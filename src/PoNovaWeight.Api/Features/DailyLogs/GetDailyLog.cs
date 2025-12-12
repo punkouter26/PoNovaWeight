@@ -39,7 +39,10 @@ public class GetDailyLogHandler : IRequestHandler<GetDailyLogQuery, DailyLogDto?
             Starches = entity.Starches,
             Fats = entity.Fats,
             Dairy = entity.Dairy,
-            WaterSegments = entity.WaterSegments
+            WaterSegments = entity.WaterSegments,
+            Weight = entity.Weight.HasValue ? (decimal)entity.Weight.Value : null,
+            OmadCompliant = entity.OmadCompliant,
+            AlcoholConsumed = entity.AlcoholConsumed
         };
     }
 }

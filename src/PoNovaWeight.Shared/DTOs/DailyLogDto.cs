@@ -16,6 +16,22 @@ public record DailyLogDto
     public required int Dairy { get; init; }
     public required int WaterSegments { get; init; }
 
+    // OMAD tracking fields
+    /// <summary>
+    /// Weight in pounds (50-500 lbs range). Null if not logged.
+    /// </summary>
+    public decimal? Weight { get; init; }
+
+    /// <summary>
+    /// True if OMAD (One Meal A Day) was followed, null if not logged.
+    /// </summary>
+    public bool? OmadCompliant { get; init; }
+
+    /// <summary>
+    /// True if alcohol was consumed, null if not logged.
+    /// </summary>
+    public bool? AlcoholConsumed { get; init; }
+
     /// <summary>
     /// Checks if the given category is over its daily target.
     /// </summary>
@@ -56,6 +72,9 @@ public record DailyLogDto
         Starches = 0,
         Fats = 0,
         Dairy = 0,
-        WaterSegments = 0
+        WaterSegments = 0,
+        Weight = null,
+        OmadCompliant = null,
+        AlcoholConsumed = null
     };
 }

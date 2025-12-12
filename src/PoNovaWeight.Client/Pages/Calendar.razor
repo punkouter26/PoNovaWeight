@@ -1,0 +1,112 @@
+@page "/calendar"
+@attribute [Authorize]
+@using PoNovaWeight.Client.Components
+@inject ApiClient Api
+@inject NavigationManager Navigation
+
+<PageTitle>Calendar - PoNovaWeight</PageTitle>
+
+<div class="space-y-4">
+    <h1 class="text-xl font-bold text-healthy-text text-center">📅 OMAD Calendar</h1>
+
+    @if (IsLoading)
+    {
+        <div class="flex justify-center py-10">
+            <div class="w-8 h-8 border-4 border-healthy-primary border-t-transparent rounded-full animate-spin"></div>
+        </div>
+    }
+    else
+    {
+        <CalendarGrid 
+            Year="@CurrentYear"
+            Month="@CurrentMonth"
+            Days="@MonthlyData?.Days"
+            OnMonthChanged="@HandleMonthChanged"
+            OnDaySelected="@HandleDaySelected" />
+
+        @if (MonthlyData?.Days.Count > 0)
+        {
+            <div class="bg-healthy-card rounded-xl shadow-healthy p-4">
+                <h3 class="text-sm font-semibold text-healthy-text mb-3">📊 Monthly Summary</h3>
+                <div class="grid grid-cols-3 gap-4 text-center">
+                    <div>
+                        <div class="text-2xl font-bold text-green-600">@OmadDaysCount</div>
+                        <div class="text-xs text-healthy-muted">OMAD Days</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold text-red-600">@NonOmadDaysCount</div>
+                        <div class="text-xs text-healthy-muted">Non-OMAD</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold text-healthy-primary">@CompliancePercentage%</div>
+                        <div class="text-xs text-healthy-muted">Compliance</div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+
+    <div class="pt-2">
+        <a href="/" class="block w-full py-2 text-center text-healthy-primary text-sm font-medium hover:bg-healthy-light rounded-lg transition-colors">
+            ← SUBMIT DATA!
+        </a>
+    </div>
+</div>
+
+@code {
+    private int CurrentYear { get; set; }
+    private int CurrentMonth { get; set; }
+    private MonthlyLogsDto? MonthlyData { get; set; }
+    private bool IsLoading { get; set; } = true;
+
+    private int OmadDaysCount => MonthlyData?.Days.Count(d => d.OmadCompliant == true) ?? 0;
+    private int NonOmadDaysCount => MonthlyData?.Days.Count(d => d.OmadCompliant == false) ?? 0;
+    private int CompliancePercentage
+    {
+        get
+        {
+            var total = OmadDaysCount + NonOmadDaysCount;
+            return total > 0 ? (int)Math.Round(100.0 * OmadDaysCount / total) : 0;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var today = DateTime.Today;
+        CurrentYear = today.Year;
+        CurrentMonth = today.Month;
+        await LoadMonthData();
+    }
+
+    private async Task LoadMonthData()
+    {
+        IsLoading = true;
+        StateHasChanged();
+
+        try
+        {
+            MonthlyData = await Api.GetMonthlyLogsAsync(CurrentYear, CurrentMonth);
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error loading monthly data: {ex.Message}");
+            MonthlyData = null;
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private async Task HandleMonthChanged((int Year, int Month) newMonth)
+    {
+        CurrentYear = newMonth.Year;
+        CurrentMonth = newMonth.Month;
+        await LoadMonthData();
+    }
+
+    private void HandleDaySelected(DateOnly date)
+    {
+        Navigation.NavigateTo($"/day/{date:yyyy-MM-dd}");
+    }
+}

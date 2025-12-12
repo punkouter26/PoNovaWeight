@@ -1,0 +1,171 @@
+@using PoNovaWeight.Shared.DTOs
+
+<div class="bg-healthy-card rounded-xl shadow-healthy p-4">
+    <!-- Month Header -->
+    <div class="flex items-center justify-between mb-4">
+        <button @onclick="PreviousMonth" 
+                class="p-2 rounded-full hover:bg-healthy-light transition-colors">
+            <svg class="w-5 h-5 text-healthy-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+        </button>
+        <h2 class="text-lg font-semibold text-healthy-text">@MonthYearDisplay</h2>
+        <button @onclick="NextMonth" 
+                class="p-2 rounded-full hover:bg-healthy-light transition-colors"
+                disabled="@IsCurrentMonth">
+            <svg class="w-5 h-5 @(IsCurrentMonth ? "text-healthy-light" : "text-healthy-muted")" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Day of Week Headers -->
+    <div class="grid grid-cols-7 gap-1 mb-2">
+        @foreach (var dayName in DayNames)
+        {
+            <div class="text-center text-xs font-medium text-healthy-muted py-1">@dayName</div>
+        }
+    </div>
+
+    <!-- Calendar Grid -->
+    <div class="grid grid-cols-7 gap-1">
+        @foreach (var day in CalendarDays)
+        {
+            @if (day == null)
+            {
+                <div class="aspect-square"></div>
+            }
+            else
+            {
+                var daySummary = GetDaySummary(day.Value);
+                var colorClass = GetDayColorClass(daySummary);
+                var isToday = day.Value == DateOnly.FromDateTime(DateTime.Today);
+                var isFuture = day.Value > DateOnly.FromDateTime(DateTime.Today);
+
+                <button @onclick="() => OnDayClick(day.Value)"
+                        disabled="@isFuture"
+                        class="aspect-square rounded-lg flex flex-col items-center justify-center text-sm transition-all @colorClass @(isToday ? "ring-2 ring-healthy-primary" : "") @(isFuture ? "opacity-30 cursor-not-allowed" : "hover:opacity-80 cursor-pointer")">
+                    <span class="font-medium">@day.Value.Day</span>
+                    @if (daySummary?.Weight != null)
+                    {
+                        <span class="text-[8px] opacity-75">@daySummary.Weight?.ToString("0")lb</span>
+                    }
+                </button>
+            }
+        }
+    </div>
+
+    <!-- Legend -->
+    <div class="flex items-center justify-center gap-4 mt-4 text-xs text-healthy-muted">
+        <div class="flex items-center gap-1">
+            <div class="w-3 h-3 rounded bg-green-500"></div>
+            <span>OMAD ✓</span>
+        </div>
+        <div class="flex items-center gap-1">
+            <div class="w-3 h-3 rounded bg-red-500"></div>
+            <span>Not OMAD</span>
+        </div>
+        <div class="flex items-center gap-1">
+            <div class="w-3 h-3 rounded bg-gray-300"></div>
+            <span>No data</span>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int Year { get; set; }
+
+    [Parameter]
+    public int Month { get; set; }
+
+    [Parameter]
+    public IReadOnlyList<DailyLogSummary>? Days { get; set; }
+
+    [Parameter]
+    public EventCallback<(int Year, int Month)> OnMonthChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<DateOnly> OnDaySelected { get; set; }
+
+    private static readonly string[] DayNames = ["S", "M", "T", "W", "T", "F", "S"];
+
+    private string MonthYearDisplay => new DateOnly(Year, Month, 1).ToString("MMMM yyyy");
+
+    private bool IsCurrentMonth
+    {
+        get
+        {
+            var today = DateTime.Today;
+            return Year == today.Year && Month == today.Month;
+        }
+    }
+
+    private List<DateOnly?> CalendarDays
+    {
+        get
+        {
+            var days = new List<DateOnly?>();
+            var firstOfMonth = new DateOnly(Year, Month, 1);
+            var daysInMonth = DateTime.DaysInMonth(Year, Month);
+
+            // Add empty cells for days before the first of the month
+            int startDayOfWeek = (int)firstOfMonth.DayOfWeek;
+            for (int i = 0; i < startDayOfWeek; i++)
+            {
+                days.Add(null);
+            }
+
+            // Add the days of the month
+            for (int day = 1; day <= daysInMonth; day++)
+            {
+                days.Add(new DateOnly(Year, Month, day));
+            }
+
+            return days;
+        }
+    }
+
+    private DailyLogSummary? GetDaySummary(DateOnly date)
+    {
+        return Days?.FirstOrDefault(d => d.Date == date);
+    }
+
+    private static string GetDayColorClass(DailyLogSummary? summary)
+    {
+        if (summary == null || !summary.OmadCompliant.HasValue)
+        {
+            return "bg-gray-200 text-gray-600"; // No data - gray
+        }
+
+        if (summary.OmadCompliant == true)
+        {
+            return "bg-green-500 text-white"; // OMAD compliant - green
+        }
+
+        return "bg-red-500 text-white"; // Not OMAD compliant - red
+    }
+
+    private async Task PreviousMonth()
+    {
+        var newDate = new DateOnly(Year, Month, 1).AddMonths(-1);
+        await OnMonthChanged.InvokeAsync((newDate.Year, newDate.Month));
+    }
+
+    private async Task NextMonth()
+    {
+        if (!IsCurrentMonth)
+        {
+            var newDate = new DateOnly(Year, Month, 1).AddMonths(1);
+            await OnMonthChanged.InvokeAsync((newDate.Year, newDate.Month));
+        }
+    }
+
+    private async Task OnDayClick(DateOnly date)
+    {
+        if (date <= DateOnly.FromDateTime(DateTime.Today))
+        {
+            await OnDaySelected.InvokeAsync(date);
+        }
+    }
+}

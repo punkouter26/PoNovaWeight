@@ -1,0 +1,455 @@
+openapi: 3.0.3
+info:
+  title: PoNovaWeight OMAD Tracking API
+  description: API endpoints for OMAD weight tracking, streaks, and analytics
+  version: 1.0.0
+
+servers:
+  - url: /api
+    description: API base path
+
+paths:
+  /dailylogs/{date}:
+    get:
+      summary: Get daily log for a specific date
+      operationId: getDailyLog
+      tags:
+        - DailyLogs
+      parameters:
+        - name: date
+          in: path
+          required: true
+          schema:
+            type: string
+            format: date
+          example: "2025-12-12"
+      responses:
+        '200':
+          description: Daily log found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DailyLogDto'
+        '404':
+          description: No log exists for this date
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '401':
+          description: Not authenticated
+
+    put:
+      summary: Create or update daily log
+      operationId: upsertDailyLog
+      tags:
+        - DailyLogs
+      parameters:
+        - name: date
+          in: path
+          required: true
+          schema:
+            type: string
+            format: date
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpsertDailyLogRequest'
+      responses:
+        '200':
+          description: Daily log saved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DailyLogDto'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '401':
+          description: Not authenticated
+        '409':
+          description: Weight change exceeds threshold - confirmation required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WeightConfirmationRequired'
+
+    delete:
+      summary: Delete daily log
+      operationId: deleteDailyLog
+      tags:
+        - DailyLogs
+      parameters:
+        - name: date
+          in: path
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        '204':
+          description: Log deleted successfully
+        '404':
+          description: No log exists for this date
+        '401':
+          description: Not authenticated
+
+  /dailylogs/month/{year}/{month}:
+    get:
+      summary: Get all daily logs for a month (calendar view)
+      operationId: getMonthlyLogs
+      tags:
+        - DailyLogs
+      parameters:
+        - name: year
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 2020
+            maximum: 2100
+          example: 2025
+        - name: month
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 12
+          example: 12
+      responses:
+        '200':
+          description: Monthly logs retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MonthlyLogsDto'
+        '401':
+          description: Not authenticated
+
+  /dailylogs/streak:
+    get:
+      summary: Calculate current OMAD streak
+      operationId: getStreak
+      tags:
+        - Analytics
+      responses:
+        '200':
+          description: Streak calculated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StreakDto'
+        '401':
+          description: Not authenticated
+
+  /dailylogs/trends:
+    get:
+      summary: Get weight trends over time
+      operationId: getWeightTrends
+      tags:
+        - Analytics
+      parameters:
+        - name: days
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 30
+            minimum: 7
+            maximum: 365
+          description: Number of days to include in trends
+      responses:
+        '200':
+          description: Trends retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WeightTrendsDto'
+        '401':
+          description: Not authenticated
+
+  /dailylogs/alcohol-correlation:
+    get:
+      summary: Get alcohol consumption correlation with weight
+      operationId: getAlcoholCorrelation
+      tags:
+        - Analytics
+      responses:
+        '200':
+          description: Correlation calculated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlcoholCorrelationDto'
+        '401':
+          description: Not authenticated
+
+components:
+  schemas:
+    DailyLogDto:
+      type: object
+      required:
+        - date
+        - proteins
+        - vegetables
+        - fruits
+        - starches
+        - fats
+        - dairy
+        - waterSegments
+      properties:
+        date:
+          type: string
+          format: date
+        proteins:
+          type: integer
+          minimum: 0
+        vegetables:
+          type: integer
+          minimum: 0
+        fruits:
+          type: integer
+          minimum: 0
+        starches:
+          type: integer
+          minimum: 0
+        fats:
+          type: integer
+          minimum: 0
+        dairy:
+          type: integer
+          minimum: 0
+        waterSegments:
+          type: integer
+          minimum: 0
+          maximum: 8
+        weight:
+          type: number
+          format: decimal
+          minimum: 50
+          maximum: 500
+          nullable: true
+          description: Weight in pounds
+        omadCompliant:
+          type: boolean
+          nullable: true
+          description: Whether OMAD was followed
+        alcoholConsumed:
+          type: boolean
+          nullable: true
+          description: Whether alcohol was consumed
+
+    UpsertDailyLogRequest:
+      type: object
+      required:
+        - proteins
+        - vegetables
+        - fruits
+        - starches
+        - fats
+        - dairy
+        - waterSegments
+      properties:
+        proteins:
+          type: integer
+          minimum: 0
+        vegetables:
+          type: integer
+          minimum: 0
+        fruits:
+          type: integer
+          minimum: 0
+        starches:
+          type: integer
+          minimum: 0
+        fats:
+          type: integer
+          minimum: 0
+        dairy:
+          type: integer
+          minimum: 0
+        waterSegments:
+          type: integer
+          minimum: 0
+          maximum: 8
+        weight:
+          type: number
+          format: decimal
+          minimum: 50
+          maximum: 500
+          nullable: true
+        omadCompliant:
+          type: boolean
+          nullable: true
+        alcoholConsumed:
+          type: boolean
+          nullable: true
+        confirmWeightChange:
+          type: boolean
+          default: false
+          description: Set to true to bypass 5 lb threshold warning
+
+    WeightConfirmationRequired:
+      type: object
+      properties:
+        previousWeight:
+          type: number
+          format: decimal
+        newWeight:
+          type: number
+          format: decimal
+        difference:
+          type: number
+          format: decimal
+        message:
+          type: string
+          example: "Weight change of 7.5 lbs exceeds threshold. Please confirm."
+
+    MonthlyLogsDto:
+      type: object
+      required:
+        - year
+        - month
+        - days
+      properties:
+        year:
+          type: integer
+        month:
+          type: integer
+        days:
+          type: array
+          items:
+            $ref: '#/components/schemas/DailyLogSummary'
+
+    DailyLogSummary:
+      type: object
+      required:
+        - date
+      properties:
+        date:
+          type: string
+          format: date
+        omadCompliant:
+          type: boolean
+          nullable: true
+        alcoholConsumed:
+          type: boolean
+          nullable: true
+        weight:
+          type: number
+          format: decimal
+          nullable: true
+
+    StreakDto:
+      type: object
+      required:
+        - currentStreak
+      properties:
+        currentStreak:
+          type: integer
+          minimum: 0
+        streakStartDate:
+          type: string
+          format: date
+          nullable: true
+
+    WeightTrendsDto:
+      type: object
+      required:
+        - dataPoints
+        - totalDaysLogged
+      properties:
+        dataPoints:
+          type: array
+          items:
+            $ref: '#/components/schemas/TrendDataPoint'
+        totalDaysLogged:
+          type: integer
+        weightChange:
+          type: number
+          format: decimal
+          nullable: true
+          description: Total weight change from first to last data point
+
+    TrendDataPoint:
+      type: object
+      required:
+        - date
+        - isCarryForward
+      properties:
+        date:
+          type: string
+          format: date
+        weight:
+          type: number
+          format: decimal
+          nullable: true
+        isCarryForward:
+          type: boolean
+          description: True if weight is carried forward from previous day
+        alcoholConsumed:
+          type: boolean
+          nullable: true
+
+    AlcoholCorrelationDto:
+      type: object
+      required:
+        - daysWithAlcohol
+        - daysWithoutAlcohol
+        - hasSufficientData
+      properties:
+        daysWithAlcohol:
+          type: integer
+        daysWithoutAlcohol:
+          type: integer
+        averageWeightWithAlcohol:
+          type: number
+          format: decimal
+          nullable: true
+        averageWeightWithoutAlcohol:
+          type: number
+          format: decimal
+          nullable: true
+        weightDifference:
+          type: number
+          format: decimal
+          nullable: true
+          description: Positive means higher weight on alcohol days
+        hasSufficientData:
+          type: boolean
+          description: True if at least 7 days of mixed data exists
+
+    ProblemDetails:
+      type: object
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string
+
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: nova-session
+
+security:
+  - cookieAuth: []
+
+tags:
+  - name: DailyLogs
+    description: Daily log CRUD operations
+  - name: Analytics
+    description: Streak, trends, and correlation analytics

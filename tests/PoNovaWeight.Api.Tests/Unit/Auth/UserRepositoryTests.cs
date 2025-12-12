@@ -17,11 +17,11 @@ public class UserRepositoryTests
     {
         _tableServiceClientMock = new Mock<TableServiceClient>();
         _tableClientMock = new Mock<TableClient>();
-        
+
         _tableServiceClientMock
             .Setup(c => c.GetTableClient("Users"))
             .Returns(_tableClientMock.Object);
-            
+
         _repository = new UserRepository(_tableServiceClientMock.Object);
     }
 
@@ -85,7 +85,7 @@ public class UserRepositoryTests
         // Arrange
         var email = "Test.User@EXAMPLE.COM";
         var normalizedEmail = email.ToLowerInvariant();
-        
+
         _tableClientMock
             .Setup(c => c.GetEntityAsync<UserEntity>(
                 normalizedEmail,

@@ -4,7 +4,7 @@
 @inject ApiClient Api
 @inject NavigationManager Navigation
 
-<PageTitle>@DisplayDate - NutraTrack</PageTitle>
+<PageTitle>@DisplayDate - PoNovaWeight</PageTitle>
 
 <div class="space-y-3">
     <!-- Compact date header with navigation -->
@@ -75,6 +75,43 @@
                           OnSegmentChanged="@UpdateWater" />
         </div>
 
+        <!-- OMAD Section -->
+        <div class="mt-3">
+            <OmadSection 
+                Weight="@DailyLog.Weight"
+                OmadCompliant="@DailyLog.OmadCompliant"
+                AlcoholConsumed="@DailyLog.AlcoholConsumed"
+                PreviousDayWeight="@PreviousDayWeight"
+                WeightChanged="@UpdateWeight"
+                OmadCompliantChanged="@UpdateOmadCompliant"
+                AlcoholConsumedChanged="@UpdateAlcoholConsumed" />
+        </div>
+
+        <!-- Weight Confirmation Modal -->
+        @if (ShowWeightConfirmation)
+        {
+            <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" @onclick="CancelWeightConfirmation">
+                <div class="bg-healthy-card rounded-xl shadow-healthy p-6 m-4 max-w-sm" @onclick:stopPropagation>
+                    <h3 class="text-lg font-semibold text-healthy-text mb-2">⚠️ Confirm Weight Change</h3>
+                    <p class="text-sm text-healthy-muted mb-4">
+                        Your weight changed by <strong>@WeightChangeDelta lbs</strong> from yesterday 
+                        (@PreviousDayWeight?.ToString("0.#") → @PendingWeight?.ToString("0.#") lbs).
+                        Is this correct?
+                    </p>
+                    <div class="flex gap-3">
+                        <button @onclick="CancelWeightConfirmation" 
+                                class="flex-1 py-2 text-sm font-medium text-healthy-muted bg-healthy-light rounded-lg hover:bg-gray-200 transition-colors">
+                            Cancel
+                        </button>
+                        <button @onclick="ConfirmWeightChange" 
+                                class="flex-1 py-2 text-sm font-medium text-white bg-healthy-primary rounded-lg hover:bg-healthy-dark transition-colors">
+                            Confirm
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+
         <!-- Compact Scan Meal Button -->
         <div class="mt-4">
             <a href="/scan/@CurrentDate.ToString("yyyy-MM-dd")"
@@ -89,10 +126,57 @@
             </a>
         </div>
 
+        <!-- Delete Log Button -->
+        @if (HasLogData)
+        {
+            <div class="mt-3">
+                <button @onclick="ShowDeleteConfirmation"
+                        class="flex items-center justify-center gap-2 w-full py-2 text-red-600 text-sm font-medium hover:bg-red-50 rounded-lg transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    Delete This Log
+                </button>
+            </div>
+        }
+
+        <!-- Delete Confirmation Modal -->
+        @if (ShowDeleteModal)
+        {
+            <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" @onclick="CancelDelete">
+                <div class="bg-healthy-card rounded-xl shadow-healthy p-6 m-4 max-w-sm" @onclick:stopPropagation>
+                    <h3 class="text-lg font-semibold text-healthy-text mb-2">🗑️ Delete Log Entry?</h3>
+                    <p class="text-sm text-healthy-muted mb-4">
+                        Are you sure you want to delete the log for <strong>@CurrentDate.ToString("MMMM d, yyyy")</strong>? 
+                        This action cannot be undone.
+                    </p>
+                    <div class="flex gap-3">
+                        <button @onclick="CancelDelete" 
+                                class="flex-1 py-2 text-sm font-medium text-healthy-muted bg-healthy-light rounded-lg hover:bg-gray-200 transition-colors">
+                            Cancel
+                        </button>
+                        <button @onclick="ConfirmDelete" 
+                                disabled="@IsDeleting"
+                                class="flex-1 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50">
+                            @if (IsDeleting)
+                            {
+                                <span>Deleting...</span>
+                            }
+                            else
+                            {
+                                <span>Delete</span>
+                            }
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+
         <!-- Compact back link -->
         <div class="pt-2">
             <a href="/" class="block w-full py-2 text-center text-healthy-primary text-sm font-medium hover:bg-healthy-light rounded-lg transition-colors">
-                ← Dashboard
+                ← Home
             </a>
         </div>
     }
@@ -108,6 +192,22 @@
     private bool IsToday => CurrentDate == DateOnly.FromDateTime(DateTime.Today);
     private bool IsFuture => CurrentDate > DateOnly.FromDateTime(DateTime.Today);
     private string DisplayDate => CurrentDate.ToString("dddd, MMM d");
+
+    // OMAD-specific state
+    private decimal? PreviousDayWeight { get; set; }
+    private bool ShowWeightConfirmation { get; set; }
+    private decimal? PendingWeight { get; set; }
+    private decimal WeightChangeDelta => PendingWeight.HasValue && PreviousDayWeight.HasValue 
+        ? Math.Abs(PendingWeight.Value - PreviousDayWeight.Value) 
+        : 0m;
+
+    // Delete state
+    private bool ShowDeleteModal { get; set; }
+    private bool IsDeleting { get; set; }
+    private bool HasLogData => DailyLog.Proteins > 0 || DailyLog.Vegetables > 0 || DailyLog.Fruits > 0 ||
+                               DailyLog.Starches > 0 || DailyLog.Fats > 0 || DailyLog.Dairy > 0 ||
+                               DailyLog.WaterSegments > 0 || DailyLog.Weight.HasValue ||
+                               DailyLog.OmadCompliant.HasValue || DailyLog.AlcoholConsumed.HasValue;
 
     protected override async Task OnInitializedAsync()
     {
@@ -139,6 +239,11 @@
         {
             var result = await Api.GetDailyLogAsync(CurrentDate);
             DailyLog = result ?? DailyLogDto.Empty(CurrentDate);
+
+            // Load previous day's weight for threshold check
+            var previousDate = CurrentDate.AddDays(-1);
+            var previousDayLog = await Api.GetDailyLogAsync(previousDate);
+            PreviousDayWeight = previousDayLog?.Weight;
         }
         catch (Exception ex)
         {
@@ -209,6 +314,102 @@
         {
             var nextDate = CurrentDate.AddDays(1);
             Navigation.NavigateTo($"/day/{nextDate:yyyy-MM-dd}");
+        }
+    }
+
+    private async Task UpdateWeight(decimal? weight)
+    {
+        // Check if weight change exceeds 5 lbs threshold
+        if (weight.HasValue && PreviousDayWeight.HasValue)
+        {
+            var delta = Math.Abs(weight.Value - PreviousDayWeight.Value);
+            if (delta > 5m)
+            {
+                // Show confirmation modal
+                PendingWeight = weight;
+                ShowWeightConfirmation = true;
+                return;
+            }
+        }
+
+        await SaveOmadChanges(weight, DailyLog.OmadCompliant, DailyLog.AlcoholConsumed);
+    }
+
+    private async Task ConfirmWeightChange()
+    {
+        ShowWeightConfirmation = false;
+        await SaveOmadChanges(PendingWeight, DailyLog.OmadCompliant, DailyLog.AlcoholConsumed);
+        PendingWeight = null;
+    }
+
+    private void CancelWeightConfirmation()
+    {
+        ShowWeightConfirmation = false;
+        PendingWeight = null;
+    }
+
+    private async Task UpdateOmadCompliant(bool? omadCompliant)
+    {
+        await SaveOmadChanges(DailyLog.Weight, omadCompliant, DailyLog.AlcoholConsumed);
+    }
+
+    private async Task UpdateAlcoholConsumed(bool? alcoholConsumed)
+    {
+        await SaveOmadChanges(DailyLog.Weight, DailyLog.OmadCompliant, alcoholConsumed);
+    }
+
+    private async Task SaveOmadChanges(decimal? weight, bool? omadCompliant, bool? alcoholConsumed)
+    {
+        try
+        {
+            var updatedLog = DailyLog with
+            {
+                Weight = weight,
+                OmadCompliant = omadCompliant,
+                AlcoholConsumed = alcoholConsumed
+            };
+
+            await Api.UpsertDailyLogAsync(updatedLog);
+            DailyLog = updatedLog;
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error updating OMAD data: {ex.Message}");
+        }
+    }
+
+    private void ShowDeleteConfirmation()
+    {
+        ShowDeleteModal = true;
+    }
+
+    private void CancelDelete()
+    {
+        ShowDeleteModal = false;
+    }
+
+    private async Task ConfirmDelete()
+    {
+        IsDeleting = true;
+        StateHasChanged();
+
+        try
+        {
+            var deleted = await Api.DeleteDailyLogAsync(CurrentDate);
+            if (deleted)
+            {
+                // Reset to empty log after successful delete
+                DailyLog = DailyLogDto.Empty(CurrentDate);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error deleting log: {ex.Message}");
+        }
+        finally
+        {
+            IsDeleting = false;
+            ShowDeleteModal = false;
         }
     }
 }

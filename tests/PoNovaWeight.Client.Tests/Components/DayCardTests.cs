@@ -126,7 +126,7 @@ public class DayCardTests : TestContext
         var cut = RenderComponent<DayCard>(parameters => parameters
             .Add(p => p.Day, dayWithWater)
             .Add(p => p.ShowWater, true));
-        
+
         // Water is always shown in compact DayCard with water emoji and count
         cut.Markup.Should().Contain("💧");
         cut.Markup.Should().Contain("5/8");

@@ -1,0 +1,119 @@
+@namespace PoNovaWeight.Client.Components
+@using PoNovaWeight.Shared.DTOs
+
+<div class="alcohol-insights bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+    <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100 flex items-center gap-2">
+        <span>🍺</span>
+        <span>Alcohol Impact</span>
+    </h3>
+
+    @if (!Correlation.HasSufficientData)
+    {
+        <div class="flex flex-col items-center justify-center py-6 text-gray-500 dark:text-gray-400">
+            <svg class="w-10 h-10 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            <span class="text-sm text-center">
+                @if (Correlation.DaysWithAlcohol == 0 && Correlation.DaysWithoutAlcohol == 0)
+                {
+                    <text>No weight data yet</text>
+                }
+                else if (Correlation.DaysWithAlcohol == 0)
+                {
+                    <text>No alcohol days logged.<br/>Log some to see correlation.</text>
+                }
+                else if (Correlation.DaysWithoutAlcohol == 0)
+                {
+                    <text>No non-alcohol days logged.<br/>Need both for comparison.</text>
+                }
+            </span>
+        </div>
+    }
+    else
+    {
+        <div class="space-y-4">
+            <!-- Weight Comparison -->
+            <div class="grid grid-cols-2 gap-3">
+                <!-- Alcohol Days -->
+                <div class="bg-amber-50 dark:bg-amber-900/20 rounded-lg p-3 text-center">
+                    <div class="text-xs text-amber-700 dark:text-amber-300 mb-1">
+                        🍺 Alcohol Days
+                    </div>
+                    <div class="text-xl font-bold text-amber-800 dark:text-amber-200">
+                        @Correlation.AverageWeightWithAlcohol?.ToString("F1") lbs
+                    </div>
+                    <div class="text-xs text-amber-600 dark:text-amber-400 mt-1">
+                        @Correlation.DaysWithAlcohol days
+                    </div>
+                </div>
+
+                <!-- Non-Alcohol Days -->
+                <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-3 text-center">
+                    <div class="text-xs text-green-700 dark:text-green-300 mb-1">
+                        💧 Sober Days
+                    </div>
+                    <div class="text-xl font-bold text-green-800 dark:text-green-200">
+                        @Correlation.AverageWeightWithoutAlcohol?.ToString("F1") lbs
+                    </div>
+                    <div class="text-xs text-green-600 dark:text-green-400 mt-1">
+                        @Correlation.DaysWithoutAlcohol days
+                    </div>
+                </div>
+            </div>
+
+            <!-- Difference Summary -->
+            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 flex items-center justify-between">
+                <span class="text-sm text-gray-600 dark:text-gray-300">
+                    Difference:
+                </span>
+                <div class="flex items-center gap-2">
+                    @if (Correlation.WeightDifference.HasValue)
+                    {
+                        var diff = Correlation.WeightDifference.Value;
+                        <span class="text-lg font-bold @(diff > 0 ? "text-red-600" : diff < 0 ? "text-green-600" : "text-gray-600")">
+                            @(diff > 0 ? "+" : "")@diff.ToString("F1") lbs
+                        </span>
+                        @if (diff > 0)
+                        {
+                            <span class="text-xs text-gray-500 dark:text-gray-400">heavier with 🍺</span>
+                        }
+                        else if (diff < 0)
+                        {
+                            <span class="text-xs text-gray-500 dark:text-gray-400">lighter with 🍺</span>
+                        }
+                    }
+                </div>
+            </div>
+
+            <!-- Insight Message -->
+            @if (Correlation.WeightDifference.HasValue && Math.Abs(Correlation.WeightDifference.Value) >= 1)
+            {
+                <div class="text-xs text-gray-500 dark:text-gray-400 text-center italic">
+                    @if (Correlation.WeightDifference.Value > 2)
+                    {
+                        <text>📈 Consider: alcohol days correlate with higher weight</text>
+                    }
+                    else if (Correlation.WeightDifference.Value > 0)
+                    {
+                        <text>Slight increase on alcohol days</text>
+                    }
+                    else
+                    {
+                        <text>Interestingly, you weigh less on alcohol days</text>
+                    }
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public AlcoholCorrelationDto Correlation { get; set; } = new() 
+    { 
+        DaysWithAlcohol = 0, 
+        DaysWithoutAlcohol = 0, 
+        HasSufficientData = false 
+    };
+}

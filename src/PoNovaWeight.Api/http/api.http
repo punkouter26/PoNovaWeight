@@ -37,7 +37,10 @@ Content-Type: application/json
   "starches": 1,
   "fats": 2,
   "dairy": 1,
-  "waterSegments": 4
+  "waterSegments": 4,
+  "weight": 175.5,
+  "omadCompliant": true,
+  "alcoholConsumed": false
 }
 
 ### Increment Unit (Protein +1)
@@ -61,6 +64,25 @@ Content-Type: application/json
 
 ### Get Weekly Summary
 GET {{baseUrl}}/api/weekly-summary/2025-01-01
+
+### =====================
+### OMAD & Weight Tracking
+### =====================
+
+### Get Monthly Logs (Calendar View)
+GET {{baseUrl}}/api/daily-logs/monthly/2025/1
+
+### Get OMAD Streak
+GET {{baseUrl}}/api/daily-logs/streak
+
+### Get Weight Trends (last 30 days)
+GET {{baseUrl}}/api/daily-logs/trends?days=30
+
+### Get Alcohol Correlation (last 90 days)
+GET {{baseUrl}}/api/daily-logs/alcohol-correlation?days=90
+
+### Delete Daily Log
+DELETE {{baseUrl}}/api/daily-logs/2025-01-01
 
 ### Scan Meal (requires Azure OpenAI configured)
 POST {{baseUrl}}/api/meal-scan

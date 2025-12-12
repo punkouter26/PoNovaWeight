@@ -1,9 +1,10 @@
 @page "/"
 @attribute [Authorize]
 @using PoNovaWeight.Client.Components
+@using PoNovaWeight.Shared.DTOs
 @inject ApiClient Api
 
-<PageTitle>Dashboard - NutraTrack</PageTitle>
+<PageTitle>Dashboard - PoNovaWeight</PageTitle>
 
 @if (IsLoading)
 {
@@ -13,6 +14,32 @@
 }
 else if (Summary is not null)
 {
+    <!-- OMAD Streak Display -->
+    @if (Streak is not null)
+    {
+        <div class="mb-4">
+            <StreakDisplay Streak="@Streak" />
+        </div>
+    }
+
+    <!-- Weight Trend Chart -->
+    @if (WeightTrends is not null)
+    {
+        <div class="mb-4">
+            <WeightTrendChart DataPoints="@MapTrendDataPoints(WeightTrends)"
+                              TotalDaysLogged="@WeightTrends.TotalDaysLogged"
+                              WeightChange="@WeightTrends.WeightChange" />
+        </div>
+    }
+
+    <!-- Alcohol Insights -->
+    @if (AlcoholCorrelation is not null)
+    {
+        <div class="mb-4">
+            <AlcoholInsights Correlation="@AlcoholCorrelation" />
+        </div>
+    }
+
     <!-- Weekly summary card -->
     <WeeklySummary Summary="@Summary" />
 
@@ -40,6 +67,9 @@ else
 
 @code {
     private WeeklySummaryDto? Summary { get; set; }
+    private StreakDto? Streak { get; set; }
+    private WeightTrendsDto? WeightTrends { get; set; }
+    private AlcoholCorrelationDto? AlcoholCorrelation { get; set; }
     private bool IsLoading { get; set; } = true;
 
     protected override async Task OnInitializedAsync()
@@ -55,16 +85,42 @@ else
         try
         {
             var today = DateOnly.FromDateTime(DateTime.Today);
-            Summary = await Api.GetWeeklySummaryAsync(today);
+            
+            // Load weekly summary, streak, weight trends, and alcohol correlation in parallel
+            var summaryTask = Api.GetWeeklySummaryAsync(today);
+            var streakTask = Api.GetStreakAsync();
+            var trendsTask = Api.GetWeightTrendsAsync(30);
+            var alcoholTask = Api.GetAlcoholCorrelationAsync(90);
+            
+            await Task.WhenAll(summaryTask, streakTask, trendsTask, alcoholTask);
+            
+            Summary = await summaryTask;
+            Streak = await streakTask;
+            WeightTrends = await trendsTask;
+            AlcoholCorrelation = await alcoholTask;
         }
         catch (Exception ex)
         {
             Console.Error.WriteLine($"Error loading weekly summary: {ex.Message}");
             Summary = null;
+            Streak = null;
+            WeightTrends = null;
+            AlcoholCorrelation = null;
         }
         finally
         {
             IsLoading = false;
         }
+    }
+
+    private List<WeightTrendChart.TrendDataPoint> MapTrendDataPoints(WeightTrendsDto trends)
+    {
+        return trends.DataPoints.Select(p => new WeightTrendChart.TrendDataPoint
+        {
+            Date = p.Date,
+            Weight = p.Weight,
+            IsCarryForward = p.IsCarryForward,
+            AlcoholConsumed = p.AlcoholConsumed
+        }).ToList();
     }
 }

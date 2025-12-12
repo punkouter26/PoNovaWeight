@@ -44,7 +44,7 @@ public static class Endpoints
         return Results.Challenge(properties, [GoogleDefaults.AuthenticationScheme]);
     }
 
-private static async Task<IResult> Logout(HttpContext context, ILoggerFactory loggerFactory)
+    private static async Task<IResult> Logout(HttpContext context, ILoggerFactory loggerFactory)
     {
         var logger = loggerFactory.CreateLogger("Auth");
         var email = context.User.FindFirstValue(ClaimTypes.Email);

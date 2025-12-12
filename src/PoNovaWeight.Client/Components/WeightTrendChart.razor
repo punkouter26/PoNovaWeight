@@ -1,0 +1,166 @@
+@namespace PoNovaWeight.Client.Components
+
+<div class="weight-trend-chart bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+    <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">
+        Weight Trends
+        @if (TotalDaysLogged > 0)
+        {
+            <span class="text-sm font-normal text-gray-500 dark:text-gray-400 ml-2">
+                (@TotalDaysLogged days logged)
+            </span>
+        }
+    </h3>
+
+    @if (!HasData)
+    {
+        <div class="flex flex-col items-center justify-center py-8 text-gray-500 dark:text-gray-400">
+            <svg class="w-12 h-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            <span>No weight data yet</span>
+            <span class="text-sm">Start logging to see trends</span>
+        </div>
+    }
+    else
+    {
+        <!-- Weight Change Summary -->
+        <div class="flex items-center justify-between mb-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <div class="text-sm text-gray-600 dark:text-gray-300">
+                <span class="font-medium">Period Change:</span>
+            </div>
+            <div class="flex items-center gap-2">
+                @if (WeightChange.HasValue)
+                {
+                    <span class="text-lg font-bold @(WeightChange > 0 ? "text-red-600" : WeightChange < 0 ? "text-green-600" : "text-gray-600")">
+                        @(WeightChange > 0 ? "+" : "")@WeightChange.Value.ToString("F1") lbs
+                    </span>
+                    @if (WeightChange > 0)
+                    {
+                        <svg class="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                        </svg>
+                    }
+                    else if (WeightChange < 0)
+                    {
+                        <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                    }
+                }
+                else
+                {
+                    <span class="text-gray-500">--</span>
+                }
+            </div>
+        </div>
+
+        <!-- Simple Chart Visualization -->
+        <div class="relative h-48 mb-4">
+            @if (DataPoints.Any(p => p.Weight.HasValue))
+            {
+                <div class="flex items-end justify-between h-full gap-0.5">
+                    @foreach (var point in DataPoints)
+                    {
+                        <div class="flex-1 flex flex-col items-center justify-end h-full group relative">
+                            @if (point.Weight.HasValue)
+                            {
+                                var height = CalculateBarHeight(point.Weight.Value);
+                                var tooltipText = $"{point.Date:MMM d}: {point.Weight.Value:F1} lbs{(point.IsCarryForward ? " (carry-forward)" : "")}{(point.AlcoholConsumed == true ? " 🍺" : "")}";
+                                <div class="w-full rounded-t transition-all duration-200 hover:opacity-80 @GetBarColorClass(point)"
+                                     style="height: @height%"
+                                     title="@tooltipText">
+                                </div>
+                                
+                                <!-- Tooltip on hover -->
+                                <div class="absolute bottom-full mb-2 hidden group-hover:block z-10">
+                                    <div class="bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-nowrap">
+                                        <div class="font-medium">@point.Date.ToString("MMM d, yyyy")</div>
+                                        <div>@point.Weight.Value.ToString("F1") lbs</div>
+                                        @if (point.IsCarryForward)
+                                        {
+                                            <div class="text-gray-300">(carry-forward)</div>
+                                        }
+                                        @if (point.AlcoholConsumed == true)
+                                        {
+                                            <div>🍺 Alcohol</div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="w-full h-1 bg-gray-200 dark:bg-gray-600 rounded"></div>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        <!-- Legend -->
+        <div class="flex flex-wrap gap-4 text-xs text-gray-600 dark:text-gray-400">
+            <div class="flex items-center gap-1">
+                <div class="w-3 h-3 bg-blue-500 rounded"></div>
+                <span>Logged</span>
+            </div>
+            <div class="flex items-center gap-1">
+                <div class="w-3 h-3 bg-blue-300 rounded"></div>
+                <span>Carry-forward</span>
+            </div>
+            <div class="flex items-center gap-1">
+                <div class="w-3 h-3 bg-amber-500 rounded"></div>
+                <span>🍺 Alcohol day</span>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public List<TrendDataPoint> DataPoints { get; set; } = new();
+
+    [Parameter]
+    public int TotalDaysLogged { get; set; }
+
+    [Parameter]
+    public decimal? WeightChange { get; set; }
+
+    private bool HasData => DataPoints.Any(p => p.Weight.HasValue);
+
+    private decimal MinWeight => DataPoints.Where(p => p.Weight.HasValue).Min(p => p.Weight!.Value);
+    private decimal MaxWeight => DataPoints.Where(p => p.Weight.HasValue).Max(p => p.Weight!.Value);
+
+    private double CalculateBarHeight(decimal weight)
+    {
+        if (!HasData) return 0;
+
+        var range = MaxWeight - MinWeight;
+        if (range == 0) return 50; // All same weight
+
+        // Scale between 20% and 100% height
+        var normalized = (double)((weight - MinWeight) / range);
+        return 20 + (normalized * 80);
+    }
+
+    private string GetBarColorClass(TrendDataPoint point)
+    {
+        if (point.AlcoholConsumed == true)
+        {
+            return "bg-amber-500";
+        }
+
+        return point.IsCarryForward ? "bg-blue-300" : "bg-blue-500";
+    }
+
+    /// <summary>
+    /// Trend data point for the chart.
+    /// </summary>
+    public class TrendDataPoint
+    {
+        public DateOnly Date { get; set; }
+        public decimal? Weight { get; set; }
+        public bool IsCarryForward { get; set; }
+        public bool? AlcoholConsumed { get; set; }
+    }
+}

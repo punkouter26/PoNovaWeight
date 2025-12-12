@@ -68,7 +68,7 @@ public class GoogleAuthTests : IAsyncLifetime
         await _page!.GotoAsync($"{BaseUrl}/login");
         // Wait for Blazor WASM to load and set title
         await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
-        await _page.WaitForFunctionAsync("() => document.title.includes('Sign In') || document.title.includes('NovaWeight')", 
+        await _page.WaitForFunctionAsync("() => document.title.includes('Sign In') || document.title.includes('NovaWeight')",
             new PageWaitForFunctionOptions { Timeout = 10000 });
 
         // Assert

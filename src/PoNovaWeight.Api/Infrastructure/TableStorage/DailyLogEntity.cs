@@ -36,6 +36,22 @@ public class DailyLogEntity : ITableEntity
     public int Dairy { get; set; }
     public int WaterSegments { get; set; }
 
+    // OMAD tracking fields (nullable for backward compatibility)
+    /// <summary>
+    /// Weight in pounds (50-500 lbs range).
+    /// </summary>
+    public double? Weight { get; set; }
+
+    /// <summary>
+    /// True if OMAD (One Meal A Day) was followed, null if not logged.
+    /// </summary>
+    public bool? OmadCompliant { get; set; }
+
+    /// <summary>
+    /// True if alcohol was consumed, null if not logged.
+    /// </summary>
+    public bool? AlcoholConsumed { get; set; }
+
     /// <summary>
     /// Creates an empty entity for the specified user and date.
     /// </summary>

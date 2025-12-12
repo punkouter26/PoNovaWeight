@@ -1,0 +1,54 @@
+@using PoNovaWeight.Shared.DTOs
+
+<div class="bg-healthy-card rounded-xl shadow-healthy p-4">
+    <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="text-4xl">🔥</div>
+            <div>
+                <div class="text-3xl font-bold text-healthy-text">@Streak?.CurrentStreak</div>
+                <div class="text-xs text-healthy-muted">Day OMAD Streak</div>
+            </div>
+        </div>
+        
+        @if (Streak?.StreakStartDate.HasValue == true)
+        {
+            <div class="text-right">
+                <div class="text-xs text-healthy-muted">Started</div>
+                <div class="text-sm font-medium text-healthy-text">
+                    @Streak.StreakStartDate.Value.ToString("MMM d")
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (Streak?.CurrentStreak > 0)
+    {
+        <div class="mt-3 pt-3 border-t border-healthy-light">
+            <div class="flex items-center gap-2">
+                @for (int i = 0; i < Math.Min(Streak.CurrentStreak, 7); i++)
+                {
+                    <div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
+                        <span class="text-white text-xs">✓</span>
+                    </div>
+                }
+                @if (Streak.CurrentStreak > 7)
+                {
+                    <div class="text-xs text-healthy-muted">+@(Streak.CurrentStreak - 7) more</div>
+                }
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="mt-3 pt-3 border-t border-healthy-light text-center">
+            <p class="text-sm text-healthy-muted">
+                Start your OMAD streak today! 💪
+            </p>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public StreakDto? Streak { get; set; }
+}

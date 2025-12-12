@@ -61,6 +61,7 @@ public class MealAnalysisService : IMealAnalysisService
             }
 
             var jsonResponse = response.Value.Content[0].Text;
+            _logger.LogInformation("OpenAI raw response: {JsonResponse}", jsonResponse);
             return ParseAnalysisResponse(jsonResponse);
         }
         catch (Exception ex)

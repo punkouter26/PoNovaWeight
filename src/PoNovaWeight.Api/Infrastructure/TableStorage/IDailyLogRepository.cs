@@ -20,4 +20,10 @@ public interface IDailyLogRepository
     /// Inserts or replaces a daily log entry.
     /// </summary>
     Task UpsertAsync(DailyLogEntity entity, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Deletes a daily log entry for a specific user and date.
+    /// Returns true if the entity was deleted, false if it didn't exist.
+    /// </summary>
+    Task<bool> DeleteAsync(string userId, DateOnly date, CancellationToken cancellationToken = default);
 }

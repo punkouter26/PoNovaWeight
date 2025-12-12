@@ -66,7 +66,7 @@ public class LoginTests : TestContext
         // For SupplyParameterFromQuery parameters, we need to test via the rendered output
         // Since the parameter comes from query string, we test the default behavior 
         // and verify the component's URL generation logic
-        
+
         // Act
         var cut = RenderComponent<Login>();
 

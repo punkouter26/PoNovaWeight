@@ -53,5 +53,56 @@ public static class Endpoints
         .WithName("UpdateWater")
         .WithSummary("Update water intake segments for a day")
         .Produces<DailyLogDto>(StatusCodes.Status200OK);
+
+        // GET /api/daily-logs/monthly/{year}/{month}
+        group.MapGet("/monthly/{year:int}/{month:int}", async (int year, int month, IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            var result = await mediator.Send(new GetMonthlyLogsQuery(year, month), cancellationToken);
+            return Results.Ok(result);
+        })
+        .WithName("GetMonthlyLogs")
+        .WithSummary("Get daily log summaries for a specific month")
+        .Produces<MonthlyLogsDto>(StatusCodes.Status200OK);
+
+        // GET /api/daily-logs/streak
+        group.MapGet("/streak", async (IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            var result = await mediator.Send(new CalculateStreakQuery(), cancellationToken);
+            return Results.Ok(result);
+        })
+        .WithName("GetStreak")
+        .WithSummary("Calculate the current OMAD streak")
+        .Produces<StreakDto>(StatusCodes.Status200OK);
+
+        // GET /api/daily-logs/trends?days=30
+        group.MapGet("/trends", async (int days, IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            var result = await mediator.Send(new GetWeightTrendsQuery(days), cancellationToken);
+            return Results.Ok(result);
+        })
+        .WithName("GetWeightTrends")
+        .WithSummary("Get weight trend data for the specified number of days")
+        .Produces<WeightTrendsDto>(StatusCodes.Status200OK);
+
+        // GET /api/daily-logs/alcohol-correlation?days=90
+        group.MapGet("/alcohol-correlation", async (int days, IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            var result = await mediator.Send(new GetAlcoholCorrelationQuery(days), cancellationToken);
+            return Results.Ok(result);
+        })
+        .WithName("GetAlcoholCorrelation")
+        .WithSummary("Get weight correlation between alcohol and non-alcohol days")
+        .Produces<AlcoholCorrelationDto>(StatusCodes.Status200OK);
+
+        // DELETE /api/daily-logs/{date}
+        group.MapDelete("/{date}", async (DateOnly date, IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            var deleted = await mediator.Send(new DeleteDailyLogCommand(date), cancellationToken);
+            return deleted ? Results.NoContent() : Results.NotFound();
+        })
+        .WithName("DeleteDailyLog")
+        .WithSummary("Delete a daily log entry")
+        .Produces(StatusCodes.Status204NoContent)
+        .Produces(StatusCodes.Status404NotFound);
     }
 }

@@ -32,6 +32,11 @@ public class UpsertDailyLogHandler : IRequestHandler<UpsertDailyLogCommand, Dail
         entity.Dairy = request.DailyLog.Dairy;
         entity.WaterSegments = request.DailyLog.WaterSegments;
 
+        // OMAD fields
+        entity.Weight = request.DailyLog.Weight.HasValue ? (double)request.DailyLog.Weight.Value : null;
+        entity.OmadCompliant = request.DailyLog.OmadCompliant;
+        entity.AlcoholConsumed = request.DailyLog.AlcoholConsumed;
+
         await _repository.UpsertAsync(entity, cancellationToken);
 
         return request.DailyLog;

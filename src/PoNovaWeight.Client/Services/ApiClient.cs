@@ -89,4 +89,55 @@ public class ApiClient
         response.EnsureSuccessStatusCode();
         return await response.Content.ReadFromJsonAsync<AuthStatus>(cancellationToken);
     }
+
+    // OMAD-related methods
+
+    /// <summary>
+    /// Deletes a daily log entry for a specific date.
+    /// </summary>
+    public async Task<bool> DeleteDailyLogAsync(DateOnly date, CancellationToken cancellationToken = default)
+    {
+        var response = await _httpClient.DeleteAsync($"api/daily-logs/{date:yyyy-MM-dd}", cancellationToken);
+        return response.IsSuccessStatusCode;
+    }
+
+    /// <summary>
+    /// Gets the monthly log summaries for calendar display.
+    /// </summary>
+    public async Task<MonthlyLogsDto?> GetMonthlyLogsAsync(int year, int month, CancellationToken cancellationToken = default)
+    {
+        var response = await _httpClient.GetAsync($"api/daily-logs/monthly/{year}/{month}", cancellationToken);
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<MonthlyLogsDto>(cancellationToken);
+    }
+
+    /// <summary>
+    /// Gets the current OMAD streak.
+    /// </summary>
+    public async Task<StreakDto?> GetStreakAsync(CancellationToken cancellationToken = default)
+    {
+        var response = await _httpClient.GetAsync("api/daily-logs/streak", cancellationToken);
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<StreakDto>(cancellationToken);
+    }
+
+    /// <summary>
+    /// Gets weight trend data for a specified number of days.
+    /// </summary>
+    public async Task<WeightTrendsDto?> GetWeightTrendsAsync(int days = 30, CancellationToken cancellationToken = default)
+    {
+        var response = await _httpClient.GetAsync($"api/daily-logs/trends?days={days}", cancellationToken);
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<WeightTrendsDto>(cancellationToken);
+    }
+
+    /// <summary>
+    /// Gets alcohol and weight correlation data.
+    /// </summary>
+    public async Task<AlcoholCorrelationDto?> GetAlcoholCorrelationAsync(int days = 90, CancellationToken cancellationToken = default)
+    {
+        var response = await _httpClient.GetAsync($"api/daily-logs/alcohol-correlation?days={days}", cancellationToken);
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<AlcoholCorrelationDto>(cancellationToken);
+    }
 }

@@ -12,8 +12,8 @@ public class DailyLogDtoValidator : AbstractValidator<DailyLogDto>
     public DailyLogDtoValidator()
     {
         RuleFor(x => x.Date)
-            .Must(BeWithinCurrentWeek)
-            .WithMessage("Can only log for current week");
+            .Must(NotBeInFuture)
+            .WithMessage("Cannot log entries for future dates");
 
         RuleFor(x => x.Proteins).GreaterThanOrEqualTo(0);
         RuleFor(x => x.Vegetables).GreaterThanOrEqualTo(0);
@@ -22,13 +22,30 @@ public class DailyLogDtoValidator : AbstractValidator<DailyLogDto>
         RuleFor(x => x.Fats).GreaterThanOrEqualTo(0);
         RuleFor(x => x.Dairy).GreaterThanOrEqualTo(0);
         RuleFor(x => x.WaterSegments).InclusiveBetween(0, UnitCategoryInfo.WaterTargetSegments);
+
+        // OMAD validation rules
+        RuleFor(x => x.Weight)
+            .InclusiveBetween(50m, 500m)
+            .When(x => x.Weight.HasValue)
+            .WithMessage("Weight must be between 50 and 500 lbs");
+
+        RuleFor(x => x.Weight)
+            .Must(HaveAtMostOneDecimalPlace)
+            .When(x => x.Weight.HasValue)
+            .WithMessage("Weight can have at most 1 decimal place");
     }
 
-    private static bool BeWithinCurrentWeek(DateOnly date)
+    private static bool NotBeInFuture(DateOnly date)
     {
         var today = DateOnly.FromDateTime(DateTime.Today);
-        var (weekStart, weekEnd) = GetWeekBounds(today);
-        return date >= weekStart && date <= weekEnd;
+        return date <= today;
+    }
+
+    private static bool HaveAtMostOneDecimalPlace(decimal? weight)
+    {
+        if (!weight.HasValue) return true;
+        var scaled = weight.Value * 10;
+        return scaled == Math.Floor(scaled);
     }
 
     /// <summary>

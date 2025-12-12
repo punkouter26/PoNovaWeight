@@ -70,4 +70,19 @@ public class DailyLogRepository : IDailyLogRepository
     {
         await _tableClient.UpsertEntityAsync(entity, TableUpdateMode.Replace, cancellationToken);
     }
+
+    public async Task<bool> DeleteAsync(string userId, DateOnly date, CancellationToken cancellationToken = default)
+    {
+        var rowKey = date.ToString("yyyy-MM-dd");
+
+        try
+        {
+            await _tableClient.DeleteEntityAsync(userId, rowKey, ETag.All, cancellationToken);
+            return true;
+        }
+        catch (RequestFailedException ex) when (ex.Status == 404)
+        {
+            return false;
+        }
+    }
 }
