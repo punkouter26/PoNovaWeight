@@ -40,6 +40,12 @@ jobs:
       - name: Build solution
         run: dotnet build ${{ env.SOLUTION_PATH }} --configuration Release --no-restore
       
+      - name: Install and start Azurite
+        run: |
+          npm install -g azurite
+          azurite --silent --location /tmp/azurite --debug /tmp/azurite-debug.log &
+          sleep 5
+      
       - name: Run unit tests
         run: |
           dotnet test tests/PoNovaWeight.Api.Tests/PoNovaWeight.Api.Tests.csproj \
@@ -48,6 +54,8 @@ jobs:
             --verbosity normal \
             --logger "trx;LogFileName=api-test-results.trx" \
             --collect:"XPlat Code Coverage"
+        env:
+          TableStorage__ConnectionString: "UseDevelopmentStorage=true"
       
       - name: Run client tests
         run: |
