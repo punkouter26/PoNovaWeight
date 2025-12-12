@@ -16,8 +16,8 @@ permissions:
 
 env:
   DOTNET_VERSION: '10.0.x'
-  AZURE_WEBAPP_NAME: 'ponova-prod-app'
-  AZURE_RESOURCE_GROUP: 'PoNovaWeight-rg'
+  AZURE_WEBAPP_NAME: 'PoNovaWeight'
+  AZURE_RESOURCE_GROUP: 'PoNovaWeight'
   SOLUTION_PATH: 'PoNovaWeight.sln'
 
 jobs:
