@@ -1,0 +1,143 @@
+# CI/CD Pipeline for PoNovaWeight
+# Builds, tests, and deploys to Azure App Service using OIDC Federated Credentials
+
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, 003-omad-weight-tracking]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  DOTNET_VERSION: '10.0.x'
+  AZURE_WEBAPP_NAME: 'ponova-prod-app'
+  AZURE_RESOURCE_GROUP: 'PoNovaWeight-rg'
+  SOLUTION_PATH: 'PoNovaWeight.sln'
+
+jobs:
+  build-and-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+      
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.SOLUTION_PATH }}
+      
+      - name: Build solution
+        run: dotnet build ${{ env.SOLUTION_PATH }} --configuration Release --no-restore
+      
+      - name: Run unit tests
+        run: |
+          dotnet test tests/PoNovaWeight.Api.Tests/PoNovaWeight.Api.Tests.csproj \
+            --configuration Release \
+            --no-build \
+            --verbosity normal \
+            --logger "trx;LogFileName=api-test-results.trx" \
+            --collect:"XPlat Code Coverage"
+      
+      - name: Run client tests
+        run: |
+          dotnet test tests/PoNovaWeight.Client.Tests/PoNovaWeight.Client.Tests.csproj \
+            --configuration Release \
+            --no-build \
+            --verbosity normal \
+            --logger "trx;LogFileName=client-test-results.trx" \
+            --collect:"XPlat Code Coverage"
+      
+      - name: Publish API
+        run: |
+          dotnet publish src/PoNovaWeight.Api/PoNovaWeight.Api.csproj \
+            --configuration Release \
+            --output ./publish
+      
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: webapp
+          path: ./publish
+          retention-days: 7
+      
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: '**/TestResults/**/*.trx'
+          retention-days: 30
+
+  deploy:
+    name: Deploy to Azure
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment:
+      name: production
+      url: ${{ steps.deploy.outputs.webapp-url }}
+    
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: webapp
+          path: ./publish
+      
+      - name: Login to Azure using OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      
+      - name: Deploy to Azure App Service
+        id: deploy
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          package: ./publish
+      
+      - name: Verify deployment
+        run: |
+          echo "Deployed to: ${{ steps.deploy.outputs.webapp-url }}"
+          curl -f -s -o /dev/null -w "%{http_code}" "${{ steps.deploy.outputs.webapp-url }}/health" || echo "Health check endpoint not available"
+
+  # Separate job for infrastructure provisioning (manual trigger)
+  provision-infrastructure:
+    name: Provision Azure Infrastructure
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Login to Azure using OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      
+      - name: Install Azure Developer CLI
+        uses: Azure/setup-azd@v1.0.0
+      
+      - name: Provision infrastructure with azd
+        working-directory: ./infra
+        run: |
+          azd provision --no-prompt
+        env:
+          AZURE_ENV_NAME: prod
+          AZURE_LOCATION: eastus
