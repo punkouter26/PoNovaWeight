@@ -1,0 +1,493 @@
+openapi: 3.0.3
+info:
+  title: PoNovaWeight Food Journal API
+  version: 1.0.0
+  description: |
+    REST API for the Nova Physician Wellness Center food journaling application.
+    Manages daily food unit logs, water tracking, and AI-powered meal scanning.
+  contact:
+    name: PoNovaWeight
+servers:
+  - url: /api
+    description: Relative API path
+
+paths:
+  /daily-logs/{date}:
+    get:
+      operationId: getDailyLog
+      summary: Get daily log for specific date
+      tags:
+        - Daily Logs
+      parameters:
+        - name: date
+          in: path
+          required: true
+          schema:
+            type: string
+            format: date
+            example: "2025-12-10"
+          description: Date in yyyy-MM-dd format
+      responses:
+        "200":
+          description: Daily log retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DailyLogDto"
+        "404":
+          description: No log exists for this date (return empty log)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DailyLogDto"
+    
+    put:
+      operationId: upsertDailyLog
+      summary: Create or update daily log
+      tags:
+        - Daily Logs
+      parameters:
+        - name: date
+          in: path
+          required: true
+          schema:
+            type: string
+            format: date
+            example: "2025-12-10"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DailyLogDto"
+      responses:
+        "200":
+          description: Daily log saved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DailyLogDto"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /daily-logs/{date}/units/{category}:
+    patch:
+      operationId: incrementUnit
+      summary: Increment or decrement a single unit category
+      description: |
+        Quick action to add or subtract from a unit category.
+        This is the primary interaction for the tally-style UI.
+      tags:
+        - Daily Logs
+      parameters:
+        - name: date
+          in: path
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: category
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/UnitCategory"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IncrementUnitRequest"
+      responses:
+        "200":
+          description: Unit updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DailyLogDto"
+        "400":
+          description: Would result in negative value
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /daily-logs/{date}/water:
+    patch:
+      operationId: updateWater
+      summary: Update water intake segments
+      tags:
+        - Daily Logs
+      parameters:
+        - name: date
+          in: path
+          required: true
+          schema:
+            type: string
+            format: date
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateWaterRequest"
+      responses:
+        "200":
+          description: Water updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DailyLogDto"
+        "400":
+          description: Invalid segment count
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /weekly-summary:
+    get:
+      operationId: getWeeklySummary
+      summary: Get weekly summary including all days
+      description: |
+        Returns the current week's summary (Sunday-Saturday) with all daily logs
+        and calculated totals. Empty days return zero-initialized entries.
+      tags:
+        - Weekly Summary
+      parameters:
+        - name: weekOf
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+          description: Any date within the desired week (defaults to today)
+      responses:
+        "200":
+          description: Weekly summary retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WeeklySummaryDto"
+
+  /meal-scan:
+    post:
+      operationId: scanMeal
+      summary: Analyze meal photo with AI
+      description: |
+        Accepts a base64-encoded image (JPEG/PNG) and returns suggested 
+        unit counts for each food category based on Azure OpenAI GPT-4o analysis.
+      tags:
+        - Meal Scan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MealScanRequest"
+      responses:
+        "200":
+          description: Meal analyzed successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MealScanResult"
+        "400":
+          description: Invalid image format or size
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "503":
+          description: AI service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /auth/passcode:
+    post:
+      operationId: verifyPasscode
+      summary: Verify 4-digit passcode
+      description: |
+        Validates the user's passcode and establishes a session.
+        Session persists until browser is closed.
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PasscodeRequest"
+      responses:
+        "200":
+          description: Passcode valid, session established
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResult"
+        "401":
+          description: Invalid passcode
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+components:
+  schemas:
+    DailyLogDto:
+      type: object
+      required:
+        - date
+        - proteins
+        - vegetables
+        - fruits
+        - starches
+        - fats
+        - dairy
+        - waterSegments
+      properties:
+        date:
+          type: string
+          format: date
+          example: "2025-12-10"
+        proteins:
+          type: integer
+          minimum: 0
+          example: 8
+        vegetables:
+          type: integer
+          minimum: 0
+          example: 3
+        fruits:
+          type: integer
+          minimum: 0
+          example: 1
+        starches:
+          type: integer
+          minimum: 0
+          example: 2
+        fats:
+          type: integer
+          minimum: 0
+          example: 2
+        dairy:
+          type: integer
+          minimum: 0
+          example: 1
+        waterSegments:
+          type: integer
+          minimum: 0
+          maximum: 8
+          example: 4
+
+    WeeklySummaryDto:
+      type: object
+      required:
+        - weekStart
+        - weekEnd
+        - days
+        - totals
+        - targets
+      properties:
+        weekStart:
+          type: string
+          format: date
+          example: "2025-12-08"
+        weekEnd:
+          type: string
+          format: date
+          example: "2025-12-14"
+        days:
+          type: array
+          items:
+            $ref: "#/components/schemas/DailyLogDto"
+          minItems: 7
+          maxItems: 7
+        totals:
+          $ref: "#/components/schemas/WeeklyTotals"
+        targets:
+          $ref: "#/components/schemas/WeeklyTargets"
+
+    WeeklyTotals:
+      type: object
+      properties:
+        proteins:
+          type: integer
+        vegetables:
+          type: integer
+        fruits:
+          type: integer
+        starches:
+          type: integer
+        fats:
+          type: integer
+        dairy:
+          type: integer
+        dairyAsProteinEquivalent:
+          type: integer
+          description: "Dairy count * 2 for protein conversion"
+
+    WeeklyTargets:
+      type: object
+      properties:
+        proteins:
+          type: integer
+          example: 105
+        vegetables:
+          type: integer
+          example: 35
+        fruits:
+          type: integer
+          example: 14
+        starches:
+          type: integer
+          example: 14
+        fats:
+          type: integer
+          example: 28
+        dairyMax:
+          type: integer
+          example: 21
+
+    UnitCategory:
+      type: string
+      enum:
+        - proteins
+        - vegetables
+        - fruits
+        - starches
+        - fats
+        - dairy
+
+    IncrementUnitRequest:
+      type: object
+      required:
+        - delta
+      properties:
+        delta:
+          type: integer
+          description: "Amount to add (positive) or subtract (negative)"
+          example: 1
+
+    UpdateWaterRequest:
+      type: object
+      required:
+        - segments
+      properties:
+        segments:
+          type: integer
+          minimum: 0
+          maximum: 8
+          description: "Total water segments (0-8)"
+          example: 5
+
+    MealScanRequest:
+      type: object
+      required:
+        - base64Image
+        - targetDate
+      properties:
+        base64Image:
+          type: string
+          format: byte
+          description: "Base64-encoded JPEG or PNG image (max 4MB)"
+        targetDate:
+          type: string
+          format: date
+          description: "Date to apply scan results to"
+
+    MealScanResult:
+      type: object
+      required:
+        - proteins
+        - vegetables
+        - fruits
+        - starches
+        - fats
+        - dairy
+      properties:
+        proteins:
+          type: integer
+          minimum: 0
+        vegetables:
+          type: integer
+          minimum: 0
+        fruits:
+          type: integer
+          minimum: 0
+        starches:
+          type: integer
+          minimum: 0
+        fats:
+          type: integer
+          minimum: 0
+        dairy:
+          type: integer
+          minimum: 0
+        foodDescription:
+          type: string
+          description: "AI-generated description of detected foods"
+          example: "Grilled chicken breast with steamed broccoli and rice"
+
+    PasscodeRequest:
+      type: object
+      required:
+        - passcode
+      properties:
+        passcode:
+          type: string
+          pattern: "^[0-9]{4}$"
+          description: "4-digit passcode"
+          example: "1234"
+
+    AuthResult:
+      type: object
+      required:
+        - authenticated
+        - userId
+      properties:
+        authenticated:
+          type: boolean
+        userId:
+          type: string
+          example: "dev-user"
+
+    ProblemDetails:
+      type: object
+      description: "RFC 7807 problem details"
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string
+
+  securitySchemes:
+    sessionAuth:
+      type: apiKey
+      in: cookie
+      name: .PoNovaWeight.Session
+      description: "Session cookie set after passcode verification"
+
+security:
+  - sessionAuth: []
+
+tags:
+  - name: Daily Logs
+    description: Manage daily food unit tracking
+  - name: Weekly Summary
+    description: View weekly aggregates and progress
+  - name: Meal Scan
+    description: AI-powered meal photo analysis
+  - name: Authentication
+    description: Passcode-based session management

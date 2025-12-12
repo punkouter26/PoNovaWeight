@@ -1,0 +1,75 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/PoNovaWeight.sln",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary;ForceNoAlign"
+      ],
+      "problemMatcher": "$msCompile",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "watch",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "watch",
+        "run",
+        "--project",
+        "${workspaceFolder}/src/PoNovaWeight.Api/PoNovaWeight.Api.csproj"
+      ],
+      "problemMatcher": "$msCompile",
+      "isBackground": true
+    },
+    {
+      "label": "test",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "test",
+        "${workspaceFolder}/PoNovaWeight.sln",
+        "--no-build"
+      ],
+      "problemMatcher": "$msCompile",
+      "group": "test"
+    },
+    {
+      "label": "tailwind-watch",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "watch"],
+      "options": {
+        "cwd": "${workspaceFolder}/src/PoNovaWeight.Client"
+      },
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "tailwind-build",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "build"],
+      "options": {
+        "cwd": "${workspaceFolder}/src/PoNovaWeight.Client"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "azurite-start",
+      "type": "shell",
+      "command": "azurite",
+      "args": ["--silent", "--location", "${workspaceFolder}/azurite", "--debug", "${workspaceFolder}/azurite/debug.log"],
+      "isBackground": true,
+      "problemMatcher": []
+    }
+  ]
+}

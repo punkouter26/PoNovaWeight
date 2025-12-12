@@ -1,0 +1,90 @@
+@using PoNovaWeight.Shared.Contracts
+
+<div class="flex items-center justify-between p-3 bg-healthy-card rounded-xl shadow-healthy border @(IsOverTarget ? "border-healthy-fruit/30" : "border-healthy-light")">
+    <div class="flex-1">
+        <div class="flex items-center gap-2">
+            <span class="text-base">@GetCategoryEmoji()</span>
+            <span class="text-sm font-semibold text-healthy-text">@CategoryName</span>
+            @if (IsOverTarget)
+            {
+                <span class="text-[9px] px-1.5 py-0.5 bg-healthy-fruit/10 text-healthy-fruit rounded-full">Over</span>
+            }
+            else if (Current >= Target)
+            {
+                <span class="text-[9px] px-1.5 py-0.5 bg-healthy-light text-healthy-primary rounded-full">✓</span>
+            }
+        </div>
+        <div class="text-[11px] text-healthy-muted mt-0.5">
+            @Current / @Target @(UnitCategoryInfo.IsMaxLimit(Category) ? "max" : "target")
+        </div>
+    </div>
+
+    <div class="flex items-center gap-2">
+        <button @onclick="Decrement" 
+                disabled="@(Current <= 0)"
+                class="stepper-btn stepper-btn-minus disabled:opacity-40 disabled:cursor-not-allowed">
+            −
+        </button>
+        
+        <span class="w-8 text-center text-lg font-bold @(IsOverTarget ? "text-healthy-fruit" : Current >= Target ? "text-healthy-primary" : "text-healthy-text")">
+            @Current
+        </span>
+        
+        <button @onclick="Increment" 
+                class="stepper-btn stepper-btn-plus">
+            +
+        </button>
+    </div>
+</div>
+
+<!-- Compact progress bar -->
+<div class="progress-bar mt-1.5">
+    <div class="progress-fill @ProgressColorClass" style="width: @ProgressPercent%"></div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public UnitCategory Category { get; set; }
+
+    [Parameter]
+    public int Current { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnValueChanged { get; set; }
+
+    private string CategoryName => Category.ToString();
+    private int Target => UnitCategoryInfo.GetDailyTarget(Category);
+    private bool IsOverTarget => Current > Target;
+    
+    private int ProgressPercent => Target > 0 ? Math.Min(100, (int)((double)Current / Target * 100)) : 0;
+    
+    private string ProgressColorClass => IsOverTarget 
+        ? "progress-fill-danger" 
+        : Current >= Target 
+            ? "progress-fill-success" 
+            : "progress-fill-warning";
+
+    private string GetCategoryEmoji() => Category switch
+    {
+        UnitCategory.Proteins => "🥩",
+        UnitCategory.Vegetables => "🥬",
+        UnitCategory.Fruits => "🍎",
+        UnitCategory.Starches => "🍞",
+        UnitCategory.Fats => "🥑",
+        UnitCategory.Dairy => "🧀",
+        _ => "📊"
+    };
+
+    private async Task Increment()
+    {
+        await OnValueChanged.InvokeAsync(1);
+    }
+
+    private async Task Decrement()
+    {
+        if (Current > 0)
+        {
+            await OnValueChanged.InvokeAsync(-1);
+        }
+    }
+}

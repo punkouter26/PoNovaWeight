@@ -1,0 +1,133 @@
+@using PoNovaWeight.Shared.Contracts
+
+<a href="/day/@Day.Date.ToString("yyyy-MM-dd")" 
+   class="day-card block @(IsToday ? "day-card-today" : "")">
+    
+    <!-- Compact header -->
+    <div class="flex items-center justify-between mb-2">
+        <div class="flex items-center gap-2">
+            <span class="text-lg">@GetDayEmoji()</span>
+            <div>
+                <div class="font-semibold text-healthy-text text-sm">@Day.Date.ToString("ddd")</div>
+                <div class="text-xs text-healthy-muted">@Day.Date.ToString("MMM d")</div>
+            </div>
+        </div>
+        @if (IsToday)
+        {
+            <span class="text-[10px] px-2 py-0.5 bg-healthy-primary text-white rounded-full font-medium">Today</span>
+        }
+        else
+        {
+            <span class="stat-value text-sm">@GetCompletionPercent()%</span>
+        }
+    </div>
+
+    <!-- Compact category mini-bars -->
+    <div class="flex gap-1 mb-2">
+        @foreach (var category in Categories)
+        {
+            var current = Day.GetUnits(category);
+            var target = UnitCategoryInfo.GetDailyTarget(category);
+            var percent = target > 0 ? Math.Min(100, (int)((double)current / target * 100)) : 0;
+            var isOver = current > target;
+
+            <div class="flex-1 h-1.5 rounded-full bg-gray-100 overflow-hidden" title="@GetShortName(category): @current/@target">
+                <div class="h-full rounded-full transition-all @GetCategoryColor(category, isOver, current >= target)" 
+                     style="width: @percent%"></div>
+            </div>
+        }
+    </div>
+
+    <!-- Compact stats row -->
+    <div class="flex items-center justify-between text-[10px]">
+        <div class="flex items-center gap-3">
+            @foreach (var category in Categories.Take(3))
+            {
+                var current = Day.GetUnits(category);
+                <span class="text-healthy-muted">
+                    <span class="@GetCategoryTextColor(category)">@GetCategoryIcon(category)</span>
+                    @current
+                </span>
+            }
+        </div>
+        
+        <!-- Water mini indicator -->
+        <div class="flex items-center gap-1">
+            <span class="text-healthy-water">💧</span>
+            <span class="text-healthy-muted">@Day.WaterSegments/8</span>
+        </div>
+    </div>
+</a>
+
+@code {
+    [Parameter, EditorRequired]
+    public DailyLogDto Day { get; set; } = null!;
+
+    [Parameter]
+    public bool ShowWater { get; set; } = true;
+
+    private bool IsToday => Day.Date == DateOnly.FromDateTime(DateTime.Today);
+
+    private static readonly UnitCategory[] Categories = Enum.GetValues<UnitCategory>();
+
+    private int GetCompletionPercent()
+    {
+        int total = 0, achieved = 0;
+        foreach (var cat in Categories)
+        {
+            var current = Day.GetUnits(cat);
+            var target = UnitCategoryInfo.GetDailyTarget(cat);
+            if (target > 0)
+            {
+                total += target;
+                achieved += Math.Min(current, target);
+            }
+        }
+        return total > 0 ? (int)((double)achieved / total * 100) : 0;
+    }
+
+    private string GetDayEmoji()
+    {
+        var percent = GetCompletionPercent();
+        return percent >= 90 ? "🌟" : percent >= 70 ? "✨" : percent >= 50 ? "🌱" : "🍃";
+    }
+
+    private static string GetShortName(UnitCategory category) => category switch
+    {
+        UnitCategory.Proteins => "Protein",
+        UnitCategory.Vegetables => "Veggies",
+        UnitCategory.Fruits => "Fruit",
+        UnitCategory.Starches => "Starch",
+        UnitCategory.Fats => "Fat",
+        UnitCategory.Dairy => "Dairy",
+        _ => category.ToString()
+    };
+
+    private static string GetCategoryIcon(UnitCategory category) => category switch
+    {
+        UnitCategory.Proteins => "🥩",
+        UnitCategory.Vegetables => "🥬",
+        UnitCategory.Fruits => "🍎",
+        _ => "•"
+    };
+
+    private static string GetCategoryColor(UnitCategory category, bool isOver, bool isMet) =>
+        isOver ? "bg-healthy-fruit" : isMet ? "bg-healthy-primary" : category switch
+        {
+            UnitCategory.Proteins => "bg-healthy-earth",
+            UnitCategory.Vegetables => "bg-healthy-secondary",
+            UnitCategory.Fruits => "bg-healthy-fruit/70",
+            UnitCategory.Starches => "bg-healthy-grain",
+            UnitCategory.Fats => "bg-healthy-grain/70",
+            UnitCategory.Dairy => "bg-healthy-water/70",
+            _ => "bg-healthy-muted"
+        };
+
+    private static string GetCategoryTextColor(UnitCategory category) => category switch
+    {
+        UnitCategory.Proteins => "text-healthy-earth",
+        UnitCategory.Vegetables => "text-healthy-secondary",
+        UnitCategory.Fruits => "text-healthy-fruit",
+        _ => ""
+    };
+}

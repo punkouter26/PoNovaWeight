@@ -1,0 +1,72 @@
+### PoNovaWeight API Testing
+### Base URL (Development)
+@baseUrl = https://localhost:5001
+
+### =====================
+### Authentication
+### =====================
+
+### Get Current User (check auth status)
+GET {{baseUrl}}/api/auth/me
+
+### Login (redirects to Google OAuth - open in browser)
+# GET {{baseUrl}}/api/auth/login
+
+### Logout (redirects to home - open in browser)
+# GET {{baseUrl}}/api/auth/logout
+
+### =====================
+### Health & Diagnostics
+### =====================
+
+### Health Check
+GET {{baseUrl}}/api/health
+
+### Get Daily Log
+GET {{baseUrl}}/api/daily-logs/2025-01-01
+
+### Upsert Daily Log
+PUT {{baseUrl}}/api/daily-logs
+Content-Type: application/json
+
+{
+  "date": "2025-01-01",
+  "proteins": 10,
+  "vegetables": 3,
+  "fruits": 1,
+  "starches": 1,
+  "fats": 2,
+  "dairy": 1,
+  "waterSegments": 4
+}
+
+### Increment Unit (Protein +1)
+POST {{baseUrl}}/api/daily-logs/increment
+Content-Type: application/json
+
+{
+  "date": "2025-01-01",
+  "category": 0,
+  "delta": 1
+}
+
+### Update Water Segments
+POST {{baseUrl}}/api/daily-logs/water
+Content-Type: application/json
+
+{
+  "date": "2025-01-01",
+  "segments": 5
+}
+
+### Get Weekly Summary
+GET {{baseUrl}}/api/weekly-summary/2025-01-01
+
+### Scan Meal (requires Azure OpenAI configured)
+POST {{baseUrl}}/api/meal-scan
+Content-Type: application/json
+
+{
+  "base64Image": "<base64-encoded-image>",
+  "targetDate": "2025-01-01"
+}

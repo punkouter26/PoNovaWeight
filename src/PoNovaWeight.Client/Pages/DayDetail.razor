@@ -1,0 +1,214 @@
+@page "/day/{DateString}"
+@attribute [Authorize]
+@using PoNovaWeight.Client.Components
+@inject ApiClient Api
+@inject NavigationManager Navigation
+
+<PageTitle>@DisplayDate - NutraTrack</PageTitle>
+
+<div class="space-y-3">
+    <!-- Compact date header with navigation -->
+    <div class="flex items-center justify-between mb-4 bg-healthy-card rounded-xl shadow-healthy p-2">
+        <button @onclick="GoToPreviousDay" 
+                class="p-1.5 rounded-full hover:bg-healthy-light transition-colors"
+                disabled="@IsLoading">
+            <svg class="w-5 h-5 text-healthy-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+        </button>
+        
+        <div class="text-center">
+            <h1 class="text-base font-semibold text-healthy-text">@DisplayDate</h1>
+            @if (IsToday)
+            {
+                <span class="text-[10px] text-healthy-primary font-medium">Today</span>
+            }
+        </div>
+        
+        <button @onclick="GoToNextDay" 
+                class="p-1.5 rounded-full hover:bg-healthy-light transition-colors"
+                disabled="@(IsLoading || IsFuture)">
+            <svg class="w-5 h-5 text-healthy-muted @(IsFuture ? "opacity-30" : "")" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+        </button>
+    </div>
+
+    @if (IsLoading)
+    {
+        <div class="flex justify-center py-6">
+            <div class="w-6 h-6 border-3 border-healthy-primary border-t-transparent rounded-full animate-spin"></div>
+        </div>
+    }
+    else
+    {
+        <!-- Compact unit steppers for each category -->
+        <div class="space-y-2">
+            <UnitStepper Category="UnitCategory.Proteins" 
+                         Current="@DailyLog.Proteins" 
+                         OnValueChanged="@(delta => UpdateUnit(UnitCategory.Proteins, delta))" />
+            
+            <UnitStepper Category="UnitCategory.Vegetables" 
+                         Current="@DailyLog.Vegetables" 
+                         OnValueChanged="@(delta => UpdateUnit(UnitCategory.Vegetables, delta))" />
+            
+            <UnitStepper Category="UnitCategory.Fruits" 
+                         Current="@DailyLog.Fruits" 
+                         OnValueChanged="@(delta => UpdateUnit(UnitCategory.Fruits, delta))" />
+            
+            <UnitStepper Category="UnitCategory.Starches" 
+                         Current="@DailyLog.Starches" 
+                         OnValueChanged="@(delta => UpdateUnit(UnitCategory.Starches, delta))" />
+            
+            <UnitStepper Category="UnitCategory.Fats" 
+                         Current="@DailyLog.Fats" 
+                         OnValueChanged="@(delta => UpdateUnit(UnitCategory.Fats, delta))" />
+            
+            <UnitStepper Category="UnitCategory.Dairy" 
+                         Current="@DailyLog.Dairy" 
+                         OnValueChanged="@(delta => UpdateUnit(UnitCategory.Dairy, delta))" />
+        </div>
+
+        <!-- Water Tracking Section -->
+        <div class="mt-3">
+            <WaterTracker FilledSegments="@DailyLog.WaterSegments"
+                          OnSegmentChanged="@UpdateWater" />
+        </div>
+
+        <!-- Compact Scan Meal Button -->
+        <div class="mt-4">
+            <a href="/scan/@CurrentDate.ToString("yyyy-MM-dd")"
+               class="flex items-center justify-center gap-2 w-full py-2.5 bg-gradient-to-r from-healthy-primary to-healthy-secondary text-white rounded-xl font-medium hover:from-healthy-dark hover:to-healthy-primary transition-all shadow-healthy text-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                          d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                          d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                📸 Scan Meal
+            </a>
+        </div>
+
+        <!-- Compact back link -->
+        <div class="pt-2">
+            <a href="/" class="block w-full py-2 text-center text-healthy-primary text-sm font-medium hover:bg-healthy-light rounded-lg transition-colors">
+                ← Dashboard
+            </a>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string DateString { get; set; } = string.Empty;
+
+    private DateOnly CurrentDate { get; set; }
+    private DailyLogDto DailyLog { get; set; } = null!;
+    private bool IsLoading { get; set; } = true;
+    private bool IsToday => CurrentDate == DateOnly.FromDateTime(DateTime.Today);
+    private bool IsFuture => CurrentDate > DateOnly.FromDateTime(DateTime.Today);
+    private string DisplayDate => CurrentDate.ToString("dddd, MMM d");
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDate();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadDate();
+    }
+
+    private async Task LoadDate()
+    {
+        if (!DateOnly.TryParseExact(DateString, "yyyy-MM-dd", out var date))
+        {
+            date = DateOnly.FromDateTime(DateTime.Today);
+        }
+        
+        CurrentDate = date;
+        await LoadDailyLog();
+    }
+
+    private async Task LoadDailyLog()
+    {
+        IsLoading = true;
+        StateHasChanged();
+
+        try
+        {
+            var result = await Api.GetDailyLogAsync(CurrentDate);
+            DailyLog = result ?? DailyLogDto.Empty(CurrentDate);
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error loading daily log: {ex.Message}");
+            DailyLog = DailyLogDto.Empty(CurrentDate);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private async Task UpdateUnit(UnitCategory category, int delta)
+    {
+        try
+        {
+            var request = new IncrementUnitRequest
+            {
+                Date = CurrentDate,
+                Category = category,
+                Delta = delta
+            };
+
+            var result = await Api.IncrementUnitAsync(request);
+            if (result is not null)
+            {
+                DailyLog = result;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error updating unit: {ex.Message}");
+            // Optionally show error toast
+        }
+    }
+
+    private async Task UpdateWater(int segments)
+    {
+        try
+        {
+            var request = new UpdateWaterRequest
+            {
+                Date = CurrentDate,
+                Segments = segments
+            };
+
+            var result = await Api.UpdateWaterAsync(request);
+            if (result is not null)
+            {
+                DailyLog = result;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error updating water: {ex.Message}");
+        }
+    }
+
+    private void GoToPreviousDay()
+    {
+        var previousDate = CurrentDate.AddDays(-1);
+        Navigation.NavigateTo($"/day/{previousDate:yyyy-MM-dd}");
+    }
+
+    private void GoToNextDay()
+    {
+        if (!IsFuture)
+        {
+            var nextDate = CurrentDate.AddDays(1);
+            Navigation.NavigateTo($"/day/{nextDate:yyyy-MM-dd}");
+        }
+    }
+}

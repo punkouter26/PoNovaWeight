@@ -1,0 +1,27 @@
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using PoNovaWeight.Client;
+using PoNovaWeight.Client.Services;
+
+var builder = WebAssemblyHostBuilder.CreateDefault(args);
+
+builder.RootComponents.Add<App>("#app");
+builder.RootComponents.Add<HeadOutlet>("head::after");
+
+// Configure HttpClient for API calls (same origin - no CORS needed)
+builder.Services.AddScoped(sp => new HttpClient
+{
+    BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
+});
+
+// Register API client service
+builder.Services.AddScoped<ApiClient>();
+
+// Authentication services
+builder.Services.AddScoped<NovaAuthStateProvider>();
+builder.Services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredService<NovaAuthStateProvider>());
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddAuthorizationCore();
+
+await builder.Build().RunAsync();

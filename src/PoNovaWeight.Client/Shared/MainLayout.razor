@@ -1,0 +1,58 @@
+@inherits LayoutComponentBase
+@using PoNovaWeight.Client.Components
+@inject NovaAuthStateProvider AuthStateProvider
+
+<div class="min-h-screen bg-healthy-bg">
+    <!-- Compact healthy header -->
+    <header class="healthy-header sticky top-0 z-10">
+        <div class="max-w-md mx-auto px-3 py-2 flex items-center justify-between">
+            <a href="/" class="flex items-center gap-2">
+                <span class="text-lg">🥗</span>
+                <span class="font-semibold tracking-tight">NutraTrack</span>
+            </a>
+            <div class="flex items-center gap-2">
+                <span class="text-xs opacity-90 bg-white/20 px-2 py-1 rounded-full">
+                    @DateTime.Today.ToString("ddd, MMM d")
+                </span>
+                @if (AuthStateProvider.CachedUser is not null)
+                {
+                    <span class="text-xs opacity-90 truncate max-w-[120px]" title="@AuthStateProvider.CachedUser.Email">
+                        @AuthStateProvider.CachedUser.Email
+                    </span>
+                    <a href="@AuthService.GetLogoutUrl()" 
+                       class="text-xs opacity-90 bg-white/20 hover:bg-white/30 px-2 py-1 rounded-full transition-colors"
+                       title="Sign out">
+                        Sign out
+                    </a>
+                }
+                <UserMenu />
+            </div>
+        </div>
+    </header>
+
+    <!-- Main content area with compact padding -->
+    <main class="max-w-md mx-auto px-3 py-3 pb-16">
+        @Body
+    </main>
+
+    <!-- Compact bottom navigation -->
+    <nav class="bottom-nav fixed bottom-0 left-0 right-0 safe-area-bottom z-40">
+        <div class="max-w-md mx-auto flex justify-around">
+            <a href="/" class="bottom-nav-item bottom-nav-item-active">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                </svg>
+                <span class="text-[10px] font-medium">Home</span>
+            </a>
+            <a href="/day/@DateTime.Today.ToString("yyyy-MM-dd")" class="bottom-nav-item">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                </svg>
+                <span class="text-[10px] font-medium">Log</span>
+            </a>
+        </div>
+    </nav>
+    
+    <!-- PWA Install Prompt -->
+    <InstallPrompt />
+</div>

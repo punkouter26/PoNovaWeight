@@ -1,0 +1,121 @@
+// Error Analysis KQL Query for Application Insights
+// Monitor application errors and exceptions
+
+// Exception count over time
+exceptions
+| where timestamp > ago(7d)
+| summarize ExceptionCount = count() by bin(timestamp, 1h)
+| render timechart 
+
+// Top exceptions by type
+exceptions
+| where timestamp > ago(7d)
+| summarize Count = count() by type
+| order by Count desc
+| take 10
+
+// Exceptions by operation
+exceptions
+| where timestamp > ago(7d)
+| summarize Count = count() by operation_Name
+| order by Count desc
+| take 10
+
+// Failed requests by status code
+requests
+| where timestamp > ago(7d)
+| where success == false
+| summarize Count = count() by resultCode
+| order by Count desc
+| render piechart
+
+// 4xx Client Errors
+requests
+| where timestamp > ago(7d)
+| where toint(resultCode) >= 400 and toint(resultCode) < 500
+| summarize Count = count() by name, resultCode
+| order by Count desc
+| take 20
+
+// 5xx Server Errors
+requests
+| where timestamp > ago(7d)
+| where toint(resultCode) >= 500
+| summarize Count = count() by name, resultCode, timestamp
+| order by timestamp desc
+| take 50
+
+// Exception details with stack traces
+exceptions
+| where timestamp > ago(1d)
+| project 
+    timestamp,
+    type,
+    message = strcat(substr(outerMessage, 0, 100), "..."),
+    operation = operation_Name,
+    problemId
+| order by timestamp desc
+| take 20
+
+// Error rate by endpoint
+requests
+| where timestamp > ago(7d)
+| summarize 
+    TotalCount = count(),
+    FailedCount = countif(success == false)
+    by name
+| extend ErrorRate = todouble(FailedCount) / TotalCount * 100
+| where TotalCount > 10
+| order by ErrorRate desc
+| project name, ErrorRate, FailedCount, TotalCount
+
+// Authentication failures
+requests
+| where timestamp > ago(7d)
+| where name contains "auth" and success == false
+| summarize FailedAttempts = count() by bin(timestamp, 1h), client_IP
+| order by timestamp desc
+
+// Validation errors
+exceptions
+| where timestamp > ago(7d)
+| where type contains "Validation"
+| summarize Count = count() by message
+| order by Count desc
+| take 10
+
+// Error trends (is it getting worse?)
+requests
+| where timestamp > ago(14d)
+| summarize 
+    ErrorRate = todouble(countif(success == false)) / count() * 100
+    by bin(timestamp, 1d)
+| render linechart
+
+// Dependencies failures (Table Storage, OpenAI)
+dependencies
+| where timestamp > ago(7d)
+| where success == false
+| summarize Count = count() by type, target, resultCode
+| order by Count desc
+
+// Browser/client errors from traces
+traces
+| where timestamp > ago(7d)
+| where severityLevel >= 3 // Warning and above
+| summarize Count = count() by message
+| order by Count desc
+| take 20
+
+// Correlated error investigation
+// Find all telemetry for a specific failed request
+let failedRequestId = 
+    requests
+    | where timestamp > ago(1h)
+    | where success == false
+    | take 1
+    | project operation_Id;
+union requests, dependencies, exceptions, traces
+| where operation_Id in (failedRequestId)
+| order by timestamp asc
+| project timestamp, itemType, name, message, duration, resultCode

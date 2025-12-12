@@ -1,0 +1,70 @@
+@page "/"
+@attribute [Authorize]
+@using PoNovaWeight.Client.Components
+@inject ApiClient Api
+
+<PageTitle>Dashboard - NutraTrack</PageTitle>
+
+@if (IsLoading)
+{
+    <div class="flex justify-center py-8">
+        <div class="w-6 h-6 border-3 border-healthy-primary border-t-transparent rounded-full animate-spin"></div>
+    </div>
+}
+else if (Summary is not null)
+{
+    <!-- Weekly summary card -->
+    <WeeklySummary Summary="@Summary" />
+
+    <!-- Day cards in a compact vertical list -->
+    <div class="space-y-2">
+        <h3 class="text-[11px] font-medium text-healthy-muted uppercase tracking-wide flex items-center gap-1">
+            <span>📅</span> This Week
+        </h3>
+        
+        @foreach (var day in Summary.Days.OrderByDescending(d => d.Date))
+        {
+            <DayCard Day="@day" />
+        }
+    </div>
+}
+else
+{
+    <div class="text-center py-8 text-healthy-muted">
+        <p class="text-sm">Unable to load weekly summary.</p>
+        <button @onclick="LoadWeeklySummary" class="mt-3 text-sm text-healthy-primary hover:underline">
+            Try again
+        </button>
+    </div>
+}
+
+@code {
+    private WeeklySummaryDto? Summary { get; set; }
+    private bool IsLoading { get; set; } = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadWeeklySummary();
+    }
+
+    private async Task LoadWeeklySummary()
+    {
+        IsLoading = true;
+        StateHasChanged();
+
+        try
+        {
+            var today = DateOnly.FromDateTime(DateTime.Today);
+            Summary = await Api.GetWeeklySummaryAsync(today);
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error loading weekly summary: {ex.Message}");
+            Summary = null;
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+}

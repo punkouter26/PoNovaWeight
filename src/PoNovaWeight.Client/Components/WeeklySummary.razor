@@ -1,0 +1,59 @@
+@using PoNovaWeight.Shared.Contracts
+
+<div class="bg-healthy-card rounded-xl shadow-healthy border border-healthy-light p-3 mb-3">
+    <!-- Compact header -->
+    <div class="flex items-center justify-between mb-2">
+        <h2 class="text-sm font-semibold text-healthy-text flex items-center gap-1">
+            <span>📊</span>
+            Week Summary
+        </h2>
+        <span class="text-[10px] text-healthy-muted bg-healthy-light px-2 py-0.5 rounded-full">
+            @Summary.WeekStart.ToString("MMM d") - @Summary.WeekEnd.ToString("MMM d")
+        </span>
+    </div>
+
+    <!-- Compact 2-row grid -->
+    <div class="grid grid-cols-3 gap-2 text-center">
+        @foreach (var (label, current, target, emoji, isMax) in GetCategoryData())
+        {
+            var percent = target > 0 ? Math.Min(100, (int)((double)current / target * 100)) : 0;
+            var isMet = isMax ? current <= target : current >= target;
+            
+            <div class="bg-healthy-bg rounded-lg p-2">
+                <div class="flex items-center justify-center gap-1 mb-1">
+                    <span class="text-sm">@emoji</span>
+                    <span class="stat-value text-sm @(isMax && current > target ? "text-healthy-fruit" : "")">@current</span>
+                </div>
+                <div class="progress-bar mb-1">
+                    <div class="progress-fill @(isMet ? "progress-fill-success" : isMax && current > target ? "progress-fill-danger" : "progress-fill-warning")"
+                         style="width: @percent%"></div>
+                </div>
+                <div class="text-[9px] text-healthy-muted">
+                    @label <span class="@(isMet ? "text-healthy-primary" : "")">/@target@(isMax ? " max" : "")</span>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (Summary.DairyAsProteinEquivalent > 0)
+    {
+        <div class="mt-2 pt-2 border-t border-healthy-light text-[10px] text-healthy-muted text-center">
+            🥛 <span class="font-medium text-healthy-text">@Summary.DairyAsProteinEquivalent</span> protein equiv. from dairy
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public WeeklySummaryDto Summary { get; set; } = null!;
+
+    private IEnumerable<(string label, int current, int target, string emoji, bool isMax)> GetCategoryData()
+    {
+        yield return ("Protein", Summary.TotalProteins, Summary.WeeklyProteinTarget, "🥩", false);
+        yield return ("Veggies", Summary.TotalVegetables, Summary.WeeklyVegetableTarget, "🥬", false);
+        yield return ("Fruit", Summary.TotalFruits, Summary.WeeklyFruitTarget, "🍎", false);
+        yield return ("Starch", Summary.TotalStarches, Summary.WeeklyStarchTarget, "🍞", false);
+        yield return ("Fats", Summary.TotalFats, Summary.WeeklyFatTarget, "🥑", false);
+        yield return ("Dairy", Summary.TotalDairy, Summary.WeeklyDairyMax, "🧀", true);
+    }
+}

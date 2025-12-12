@@ -1,0 +1,57 @@
+# Azure Developer CLI (azd) Configuration
+# Used for deploying Nova Food Journal to Azure
+
+name: ponova-food-journal
+metadata:
+  template: custom
+
+# Infrastructure configuration
+infra:
+  provider: bicep
+  path: ./
+  module: main
+
+# Service configuration
+services:
+  api:
+    project: ../src/PoNovaWeight.Api
+    language: dotnet
+    host: appservice
+    hooks:
+      prepackage:
+        windows:
+          shell: pwsh
+          run: dotnet publish -c Release -o ./publish
+        posix:
+          shell: sh
+          run: dotnet publish -c Release -o ./publish
+
+# Pipeline configuration for CI/CD
+pipeline:
+  provider: github
+
+# Environment variables schema
+hooks:
+  preprovision:
+    windows:
+      shell: pwsh
+      run: |
+        Write-Host "Preparing Nova Food Journal deployment..."
+        Write-Host "Environment: $env:AZURE_ENV_NAME"
+    posix:
+      shell: sh
+      run: |
+        echo "Preparing Nova Food Journal deployment..."
+        echo "Environment: $AZURE_ENV_NAME"
+  
+  postprovision:
+    windows:
+      shell: pwsh
+      run: |
+        Write-Host "Deployment complete!"
+        Write-Host "App URL: $env:SERVICE_API_ENDPOINT"
+    posix:
+      shell: sh
+      run: |
+        echo "Deployment complete!"
+        echo "App URL: $SERVICE_API_ENDPOINT"

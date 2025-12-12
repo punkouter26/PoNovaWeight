@@ -1,0 +1,108 @@
+@inject IJSRuntime JSRuntime
+
+@if (_showPrompt)
+{
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg p-4 z-50 safe-area-inset-bottom">
+        <div class="max-w-md mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-nova-primary rounded-lg flex items-center justify-center">
+                    <span class="text-white font-bold text-lg">N</span>
+                </div>
+                <div>
+                    <p class="font-medium text-gray-900">Install Nova Journal</p>
+                    <p class="text-sm text-gray-500">Add to home screen for quick access</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <button @onclick="DismissPrompt" 
+                        class="px-3 py-2 text-gray-600 hover:text-gray-800 text-sm">
+                    Not now
+                </button>
+                <button @onclick="InstallApp" 
+                        class="px-4 py-2 bg-nova-primary text-white rounded-lg hover:bg-nova-primary/90 text-sm font-medium">
+                    Install
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private bool _showPrompt;
+    private IJSObjectReference? _module;
+    private DotNetObjectReference<InstallPrompt>? _dotNetRef;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _dotNetRef = DotNetObjectReference.Create(this);
+            
+            try
+            {
+                _module = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                    "import", "./js/installPrompt.js");
+                
+                await _module.InvokeVoidAsync("initialize", _dotNetRef);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Install prompt initialization failed: {ex.Message}");
+            }
+        }
+    }
+
+    [JSInvokable]
+    public void ShowInstallPrompt()
+    {
+        _showPrompt = true;
+        StateHasChanged();
+    }
+
+    private async Task InstallApp()
+    {
+        try
+        {
+            if (_module != null)
+            {
+                var result = await _module.InvokeAsync<bool>("promptInstall");
+                if (result)
+                {
+                    _showPrompt = false;
+                    StateHasChanged();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Install failed: {ex.Message}");
+        }
+    }
+
+    private async Task DismissPrompt()
+    {
+        _showPrompt = false;
+        
+        try
+        {
+            if (_module != null)
+            {
+                await _module.InvokeVoidAsync("dismissPrompt");
+            }
+        }
+        catch
+        {
+            // Ignore errors when dismissing
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_module != null)
+        {
+            await _module.DisposeAsync();
+        }
+        
+        _dotNetRef?.Dispose();
+    }
+}

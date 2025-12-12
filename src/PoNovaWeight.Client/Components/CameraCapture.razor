@@ -1,0 +1,104 @@
+@inject IJSRuntime JS
+
+<div class="camera-capture">
+    @if (!HasImage)
+    {
+        <!-- Camera input -->
+        <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+            <label for="camera-input" class="cursor-pointer">
+                <div class="flex flex-col items-center gap-4">
+                    <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <span class="text-gray-600 font-medium">Tap to take a photo</span>
+                    <span class="text-gray-400 text-sm">or select from gallery</span>
+                </div>
+            </label>
+            <input id="camera-input" 
+                   type="file" 
+                   accept="image/*" 
+                   capture="environment"
+                   @ref="fileInput"
+                   @onchange="OnFileSelected"
+                   class="hidden" />
+        </div>
+    }
+    else
+    {
+        <!-- Image preview -->
+        <div class="relative">
+            <img src="@ImageDataUrl" 
+                 alt="Captured meal" 
+                 class="w-full rounded-lg shadow-md max-h-80 object-contain bg-gray-100" />
+            
+            <!-- Remove button -->
+            <button @onclick="ClearImage"
+                    class="absolute top-2 right-2 bg-white/90 rounded-full p-2 shadow-md hover:bg-white transition-colors"
+                    aria-label="Remove image">
+                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+    }
+
+    @if (IsProcessing)
+    {
+        <div class="mt-4 flex items-center justify-center gap-2 text-gray-600">
+            <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span>Processing image...</span>
+        </div>
+    }
+</div>
+
+@code {
+    private ElementReference fileInput;
+
+    [Parameter]
+    public EventCallback<string> OnImageCaptured { get; set; }
+
+    [Parameter]
+    public bool IsProcessing { get; set; }
+
+    private bool HasImage => !string.IsNullOrEmpty(ImageDataUrl);
+    private string? ImageDataUrl { get; set; }
+    private string? ImageBase64 { get; set; }
+
+    private async Task OnFileSelected(ChangeEventArgs e)
+    {
+        try
+        {
+            // Read file using JS interop
+            var result = await JS.InvokeAsync<ImageResult>("readFileAsBase64", fileInput);
+            
+            if (result is not null && !string.IsNullOrEmpty(result.Base64))
+            {
+                // Compress image to reduce API payload size
+                var compressed = await JS.InvokeAsync<ImageResult>("compressImage", result.Base64, 1200, 0.8);
+                
+                ImageBase64 = compressed?.Base64 ?? result.Base64;
+                ImageDataUrl = $"data:image/jpeg;base64,{ImageBase64}";
+                
+                await OnImageCaptured.InvokeAsync(ImageBase64);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error reading image: {ex.Message}");
+        }
+    }
+
+    private void ClearImage()
+    {
+        ImageDataUrl = null;
+        ImageBase64 = null;
+    }
+
+    public record ImageResult(string? Base64, int Width, int Height);
+}

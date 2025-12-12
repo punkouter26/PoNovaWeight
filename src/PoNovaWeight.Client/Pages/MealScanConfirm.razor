@@ -1,0 +1,316 @@
+@page "/scan/{DateStr}"
+@attribute [Authorize]
+@using PoNovaWeight.Shared.Contracts
+@inject PoNovaWeight.Client.Services.ApiClient Api
+@inject NavigationManager Navigation
+
+<div class="max-w-md mx-auto px-4 py-6 space-y-6">
+    <div class="flex items-center justify-between">
+        <h1 class="text-2xl font-bold text-gray-800">Scan Meal</h1>
+        <button @onclick="Cancel" class="text-gray-500 hover:text-gray-700">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+    </div>
+
+    @if (Step == ScanStep.Capture)
+    {
+        <CameraCapture OnImageCaptured="OnImageCaptured" IsProcessing="IsAnalyzing" />
+        
+        @if (!string.IsNullOrEmpty(ImageBase64))
+        {
+            <button @onclick="AnalyzeMeal" 
+                    disabled="@IsAnalyzing"
+                    class="w-full py-3 bg-nova-primary text-white rounded-lg font-medium hover:bg-nova-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                @if (IsAnalyzing)
+                {
+                    <span>Analyzing with AI...</span>
+                }
+                else
+                {
+                    <span>Analyze Meal</span>
+                }
+            </button>
+        }
+    }
+    else if (Step == ScanStep.Review)
+    {
+        <!-- AI Results Review -->
+        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+            <div class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-green-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+                <div>
+                    <h3 class="font-medium text-green-800">AI Analysis Complete</h3>
+                    @if (!string.IsNullOrEmpty(MealDescription))
+                    {
+                        <p class="text-green-700 text-sm mt-1">@MealDescription</p>
+                    }
+                    <p class="text-green-600 text-xs mt-1">Confidence: @ConfidenceScore%</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Editable suggestions -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-4 space-y-4">
+            <h3 class="font-semibold text-gray-800">Review & Edit Suggestions</h3>
+            <p class="text-sm text-gray-500">Tap +/- to adjust any values before adding to your log.</p>
+
+            @foreach (var category in Categories)
+            {
+                var current = GetSuggestionValue(category);
+                <div class="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
+                    <div class="flex items-center gap-3">
+                        <span class="text-lg">@UnitCategoryInfo.GetEmoji(category)</span>
+                        <div>
+                            <div class="font-medium text-gray-800">@UnitCategoryInfo.GetDisplayName(category)</div>
+                            <div class="text-xs text-gray-500">@UnitCategoryInfo.GetPortionSize(category)</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button @onclick="() => AdjustSuggestion(category, -1)"
+                                disabled="@(current <= 0)"
+                                class="w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center hover:bg-gray-200 disabled:opacity-30 disabled:cursor-not-allowed">
+                            −
+                        </button>
+                        <span class="w-8 text-center font-semibold text-gray-800">@current</span>
+                        <button @onclick="() => AdjustSuggestion(category, 1)"
+                                class="w-8 h-8 rounded-full bg-nova-primary text-white flex items-center justify-center hover:bg-nova-primary/90">
+                            +
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Action buttons -->
+        <div class="space-y-3">
+            <button @onclick="AcceptAndSave"
+                    disabled="@IsSaving"
+                    class="w-full py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2">
+                @if (IsSaving)
+                {
+                    <span>Saving...</span>
+                }
+                else
+                {
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span>Accept</span>
+                }
+            </button>
+            <button @onclick="RetakePhoto"
+                    disabled="@IsSaving"
+                    class="w-full py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 disabled:opacity-50 transition-colors">
+                Retake Photo
+            </button>
+        </div>
+    }
+    else if (Step == ScanStep.Error)
+    {
+        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-red-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                </svg>
+                <div>
+                    <h3 class="font-medium text-red-800">Analysis Failed</h3>
+                    <p class="text-red-700 text-sm mt-1">@ErrorMessage</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-3">
+            <button @onclick="RetakePhoto"
+                    class="w-full py-3 bg-nova-primary text-white rounded-lg font-medium hover:bg-nova-primary/90 transition-colors">
+                Try Again
+            </button>
+            <button @onclick="Cancel"
+                    class="w-full py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors">
+                Enter Manually
+            </button>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string DateStr { get; set; } = string.Empty;
+
+    private DateOnly CurrentDate => DateOnly.TryParseExact(DateStr, "yyyy-MM-dd", out var d) 
+        ? d 
+        : DateOnly.FromDateTime(DateTime.Today);
+
+    private enum ScanStep { Capture, Review, Error }
+    private ScanStep Step { get; set; } = ScanStep.Capture;
+
+    private string? ImageBase64 { get; set; }
+    private bool IsAnalyzing { get; set; }
+    private string? MealDescription { get; set; }
+    private int ConfidenceScore { get; set; }
+    private string? ErrorMessage { get; set; }
+    private bool IsSaving { get; set; }
+
+    // Editable suggestion values
+    private int SuggestedProteins { get; set; }
+    private int SuggestedVegetables { get; set; }
+    private int SuggestedFruits { get; set; }
+    private int SuggestedStarches { get; set; }
+    private int SuggestedFats { get; set; }
+    private int SuggestedDairy { get; set; }
+
+    private static readonly UnitCategory[] Categories = Enum.GetValues<UnitCategory>();
+
+    private void OnImageCaptured(string base64)
+    {
+        ImageBase64 = base64;
+        StateHasChanged();
+    }
+
+    private async Task AnalyzeMeal()
+    {
+        if (string.IsNullOrEmpty(ImageBase64))
+            return;
+
+        IsAnalyzing = true;
+        ErrorMessage = null;
+
+        try
+        {
+            var result = await Api.ScanMealAsync(new MealScanRequestDto
+            {
+                ImageBase64 = ImageBase64,
+                Date = CurrentDate
+            });
+
+            if (result?.Success == true && result.Suggestions is not null)
+            {
+                // Populate editable fields with AI suggestions
+                SuggestedProteins = result.Suggestions.Proteins;
+                SuggestedVegetables = result.Suggestions.Vegetables;
+                SuggestedFruits = result.Suggestions.Fruits;
+                SuggestedStarches = result.Suggestions.Starches;
+                SuggestedFats = result.Suggestions.Fats;
+                SuggestedDairy = result.Suggestions.Dairy;
+                MealDescription = result.MealDescription;
+                ConfidenceScore = result.ConfidenceScore;
+                Step = ScanStep.Review;
+            }
+            else
+            {
+                ErrorMessage = result?.ErrorMessage ?? "Unable to analyze meal. Please try again.";
+                Step = ScanStep.Error;
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Error: {ex.Message}";
+            Step = ScanStep.Error;
+        }
+        finally
+        {
+            IsAnalyzing = false;
+        }
+    }
+
+    private int GetSuggestionValue(UnitCategory category) => category switch
+    {
+        UnitCategory.Proteins => SuggestedProteins,
+        UnitCategory.Vegetables => SuggestedVegetables,
+        UnitCategory.Fruits => SuggestedFruits,
+        UnitCategory.Starches => SuggestedStarches,
+        UnitCategory.Fats => SuggestedFats,
+        UnitCategory.Dairy => SuggestedDairy,
+        _ => 0
+    };
+
+    private void AdjustSuggestion(UnitCategory category, int delta)
+    {
+        switch (category)
+        {
+            case UnitCategory.Proteins:
+                SuggestedProteins = Math.Max(0, SuggestedProteins + delta);
+                break;
+            case UnitCategory.Vegetables:
+                SuggestedVegetables = Math.Max(0, SuggestedVegetables + delta);
+                break;
+            case UnitCategory.Fruits:
+                SuggestedFruits = Math.Max(0, SuggestedFruits + delta);
+                break;
+            case UnitCategory.Starches:
+                SuggestedStarches = Math.Max(0, SuggestedStarches + delta);
+                break;
+            case UnitCategory.Fats:
+                SuggestedFats = Math.Max(0, SuggestedFats + delta);
+                break;
+            case UnitCategory.Dairy:
+                SuggestedDairy = Math.Max(0, SuggestedDairy + delta);
+                break;
+        }
+    }
+
+    private async Task AcceptAndSave()
+    {
+        IsSaving = true;
+
+        try
+        {
+            // Apply each non-zero category
+            var tasks = new List<Task>();
+
+            if (SuggestedProteins > 0)
+                tasks.Add(ApplyCategoryAsync(UnitCategory.Proteins, SuggestedProteins));
+            if (SuggestedVegetables > 0)
+                tasks.Add(ApplyCategoryAsync(UnitCategory.Vegetables, SuggestedVegetables));
+            if (SuggestedFruits > 0)
+                tasks.Add(ApplyCategoryAsync(UnitCategory.Fruits, SuggestedFruits));
+            if (SuggestedStarches > 0)
+                tasks.Add(ApplyCategoryAsync(UnitCategory.Starches, SuggestedStarches));
+            if (SuggestedFats > 0)
+                tasks.Add(ApplyCategoryAsync(UnitCategory.Fats, SuggestedFats));
+            if (SuggestedDairy > 0)
+                tasks.Add(ApplyCategoryAsync(UnitCategory.Dairy, SuggestedDairy));
+
+            await Task.WhenAll(tasks);
+            
+            // Navigate back to home page
+            Navigation.NavigateTo("/");
+        }
+        finally
+        {
+            IsSaving = false;
+        }
+    }
+
+    private async Task ApplyCategoryAsync(UnitCategory category, int units)
+    {
+        try
+        {
+            await Api.IncrementUnitAsync(new IncrementUnitRequest
+            {
+                Date = CurrentDate,
+                Category = category,
+                Delta = units
+            });
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error applying {category}: {ex.Message}");
+        }
+    }
+
+    private void RetakePhoto()
+    {
+        ImageBase64 = null;
+        Step = ScanStep.Capture;
+        ErrorMessage = null;
+    }
+
+    private void Cancel()
+    {
+        Navigation.NavigateTo($"/day/{CurrentDate:yyyy-MM-dd}");
+    }
+}

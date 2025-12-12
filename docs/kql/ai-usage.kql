@@ -1,0 +1,89 @@
+// AI Usage KQL Query for Application Insights
+// Monitor Azure OpenAI meal scanning usage and costs
+
+// AI scan requests over time
+requests
+| where timestamp > ago(30d)
+| where name contains "meal-scan"
+| summarize ScanCount = count() by bin(timestamp, 1d)
+| render linechart 
+
+// AI success vs failure rate
+requests
+| where timestamp > ago(7d)
+| where name contains "meal-scan"
+| summarize 
+    SuccessCount = countif(success == true),
+    FailureCount = countif(success == false)
+| project 
+    SuccessRate = todouble(SuccessCount) / (SuccessCount + FailureCount) * 100,
+    SuccessCount,
+    FailureCount
+
+// AI response times
+requests
+| where timestamp > ago(7d)
+| where name contains "meal-scan"
+| summarize 
+    AvgDuration = avg(duration),
+    MaxDuration = max(duration),
+    MinDuration = min(duration),
+    p95 = percentile(duration, 95)
+    by bin(timestamp, 1d)
+| render timechart
+
+// AI usage by hour of day
+requests
+| where timestamp > ago(7d)
+| where name contains "meal-scan"
+| extend Hour = hourofday(timestamp)
+| summarize ScanCount = count() by Hour
+| order by Hour asc
+| render columnchart
+
+// AI error analysis
+requests
+| where timestamp > ago(7d)
+| where name contains "meal-scan"
+| where success == false
+| summarize Count = count() by resultCode
+| order by Count desc
+
+// AI request payload sizes (if logged)
+dependencies
+| where timestamp > ago(7d)
+| where type == "HTTP" and target contains "openai"
+| summarize 
+    AvgDuration = avg(duration),
+    Count = count()
+    by bin(timestamp, 1h)
+| render timechart
+
+// Estimated AI cost tracking
+// Note: Actual costs come from Azure Cost Management
+// This estimates based on request count
+requests
+| where timestamp > ago(30d)
+| where name contains "meal-scan" and success == true
+| summarize DailyScanCount = count() by bin(timestamp, 1d)
+| extend EstimatedCost = DailyScanCount * 0.01 // Rough estimate per scan
+| project timestamp, DailyScanCount, EstimatedCost
+| render timechart
+
+// AI performance degradation detection
+requests
+| where timestamp > ago(7d)
+| where name contains "meal-scan"
+| summarize 
+    AvgDuration = avg(duration),
+    Count = count()
+    by bin(timestamp, 1h)
+| where AvgDuration > 5000 // Alert if > 5 seconds average
+| order by timestamp desc
+
+// Stub vs Real AI usage (development tracking)
+customEvents
+| where timestamp > ago(7d)
+| where name == "MealAnalysis"
+| summarize Count = count() by tostring(customDimensions["UseStub"])
+| render piechart

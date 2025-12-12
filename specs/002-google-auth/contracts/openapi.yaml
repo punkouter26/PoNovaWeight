@@ -1,0 +1,157 @@
+openapi: 3.0.3
+info:
+  title: PoNovaWeight Authentication API
+  description: Google OAuth authentication endpoints for PoNovaWeight
+  version: 2.0.0
+  contact:
+    email: punkouter26@gmail.com
+
+servers:
+  - url: https://localhost:5001
+    description: Local development
+  - url: https://ponovaweight-app.azurewebsites.net
+    description: Production
+
+paths:
+  /api/auth/login:
+    get:
+      operationId: initiateGoogleLogin
+      summary: Initiate Google OAuth login
+      description: |
+        Redirects the user to Google's OAuth consent screen.
+        After authentication, user is redirected back to the app.
+      tags:
+        - Authentication
+      parameters:
+        - name: returnUrl
+          in: query
+          required: false
+          description: URL to redirect to after successful login (default: /)
+          schema:
+            type: string
+            default: "/"
+      responses:
+        "302":
+          description: Redirect to Google OAuth consent screen
+          headers:
+            Location:
+              description: Google OAuth URL
+              schema:
+                type: string
+                example: https://accounts.google.com/o/oauth2/v2/auth?...
+
+  /api/auth/logout:
+    post:
+      operationId: logout
+      summary: Sign out the current user
+      description: Clears the authentication cookie and signs out the user.
+      tags:
+        - Authentication
+      responses:
+        "200":
+          description: Successfully signed out
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthStatus"
+        "401":
+          description: Not authenticated
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/auth/me:
+    get:
+      operationId: getCurrentUser
+      summary: Get current authenticated user
+      description: |
+        Returns the current user's information if authenticated.
+        Returns 401 if not authenticated.
+      tags:
+        - Authentication
+      responses:
+        "200":
+          description: User is authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthStatus"
+        "401":
+          description: Not authenticated
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+components:
+  schemas:
+    AuthStatus:
+      type: object
+      required:
+        - isAuthenticated
+      properties:
+        isAuthenticated:
+          type: boolean
+          description: Whether the user is currently authenticated
+          example: true
+        user:
+          $ref: "#/components/schemas/UserInfo"
+
+    UserInfo:
+      type: object
+      required:
+        - email
+        - displayName
+      properties:
+        email:
+          type: string
+          format: email
+          description: User's email address
+          example: user@gmail.com
+        displayName:
+          type: string
+          description: User's display name from Google
+          example: John Doe
+        pictureUrl:
+          type: string
+          format: uri
+          nullable: true
+          description: URL to user's Google profile picture
+          example: https://lh3.googleusercontent.com/a/...
+
+    ProblemDetails:
+      type: object
+      description: RFC 7807 Problem Details
+      properties:
+        type:
+          type: string
+          format: uri
+          description: A URI reference that identifies the problem type
+        title:
+          type: string
+          description: A short, human-readable summary of the problem type
+        status:
+          type: integer
+          description: The HTTP status code
+        detail:
+          type: string
+          description: A human-readable explanation specific to this occurrence
+        instance:
+          type: string
+          format: uri
+          description: A URI reference that identifies the specific occurrence
+
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: nova-session
+      description: Session cookie set after successful Google OAuth login
+
+security:
+  - cookieAuth: []
+
+tags:
+  - name: Authentication
+    description: Google OAuth authentication endpoints
