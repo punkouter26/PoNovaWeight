@@ -18,8 +18,8 @@ public class OmadSectionTests : TestContext
         // Assert
         cut.Markup.Should().Contain("Daily Health Tracking");
         cut.Markup.Should().Contain("Weight (lbs)");
-        cut.Markup.Should().Contain("OMAD Compliant");
-        cut.Markup.Should().Contain("Alcohol Consumed");
+        cut.Markup.Should().Contain("Did you eat OMAD today?");
+        cut.Markup.Should().Contain("Did you drink alcohol today?");
     }
 
     [Fact]
@@ -47,9 +47,9 @@ public class OmadSectionTests : TestContext
             .Add(p => p.AlcoholConsumed, null)
             .Add(p => p.OmadCompliantChanged, EventCallback.Factory.Create<bool?>(this, v => receivedValue = v)));
 
-        // Act - click the OMAD toggle button
-        var buttons = cut.FindAll("button[aria-pressed]");
-        buttons[0].Click(); // OMAD is first toggle
+        // Act - click the OMAD Yes radio
+        var radios = cut.FindAll("input[type='radio'][name='omad']");
+        radios[0].Change(true); // Yes radio
 
         // Assert - null -> true
         receivedValue.Should().BeTrue();
@@ -66,47 +66,47 @@ public class OmadSectionTests : TestContext
             .Add(p => p.AlcoholConsumed, null)
             .Add(p => p.AlcoholConsumedChanged, EventCallback.Factory.Create<bool?>(this, v => receivedValue = v)));
 
-        // Act - click the Alcohol toggle button
-        var buttons = cut.FindAll("button[aria-pressed]");
-        buttons[1].Click(); // Alcohol is second toggle
+        // Act - click the Alcohol Yes radio
+        var radios = cut.FindAll("input[type='radio'][name='alcohol']");
+        radios[0].Change(true); // Yes radio
 
         // Assert - null -> true
         receivedValue.Should().BeTrue();
     }
 
     [Fact]
-    public void OmadSection_OmadTrue_TogglesTo_False()
+    public void OmadSection_OmadTrue_TogglesTo_Null()
     {
         // Arrange
-        bool? receivedValue = null;
+        bool? receivedValue = true; // Start non-null to verify it becomes null
         var cut = RenderComponent<OmadSection>(parameters => parameters
             .Add(p => p.Weight, null)
             .Add(p => p.OmadCompliant, true) // Start with true
             .Add(p => p.AlcoholConsumed, null)
             .Add(p => p.OmadCompliantChanged, EventCallback.Factory.Create<bool?>(this, v => receivedValue = v)));
 
-        // Act
-        var buttons = cut.FindAll("button[aria-pressed]");
-        buttons[0].Click();
+        // Act - clicking Yes again should toggle it off (to null)
+        var radios = cut.FindAll("input[type='radio'][name='omad']");
+        radios[0].Change(true); // Click Yes radio again when already true
 
-        // Assert - true -> false
-        receivedValue.Should().BeFalse();
+        // Assert - true -> null (toggle off)
+        receivedValue.Should().BeNull();
     }
 
     [Fact]
     public void OmadSection_OmadFalse_TogglesTo_Null()
     {
         // Arrange
-        bool? receivedValue = true; // Set non-null initial to verify it becomes null
+        bool? receivedValue = false; // Set non-null initial to verify it becomes null
         var cut = RenderComponent<OmadSection>(parameters => parameters
             .Add(p => p.Weight, null)
             .Add(p => p.OmadCompliant, false) // Start with false
             .Add(p => p.AlcoholConsumed, null)
             .Add(p => p.OmadCompliantChanged, EventCallback.Factory.Create<bool?>(this, v => receivedValue = v)));
 
-        // Act
-        var buttons = cut.FindAll("button[aria-pressed]");
-        buttons[0].Click();
+        // Act - clicking No again should toggle it off (to null)
+        var radios = cut.FindAll("input[type='radio'][name='omad']");
+        radios[1].Change(true); // Click No radio again when already false
 
         // Assert - false -> null
         receivedValue.Should().BeNull();
