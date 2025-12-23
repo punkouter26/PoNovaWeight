@@ -1,11 +1,10 @@
-# Build stage - Using .NET 10.0 nightly SDK
-FROM mcr.microsoft.com/dotnet/nightly/sdk:10.0 AS build
+# Build stage - Using official .NET 10.0 SDK (Ubuntu 24.04 Noble)
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
 # Copy solution and project files
 COPY PoNovaWeight.sln .
 COPY global.json .
-COPY nuget.config .
 COPY src/PoNovaWeight.Api/PoNovaWeight.Api.csproj src/PoNovaWeight.Api/
 COPY src/PoNovaWeight.Client/PoNovaWeight.Client.csproj src/PoNovaWeight.Client/
 COPY src/PoNovaWeight.Shared/PoNovaWeight.Shared.csproj src/PoNovaWeight.Shared/
@@ -26,8 +25,8 @@ COPY src/ src/
 # Build and publish
 RUN dotnet publish src/PoNovaWeight.Api/PoNovaWeight.Api.csproj -c Release -o /app/publish --no-restore
 
-# Runtime stage
-FROM mcr.microsoft.com/dotnet/nightly/aspnet:10.0 AS runtime
+# Runtime stage - Using official .NET 10.0 ASP.NET runtime (Ubuntu 24.04 Noble Chiseled for smaller image)
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled AS runtime
 WORKDIR /app
 
 # Copy published app
@@ -40,9 +39,8 @@ EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
 ENV ASPNETCORE_ENVIRONMENT=Production
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:8080/health || exit 1
+# Note: Health check handled by Azure Container Apps, not in container
+# Chiseled images don't include curl
 
 # Run the app
 ENTRYPOINT ["dotnet", "PoNovaWeight.Api.dll"]
