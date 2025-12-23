@@ -1,9 +1,10 @@
-# Build stage - Using .NET 10.0 preview
-FROM mcr.microsoft.com/dotnet/sdk:10.0-preview AS build
+# Build stage - Using .NET 10.0 nightly SDK
+FROM mcr.microsoft.com/dotnet/nightly/sdk:10.0 AS build
 WORKDIR /src
 
 # Copy solution and project files
 COPY PoNovaWeight.sln .
+COPY global.json .
 COPY src/PoNovaWeight.Api/PoNovaWeight.Api.csproj src/PoNovaWeight.Api/
 COPY src/PoNovaWeight.Client/PoNovaWeight.Client.csproj src/PoNovaWeight.Client/
 COPY src/PoNovaWeight.Shared/PoNovaWeight.Shared.csproj src/PoNovaWeight.Shared/
@@ -25,7 +26,7 @@ COPY src/ src/
 RUN dotnet publish src/PoNovaWeight.Api/PoNovaWeight.Api.csproj -c Release -o /app/publish --no-restore
 
 # Runtime stage
-FROM mcr.microsoft.com/dotnet/aspnet:10.0-preview AS runtime
+FROM mcr.microsoft.com/dotnet/nightly/aspnet:10.0 AS runtime
 WORKDIR /app
 
 # Copy published app
