@@ -2,9 +2,11 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
-# Copy solution and project files
+# Copy solution and project files (excluding obj directories via .dockerignore)
 COPY PoNovaWeight.sln .
 COPY global.json .
+COPY Directory.Build.props .
+COPY Directory.Packages.props .
 COPY src/PoNovaWeight.Api/PoNovaWeight.Api.csproj src/PoNovaWeight.Api/
 COPY src/PoNovaWeight.Client/PoNovaWeight.Client.csproj src/PoNovaWeight.Client/
 COPY src/PoNovaWeight.Shared/PoNovaWeight.Shared.csproj src/PoNovaWeight.Shared/
@@ -13,17 +15,18 @@ COPY src/PoNovaWeight.ServiceDefaults/PoNovaWeight.ServiceDefaults.csproj src/Po
 COPY tests/PoNovaWeight.Api.Tests/PoNovaWeight.Api.Tests.csproj tests/PoNovaWeight.Api.Tests/
 COPY tests/PoNovaWeight.Client.Tests/PoNovaWeight.Client.Tests.csproj tests/PoNovaWeight.Client.Tests/
 COPY tests/PoNovaWeight.E2E/PoNovaWeight.E2E.csproj tests/PoNovaWeight.E2E/
-COPY Directory.Build.props .
-COPY Directory.Packages.props .
 
-# Restore dependencies
+# Restore dependencies (fresh restore in container)
 RUN dotnet restore src/PoNovaWeight.Api/PoNovaWeight.Api.csproj
 
-# Copy all source code
-COPY src/ src/
+# Copy source code (excluding bin/obj via .dockerignore)
+COPY src/PoNovaWeight.Api/ src/PoNovaWeight.Api/
+COPY src/PoNovaWeight.Client/ src/PoNovaWeight.Client/
+COPY src/PoNovaWeight.Shared/ src/PoNovaWeight.Shared/
+COPY src/PoNovaWeight.ServiceDefaults/ src/PoNovaWeight.ServiceDefaults/
 
 # Build and publish
-RUN dotnet publish src/PoNovaWeight.Api/PoNovaWeight.Api.csproj -c Release -o /app/publish --no-restore
+RUN dotnet publish src/PoNovaWeight.Api/PoNovaWeight.Api.csproj -c Release -o /app/publish
 
 # Runtime stage - Using official .NET 10.0 ASP.NET runtime (Ubuntu 24.04 Noble Chiseled for smaller image)
 FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled AS runtime

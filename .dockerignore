@@ -1,0 +1,34 @@
+# Ignore build outputs
+**/bin/
+**/obj/
+
+# Ignore local development files
+**/.vs/
+**/.vscode/
+**/azurite/
+**/__blobstorage__/
+**/__queuestorage__/
+**/__azurite_db_*.json
+
+# Ignore test results
+**/TestResults/
+**/coverage/
+
+# Ignore IDE files
+*.user
+*.suo
+
+# Ignore git
+.git/
+.gitignore
+.github/
+
+# Ignore docs
+docs/
+*.md
+
+# Ignore scripts
+scripts/
+
+# Ignore infrastructure
+infra/
