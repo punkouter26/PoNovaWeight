@@ -3,10 +3,12 @@
   <PropertyGroup>
     <RootNamespace>PoNovaWeight.Api</RootNamespace>
     <AssemblyName>PoNovaWeight.Api</AssemblyName>
+    <!-- Disable AOT for API due to MVC controllers and reflection-based serialization -->
+    <IsAotCompatible>false</IsAotCompatible>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Azure.Data.Tables" />
+    <PackageReference Include="Aspire.Azure.Data.Tables" />
     <PackageReference Include="Azure.AI.OpenAI" />
     <PackageReference Include="Azure.Identity" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" />
@@ -21,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PoNovaWeight.Client\PoNovaWeight.Client.csproj" />
+    <ProjectReference Include="..\PoNovaWeight.ServiceDefaults\PoNovaWeight.ServiceDefaults.csproj" />
     <ProjectReference Include="..\PoNovaWeight.Shared\PoNovaWeight.Shared.csproj" />
   </ItemGroup>
 

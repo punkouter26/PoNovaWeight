@@ -3,6 +3,8 @@
   <PropertyGroup>
     <RootNamespace>PoNovaWeight.Client</RootNamespace>
     <AssemblyName>PoNovaWeight.Client</AssemblyName>
+    <!-- Disable AOT for WASM client due to reflection-based JSON serialization -->
+    <IsAotCompatible>false</IsAotCompatible>
   </PropertyGroup>
 
   <ItemGroup>

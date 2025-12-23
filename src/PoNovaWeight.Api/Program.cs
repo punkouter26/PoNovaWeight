@@ -25,6 +25,9 @@ try
 {
     var builder = WebApplication.CreateBuilder(args);
 
+    // Add Aspire service defaults for OpenTelemetry, health checks, and resilience
+    builder.AddServiceDefaults();
+
     // Serilog configuration
     builder.Host.UseSerilog((context, services, configuration) => configuration
         .ReadFrom.Configuration(context.Configuration)
@@ -46,10 +49,31 @@ try
     // FluentValidation
     builder.Services.AddValidatorsFromAssemblyContaining<DailyLogDtoValidator>();
 
-    // Azure Table Storage
-    var connectionString = builder.Configuration.GetConnectionString("AzureStorage")
-        ?? "UseDevelopmentStorage=true";
-    builder.Services.AddSingleton(new TableServiceClient(connectionString));
+    // Azure Table Storage - Use Aspire integration when available
+    // Check if running under Aspire orchestration
+    var isAspireOrchestrated = !string.IsNullOrEmpty(builder.Configuration["ConnectionStrings:tables"]) ||
+                                !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER"));
+    
+    if (isAspireOrchestrated)
+    {
+        // Aspire integration - automatic connection via service discovery
+        builder.AddAzureTableClient("tables", settings =>
+        {
+            // Disable health checks due to bug in AspNetCore.HealthChecks.Azure.Data.Tables
+            // that sends invalid OData filter ($filter=false) causing 400 errors
+            settings.DisableHealthChecks = true;
+            settings.DisableTracing = false;
+        });
+    }
+    else
+    {
+        // Fallback for non-Aspire scenarios (tests, standalone)
+        var connectionString = builder.Configuration.GetConnectionString("AzureStorage")
+            ?? "UseDevelopmentStorage=true";
+        builder.Services.AddSingleton(new TableServiceClient(connectionString));
+    }
+
+    // Register repositories using TableServiceClient
     builder.Services.AddSingleton<IDailyLogRepository, DailyLogRepository>();
     builder.Services.AddSingleton<IUserRepository, UserRepository>();
 
@@ -165,6 +189,9 @@ try
     // Authentication & Authorization
     app.UseAuthentication();
     app.UseAuthorization();
+
+    // Map Aspire default endpoints (health checks, etc.)
+    app.MapDefaultEndpoints();
 
     // Map endpoints
     app.MapHealthEndpoints();

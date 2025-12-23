@@ -5,5 +5,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <IsAotCompatible>true</IsAotCompatible>
+    <!-- Suppress vulnerability warnings for known transitive packages during development -->
+    <!-- KubernetesClient is a transitive dependency of Aspire.Hosting.AppHost -->
+    <NoWarn>$(NoWarn);NU1902;NU1903</NoWarn>
   </PropertyGroup>
 </Project>

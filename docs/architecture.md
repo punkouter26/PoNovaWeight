@@ -2,10 +2,15 @@
 
 ## System Overview
 
-The Nova Food Journal is a Progressive Web App (PWA) built with Blazor WebAssembly for the frontend and ASP.NET Core Minimal API for the backend. It follows a Clean Architecture pattern with feature-based organization.
+The Nova Food Journal is a Progressive Web App (PWA) built with Blazor WebAssembly for the frontend and ASP.NET Core Minimal API for the backend. It follows a Clean Architecture pattern with feature-based organization and uses **.NET Aspire** for orchestration and observability.
 
 ```mermaid
 graph TB
+    subgraph Aspire["Aspire AppHost (Orchestration)"]
+        Dashboard["Aspire Dashboard<br/>Logs, Traces, Metrics"]
+        Storage["Azure Storage Emulator<br/>(Azurite)"]
+    end
+
     subgraph Client["Blazor WASM Client"]
         Pages["Pages<br/>(Dashboard, DayDetail, Login, MealScan)"]
         Components["Components<br/>(UnitStepper, WaterTracker, DayCard)"]
@@ -16,21 +21,44 @@ graph TB
         Endpoints["Minimal API Endpoints"]
         Handlers["MediatR Handlers"]
         Repository["DailyLogRepository"]
+        ServiceDefaults["ServiceDefaults<br/>(OpenTelemetry, Health, Resilience)"]
     end
 
     subgraph External["External Services"]
-        Storage["Azure Table Storage"]
+        TableStorage["Azure Table Storage"]
         OpenAI["Azure OpenAI<br/>GPT-4o"]
     end
 
+    Aspire --> API
+    Aspire --> Storage
     Pages --> Components
     Pages --> Services
     Services --> Endpoints
     Endpoints --> Handlers
     Handlers --> Repository
     Handlers --> OpenAI
-    Repository --> Storage
+    Repository --> TableStorage
+    Storage --> TableStorage
 ```
+
+## .NET Aspire Integration
+
+The application uses .NET Aspire for local development orchestration:
+
+- **AppHost**: Orchestrates all services, manages Azure Storage emulator (Azurite), and provides the Aspire Dashboard
+- **ServiceDefaults**: Provides OpenTelemetry, health checks, service discovery, and HTTP resilience
+- **Azure Storage Integration**: Uses Aspire's Azure Table Storage integration for automatic configuration
+
+### Running with Aspire
+
+```bash
+dotnet run --project src/PoNovaWeight.AppHost
+```
+
+This will:
+1. Start the Azurite storage emulator with persistent data
+2. Launch the API with all dependencies
+3. Open the Aspire Dashboard for observability
 
 ## Component Architecture
 

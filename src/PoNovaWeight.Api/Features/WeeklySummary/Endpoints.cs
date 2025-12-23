@@ -1,5 +1,6 @@
 using MediatR;
 using PoNovaWeight.Shared.DTOs;
+using System.Security.Claims;
 
 namespace PoNovaWeight.Api.Features.WeeklySummary;
 
@@ -14,9 +15,10 @@ public static class Endpoints
             .WithTags("Weekly Summary");
 
         // GET /api/weekly-summary/{date}
-        group.MapGet("/{date}", async (DateOnly date, IMediator mediator, CancellationToken cancellationToken) =>
+        group.MapGet("/{date}", async (DateOnly date, HttpContext httpContext, IMediator mediator, CancellationToken cancellationToken) =>
         {
-            var result = await mediator.Send(new GetWeeklySummaryQuery(date), cancellationToken);
+            var userId = httpContext.User.FindFirstValue(ClaimTypes.Email) ?? throw new UnauthorizedAccessException();
+            var result = await mediator.Send(new GetWeeklySummaryQuery(date, userId), cancellationToken);
             return Results.Ok(result);
         })
         .WithName("GetWeeklySummary")

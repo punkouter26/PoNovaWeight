@@ -1,9 +1,18 @@
 @inject NavigationManager Navigation
+@inject AuthService AuthService
 
 @code {
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        var returnUrl = Uri.EscapeDataString(Navigation.Uri);
-        Navigation.NavigateTo($"/login?returnUrl={returnUrl}", forceLoad: true);
+        // First check if user is actually authenticated (cookie might be set from OAuth callback)
+        await AuthService.RefreshAuthStateAsync();
+        
+        // If still not authenticated after refresh, redirect to login
+        var status = await AuthService.GetCurrentUserAsync();
+        if (status?.IsAuthenticated != true)
+        {
+            var returnUrl = Uri.EscapeDataString(Navigation.Uri);
+            Navigation.NavigateTo($"/login?returnUrl={returnUrl}", forceLoad: true);
+        }
     }
 }

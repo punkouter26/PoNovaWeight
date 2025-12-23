@@ -18,6 +18,22 @@
       }
     },
     {
+      "label": "aspire-run",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "run",
+        "--project",
+        "${workspaceFolder}/src/PoNovaWeight.AppHost/PoNovaWeight.AppHost.csproj"
+      ],
+      "problemMatcher": "$msCompile",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
       "label": "watch",
       "command": "dotnet",
       "type": "process",
