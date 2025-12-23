@@ -1,10 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <RootNamespace>PoNovaWeight.Api</RootNamespace>
     <AssemblyName>PoNovaWeight.Api</AssemblyName>
     <!-- Disable AOT for API due to MVC controllers and reflection-based serialization -->
     <IsAotCompatible>false</IsAotCompatible>
+    <UserSecretsId>a83dc2a4-5dcf-40c7-aa9e-51fdf9216004</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

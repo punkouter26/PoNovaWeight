@@ -1,7 +1,7 @@
 # Azure Developer CLI (azd) Configuration
-# Used for deploying Nova Food Journal to Azure
+# Used for deploying Nova Food Journal to Azure Container Apps
 
-name: ponova-food-journal
+name: ponovaweight
 metadata:
   template: custom
 
@@ -16,15 +16,10 @@ services:
   api:
     project: ../src/PoNovaWeight.Api
     language: dotnet
-    host: appservice
-    hooks:
-      prepackage:
-        windows:
-          shell: pwsh
-          run: dotnet publish -c Release -o ./publish
-        posix:
-          shell: sh
-          run: dotnet publish -c Release -o ./publish
+    host: containerapp
+    docker:
+      path: ../src/PoNovaWeight.Api/Dockerfile
+      context: ../
 
 # Pipeline configuration for CI/CD
 pipeline:

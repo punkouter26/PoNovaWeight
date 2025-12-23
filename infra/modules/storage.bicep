@@ -31,19 +31,6 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
       defaultAction: 'Allow' // Will be restricted in production
       bypass: 'AzureServices'
     }
-    encryption: {
-      services: {
-        table: {
-          enabled: true
-          keyType: 'Account'
-        }
-        blob: {
-          enabled: true
-          keyType: 'Account'
-        }
-      }
-      keySource: 'Microsoft.Storage'
-    }
   }
 }
 
