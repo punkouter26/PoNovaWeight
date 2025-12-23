@@ -5,6 +5,7 @@ WORKDIR /src
 # Copy solution and project files
 COPY PoNovaWeight.sln .
 COPY global.json .
+COPY nuget.config .
 COPY src/PoNovaWeight.Api/PoNovaWeight.Api.csproj src/PoNovaWeight.Api/
 COPY src/PoNovaWeight.Client/PoNovaWeight.Client.csproj src/PoNovaWeight.Client/
 COPY src/PoNovaWeight.Shared/PoNovaWeight.Shared.csproj src/PoNovaWeight.Shared/
