@@ -280,7 +280,7 @@ stateDiagram-v2
 ```mermaid
 graph TB
     subgraph Azure["Azure (East US 2)"]
-        subgraph AppService["App Service (B1)"]
+        subgraph ContainerApps["Azure Container Apps (ACA)"]
             API["ASP.NET Core API"]
             Blazor["Blazor WASM<br/>(static files)"]
         end

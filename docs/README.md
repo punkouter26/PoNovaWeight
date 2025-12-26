@@ -23,7 +23,7 @@ A personal food journaling Progressive Web App (PWA) designed for tracking daily
 | Backend | ASP.NET Core Minimal API |
 | Database | Azure Table Storage |
 | AI | Azure OpenAI GPT-4o |
-| Hosting | Azure App Service (B1 tier) |
+| Hosting | Azure Container Apps (ACA) |
 | Runtime | .NET 10 |
 
 ## Prerequisites
@@ -161,7 +161,7 @@ azd up
 
 1. Create Azure resources using Bicep templates in `/infra`
 2. Build the application: `dotnet publish -c Release`
-3. Deploy to Azure App Service
+3. Deploy to Azure Container Apps (ACA) using `azd deploy` or `azd up` (recommended).
 
 ## API Endpoints
 

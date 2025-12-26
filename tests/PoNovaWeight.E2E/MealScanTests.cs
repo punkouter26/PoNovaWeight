@@ -34,7 +34,7 @@ public class MealScanTests : IAsyncLifetime
         _playwright?.Dispose();
     }
 
-    [Fact(Skip = "Requires authenticated user - meal scan feature needs real session cookie")]
+    [Fact]
     public async Task ScanMealPage_ShowsAnalyzeButton_AfterImageUpload()
     {
         // Arrange - Create a test image file (1x1 red pixel PNG)
@@ -87,7 +87,7 @@ public class MealScanTests : IAsyncLifetime
         }
     }
 
-    [Fact(Skip = "Requires authenticated user - mock cookie does not work with real auth")]
+    [Fact]
     public async Task ScanMealPage_ShowsAnalyzeButton_AfterImageUpload_WithMockedAuth()
     {
         // Arrange - Create a test image file (simple JPEG)

@@ -36,7 +36,7 @@ public class GoogleAuthTests : IAsyncLifetime
         _playwright?.Dispose();
     }
 
-    [Fact(Skip = "Requires running server - run manually with 'dotnet run' first")]
+    [Fact]
     public async Task LoginPage_DisplaysCorrectUIElements()
     {
         // Act - Navigate to login page
@@ -57,7 +57,7 @@ public class GoogleAuthTests : IAsyncLifetime
         Assert.Contains("terms of service", content.ToLowerInvariant());
     }
 
-    [Fact(Skip = "Requires running server - run manually with 'dotnet run' first")]
+    [Fact]
     public async Task AuthFlow_WorksCorrectly()
     {
         // Test homepage redirect

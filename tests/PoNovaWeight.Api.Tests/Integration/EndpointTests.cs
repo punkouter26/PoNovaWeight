@@ -55,7 +55,7 @@ public class EndpointTests
             WaterSegments = 6
         };
 
-        var client = CreateClientWithMockedDependencies(mockEntity);
+        var client = CreateClientWithMockedDependencies(mockEntity, null, authenticated: true);
 
         // Act
         var response = await client.GetAsync($"/api/daily-logs/{testDate:yyyy-MM-dd}");
@@ -74,7 +74,7 @@ public class EndpointTests
     {
         // Arrange
         var testDate = DateOnly.FromDateTime(DateTime.UtcNow);
-        var client = CreateClientWithMockedDependencies(null);
+        var client = CreateClientWithMockedDependencies(null, null, authenticated: true);
 
         // Act
         var response = await client.GetAsync($"/api/daily-logs/{testDate:yyyy-MM-dd}");
@@ -87,7 +87,7 @@ public class EndpointTests
     public async Task GetDailyLog_InvalidDate_ReturnsError()
     {
         // Arrange
-        var client = CreateClientWithMockedDependencies();
+        var client = CreateClientWithMockedDependencies(authenticated: true);
 
         // Act
         var response = await client.GetAsync("/api/daily-logs/not-a-date");
@@ -121,7 +121,7 @@ public class EndpointTests
         mockRepo.Setup(r => r.GetAsync(It.IsAny<string>(), It.IsAny<DateOnly>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((DailyLogEntity?)null);
 
-        var client = CreateClientWithMockedDependencies(mockRepo: mockRepo);
+        var client = CreateClientWithMockedDependencies(mockRepo: mockRepo, authenticated: true);
 
         // Act - API uses PUT /api/daily-logs/ (date in body, not URL)
         var response = await client.PutAsJsonAsync("/api/daily-logs/", dto);
@@ -149,7 +149,7 @@ public class EndpointTests
         mockRepo.Setup(r => r.GetRangeAsync(It.IsAny<string>(), It.IsAny<DateOnly>(), It.IsAny<DateOnly>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(entities);
 
-        var client = CreateClientWithMockedDependencies(mockRepo: mockRepo);
+        var client = CreateClientWithMockedDependencies(mockRepo: mockRepo, authenticated: true);
 
         // Act - API requires date parameter: GET /api/weekly-summary/{date}
         var response = await client.GetAsync($"/api/weekly-summary/{today:yyyy-MM-dd}");
@@ -184,7 +184,8 @@ public class EndpointTests
 
     private HttpClient CreateClientWithMockedDependencies(
         DailyLogEntity? returnEntity = null,
-        Mock<IDailyLogRepository>? mockRepo = null)
+        Mock<IDailyLogRepository>? mockRepo = null,
+        bool authenticated = false)
     {
         var factory = _factory.WithWebHostBuilder(builder =>
         {
@@ -211,6 +212,26 @@ public class EndpointTests
                 }
 
                 services.AddSingleton(mockRepo.Object);
+
+                // Add test authentication only when explicitly requested via the 'authenticated' parameter
+                if (authenticated)
+                {
+                    services.AddAuthentication(options =>
+                    {
+                        options.DefaultAuthenticateScheme = "Test";
+                        options.DefaultScheme = "Test";
+                        options.DefaultChallengeScheme = "Test";
+                    })
+                    .AddScheme<Microsoft.AspNetCore.Authentication.AuthenticationSchemeOptions, PoNovaWeight.Api.Tests.TestAuth.TestAuthHandler>(
+                        "Test", _ => { });
+
+                    services.AddAuthorization(options =>
+                    {
+                        options.DefaultPolicy = new Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder("Test")
+                            .RequireAuthenticatedUser()
+                            .Build();
+                    });
+                }
             });
         });
 

@@ -88,7 +88,7 @@ public class TrendsEndpointTests
         Assert.Null(result.WeightChange);
     }
 
-    private HttpClient CreateClientWithMockedRepository(Mock<IDailyLogRepository> mockRepo)
+    private HttpClient CreateClientWithMockedRepository(Mock<IDailyLogRepository> mockRepo, bool authenticated = true)
     {
         var factory = _factory.WithWebHostBuilder(builder =>
         {
@@ -101,6 +101,25 @@ public class TrendsEndpointTests
                     services.Remove(descriptor);
                 }
                 services.AddSingleton(mockRepo.Object);
+
+                if (authenticated)
+                {
+                    services.AddAuthentication(options =>
+                    {
+                        options.DefaultAuthenticateScheme = "Test";
+                        options.DefaultScheme = "Test";
+                        options.DefaultChallengeScheme = "Test";
+                    })
+                    .AddScheme<Microsoft.AspNetCore.Authentication.AuthenticationSchemeOptions, PoNovaWeight.Api.Tests.TestAuth.TestAuthHandler>(
+                        "Test", _ => { });
+
+                    services.AddAuthorization(options =>
+                    {
+                        options.DefaultPolicy = new Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder("Test")
+                            .RequireAuthenticatedUser()
+                            .Build();
+                    });
+                }
             });
         });
 
