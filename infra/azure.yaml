@@ -21,8 +21,7 @@ services:
     docker:
       path: ../src/PoNovaWeight.Api/Dockerfile
       context: ../
-      registry:
-        endpoint: ponovaweightacr.azurecr.io
+      registry: ponovaweightacr.azurecr.io
 
 # Pipeline configuration for CI/CD
 pipeline:
