@@ -13,6 +13,9 @@ param tags object = {}
 @description('Daily data cap in GB')
 param dailyDataCapGb int = 1
 
+@description('Enable availability (health check ping) test')
+param enableAvailabilityTest bool = true
+
 // Log Analytics Workspace (required for Application Insights)
 resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
   name: '${name}-logs'
@@ -50,41 +53,36 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
   }
 }
 
-@description('Enable availability (health check ping) test')
-param enableAvailabilityTest bool = true
-
 // Availability Test (health check ping)
-if (enableAvailabilityTest) {
-  resource availabilityTest 'Microsoft.Insights/webtests@2022-06-15' = {
-    name: '${name}-health-ping'
-    location: location
-    tags: union(tags, {
-      'hidden-link:${appInsights.id}': 'Resource'
-    })
-    kind: 'ping'
-    properties: {
-      SyntheticMonitorId: '${name}-health-ping'
-      Name: 'Health Check Ping'
-      Enabled: true
-      Frequency: 300 // 5 minutes
-      Timeout: 30
-      Kind: 'standard'
-      RetryEnabled: true
-      Locations: [
-        {
-          Id: 'us-va-ash-azr' // East US
-        }
-      ]
-      Request: {
-        RequestUrl: 'https://placeholder-url/api/health' // Updated during deployment
-        HttpVerb: 'GET'
-        ParseDependentRequests: false
+resource availabilityTest 'Microsoft.Insights/webtests@2022-06-15' = if (enableAvailabilityTest) {
+  name: '${name}-health-ping'
+  location: location
+  tags: union(tags, {
+    'hidden-link:${appInsights.id}': 'Resource'
+  })
+  kind: 'ping'
+  properties: {
+    SyntheticMonitorId: '${name}-health-ping'
+    Name: 'Health Check Ping'
+    Enabled: true
+    Frequency: 300 // 5 minutes
+    Timeout: 30
+    Kind: 'standard'
+    RetryEnabled: true
+    Locations: [
+      {
+        Id: 'us-va-ash-azr' // East US
       }
-      ValidationRules: {
-        ExpectedHttpStatusCode: 200
-        SSLCheck: true
-        SSLCertRemainingLifetimeCheck: 7
-      }
+    ]
+    Request: {
+      RequestUrl: 'https://placeholder-url/api/health' // Updated during deployment
+      HttpVerb: 'GET'
+      ParseDependentRequests: false
+    }
+    ValidationRules: {
+      ExpectedHttpStatusCode: 200
+      SSLCheck: true
+      SSLCertRemainingLifetimeCheck: 7
     }
   }
 }
