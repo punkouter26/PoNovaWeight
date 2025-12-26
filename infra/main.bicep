@@ -64,6 +64,7 @@ module appInsights 'modules/app-insights.bicep' = {
     name: '${baseName}-ai'
     location: location
     tags: tags
+    enableAvailabilityTest: false
   }
 }
 
