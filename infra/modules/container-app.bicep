@@ -155,7 +155,7 @@ resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
             }
             {
               name: 'Google__ClientId'
-              value: googleClientId
+              value: !empty(googleClientId) ? googleClientId : 'placeholder'
             }
             {
               name: 'Google__ClientSecret'
