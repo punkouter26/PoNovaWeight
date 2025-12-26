@@ -14,12 +14,15 @@ infra:
 # Service configuration
 services:
   api:
+    name: ponovaweight-api
     project: ../src/PoNovaWeight.Api
     language: dotnet
     host: containerapp
     docker:
       path: ../src/PoNovaWeight.Api/Dockerfile
       context: ../
+      registry:
+        endpoint: ponovaweightacr.azurecr.io
 
 # Pipeline configuration for CI/CD
 pipeline:
