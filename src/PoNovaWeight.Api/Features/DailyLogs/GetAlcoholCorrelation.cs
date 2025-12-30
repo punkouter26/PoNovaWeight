@@ -13,21 +13,14 @@ public record GetAlcoholCorrelationQuery(int Days = 90, string UserId = "dev-use
 /// Handler for GetAlcoholCorrelationQuery.
 /// Calculates average weight on alcohol days vs non-alcohol days.
 /// </summary>
-public class GetAlcoholCorrelationHandler : IRequestHandler<GetAlcoholCorrelationQuery, AlcoholCorrelationDto>
+public class GetAlcoholCorrelationHandler(IDailyLogRepository repository) : IRequestHandler<GetAlcoholCorrelationQuery, AlcoholCorrelationDto>
 {
-    private readonly IDailyLogRepository _repository;
-
-    public GetAlcoholCorrelationHandler(IDailyLogRepository repository)
-    {
-        _repository = repository;
-    }
-
     public async Task<AlcoholCorrelationDto> Handle(GetAlcoholCorrelationQuery request, CancellationToken cancellationToken)
     {
         var today = DateOnly.FromDateTime(DateTime.Today);
         var startDate = today.AddDays(-request.Days + 1);
 
-        var entities = await _repository.GetRangeAsync(
+        var entities = await repository.GetRangeAsync(
             request.UserId,
             startDate,
             today,

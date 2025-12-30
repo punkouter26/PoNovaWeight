@@ -1,0 +1,81 @@
+@namespace PoNovaWeight.Client.Components
+
+<div class="empty-state">
+    <!-- Illustration -->
+    <div class="mb-6">
+        <div class="w-32 h-32 lg:w-40 lg:h-40 rounded-full bg-gradient-to-br from-healthy-light to-healthy-bg flex items-center justify-center mx-auto">
+            <span class="text-6xl lg:text-7xl">🥗</span>
+        </div>
+    </div>
+
+    <!-- Title & Description -->
+    <h2 class="text-xl lg:text-2xl font-bold text-healthy-text mb-2">
+        Start Your Wellness Journey
+    </h2>
+    <p class="text-sm lg:text-base text-healthy-muted max-w-sm mb-8 leading-relaxed">
+        Track your meals, build OMAD streaks, and watch your progress unfold. 
+        Your first log is just a tap away!
+    </p>
+
+    <!-- Primary CTA -->
+    <a href="/day/@DateOnly.FromDateTime(DateTime.Today).ToString("yyyy-MM-dd")"
+       class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-healthy-primary to-healthy-secondary text-white rounded-xl font-medium hover:from-healthy-dark hover:to-healthy-primary transition-all shadow-healthy text-sm lg:text-base">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+        </svg>
+        Log Your First Meal
+    </a>
+
+    <!-- Secondary Actions -->
+    <div class="flex flex-col sm:flex-row items-center gap-3 mt-4">
+        <button @onclick="() => OnGetStarted.InvokeAsync()" 
+                class="text-sm text-healthy-primary hover:text-healthy-dark transition-colors flex items-center gap-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            Learn how it works
+        </button>
+        <span class="hidden sm:inline text-healthy-light">•</span>
+        <button @onclick="() => OnRetry.InvokeAsync()" 
+                class="text-sm text-healthy-muted hover:text-healthy-text transition-colors">
+            Refresh data
+        </button>
+    </div>
+
+    <!-- Feature Highlights -->
+    <div class="mt-10 pt-8 border-t border-healthy-light w-full max-w-md">
+        <h3 class="text-xs font-medium text-healthy-muted uppercase tracking-wide mb-4 text-center">
+            What you can track
+        </h3>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            <div class="flex flex-col items-center p-3 bg-healthy-bg rounded-xl">
+                <span class="text-2xl mb-1">🥩</span>
+                <span class="text-xs font-medium text-healthy-text">Food Groups</span>
+                <span class="text-[10px] text-healthy-muted">6 categories</span>
+            </div>
+            <div class="flex flex-col items-center p-3 bg-healthy-bg rounded-xl">
+                <span class="text-2xl mb-1">💧</span>
+                <span class="text-xs font-medium text-healthy-text">Hydration</span>
+                <span class="text-[10px] text-healthy-muted">8 glasses goal</span>
+            </div>
+            <div class="flex flex-col items-center p-3 bg-healthy-bg rounded-xl">
+                <span class="text-2xl mb-1">⚖️</span>
+                <span class="text-xs font-medium text-healthy-text">Weight</span>
+                <span class="text-[10px] text-healthy-muted">Trend analysis</span>
+            </div>
+            <div class="flex flex-col items-center p-3 bg-healthy-bg rounded-xl">
+                <span class="text-2xl mb-1">🔥</span>
+                <span class="text-xs font-medium text-healthy-text">Streaks</span>
+                <span class="text-[10px] text-healthy-muted">OMAD tracking</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback OnGetStarted { get; set; }
+
+    [Parameter]
+    public EventCallback OnRetry { get; set; }
+}

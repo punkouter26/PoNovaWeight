@@ -6,7 +6,7 @@ using PoNovaWeight.Shared.DTOs;
 
 namespace PoNovaWeight.Client.Tests.Components;
 
-public class DayCardTests : TestContext
+public class DayCardTests : BunitContext
 {
     [Fact]
     public void DayCard_ProgressBar_ShowsCorrectColorByStatus()
@@ -23,7 +23,7 @@ public class DayCardTests : TestContext
             Dairy = 1,
             WaterSegments = 4
         };
-        var cutOver = RenderComponent<DayCard>(parameters => parameters
+        var cutOver = Render<DayCard>(parameters => parameters
             .Add(p => p.Day, overTargetDay)
             .Add(p => p.ShowWater, true));
         // DayCard uses inline Tailwind colors - over target shows bg-healthy-fruit
@@ -41,7 +41,7 @@ public class DayCardTests : TestContext
             Dairy = 1,
             WaterSegments = 0
         };
-        var cutUnder = RenderComponent<DayCard>(parameters => parameters
+        var cutUnder = Render<DayCard>(parameters => parameters
             .Add(p => p.Day, underTargetDay)
             .Add(p => p.ShowWater, true));
         // Under target shows category color (e.g., bg-healthy-earth for proteins)
@@ -59,7 +59,7 @@ public class DayCardTests : TestContext
             Dairy = 0,
             WaterSegments = 0
         };
-        var cutAt = RenderComponent<DayCard>(parameters => parameters
+        var cutAt = Render<DayCard>(parameters => parameters
             .Add(p => p.Day, atTargetDay)
             .Add(p => p.ShowWater, true));
         // At/met target shows primary color
@@ -72,7 +72,7 @@ public class DayCardTests : TestContext
         // Today should show badge
         var today = DateOnly.FromDateTime(DateTime.Today);
         var todayDay = DailyLogDto.Empty(today);
-        var cutToday = RenderComponent<DayCard>(parameters => parameters
+        var cutToday = Render<DayCard>(parameters => parameters
             .Add(p => p.Day, todayDay)
             .Add(p => p.ShowWater, false));
         cutToday.Markup.Should().Contain("Today");
@@ -81,7 +81,7 @@ public class DayCardTests : TestContext
         // Yesterday should not show badge
         var yesterday = DateOnly.FromDateTime(DateTime.Today.AddDays(-1));
         var yesterdayDay = DailyLogDto.Empty(yesterday);
-        var cutYesterday = RenderComponent<DayCard>(parameters => parameters
+        var cutYesterday = Render<DayCard>(parameters => parameters
             .Add(p => p.Day, yesterdayDay)
             .Add(p => p.ShowWater, false));
         cutYesterday.Markup.Should().NotContain(">Today<");
@@ -95,7 +95,7 @@ public class DayCardTests : TestContext
         var day = DailyLogDto.Empty(DateOnly.FromDateTime(DateTime.Today));
 
         // Act
-        var cut = RenderComponent<DayCard>(parameters => parameters
+        var cut = Render<DayCard>(parameters => parameters
             .Add(p => p.Day, day)
             .Add(p => p.ShowWater, false));
 
@@ -123,7 +123,7 @@ public class DayCardTests : TestContext
             Dairy = 0,
             WaterSegments = 5
         };
-        var cut = RenderComponent<DayCard>(parameters => parameters
+        var cut = Render<DayCard>(parameters => parameters
             .Add(p => p.Day, dayWithWater)
             .Add(p => p.ShowWater, true));
 
@@ -140,7 +140,7 @@ public class DayCardTests : TestContext
         var day = DailyLogDto.Empty(date);
 
         // Act
-        var cut = RenderComponent<DayCard>(parameters => parameters
+        var cut = Render<DayCard>(parameters => parameters
             .Add(p => p.Day, day)
             .Add(p => p.ShowWater, false));
 

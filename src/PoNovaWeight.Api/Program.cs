@@ -53,7 +53,7 @@ try
     // Check if running under Aspire orchestration
     var isAspireOrchestrated = !string.IsNullOrEmpty(builder.Configuration["ConnectionStrings:tables"]) ||
                                 !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER"));
-    
+
     if (isAspireOrchestrated)
     {
         // Aspire integration - automatic connection via service discovery

@@ -1,0 +1,297 @@
+@namespace PoNovaWeight.Client.Components
+@inject NavigationManager Navigation
+
+<div class="min-h-[70vh] flex items-center justify-center px-4">
+    <div class="onboarding-card w-full max-w-md lg:max-w-lg">
+        <!-- Progress Indicators -->
+        <div class="flex justify-center gap-2 pt-6 pb-4">
+            @for (int i = 0; i < TotalSteps; i++)
+            {
+                var stepIndex = i;
+                <div class="onboarding-step-indicator @GetStepClass(stepIndex)"></div>
+            }
+        </div>
+
+        <!-- Step Content -->
+        <div class="px-6 pb-6">
+            @switch (CurrentStep)
+            {
+                case 0:
+                    @WelcomeStep
+                    break;
+                case 1:
+                    @OmadExplainerStep
+                    break;
+                case 2:
+                    @FoodCategoriesStep
+                    break;
+                case 3:
+                    @GetStartedStep
+                    break;
+            }
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="px-6 pb-6 flex gap-3">
+            @if (CurrentStep > 0)
+            {
+                <button @onclick="PreviousStep" 
+                        class="flex-1 py-3 text-sm font-medium text-healthy-muted bg-healthy-light rounded-xl hover:bg-gray-200 transition-colors">
+                    Back
+                </button>
+            }
+            
+            @if (CurrentStep < TotalSteps - 1)
+            {
+                <button @onclick="NextStep" 
+                        class="flex-1 py-3 text-sm font-medium text-white bg-healthy-primary rounded-xl hover:bg-healthy-dark transition-colors">
+                    Continue
+                </button>
+            }
+            else
+            {
+                <button @onclick="Complete" 
+                        class="flex-1 py-3 text-sm font-medium text-white bg-gradient-to-r from-healthy-primary to-healthy-secondary rounded-xl hover:from-healthy-dark hover:to-healthy-primary transition-all">
+                    Start Tracking! 🚀
+                </button>
+            }
+        </div>
+
+        <!-- Skip Option -->
+        @if (CurrentStep < TotalSteps - 1)
+        {
+            <div class="pb-6 text-center">
+                <button @onclick="Complete" class="text-xs text-healthy-muted hover:text-healthy-text transition-colors">
+                    Skip introduction
+                </button>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback OnComplete { get; set; }
+
+    private int CurrentStep { get; set; } = 0;
+    private const int TotalSteps = 4;
+
+    private string GetStepClass(int step)
+    {
+        if (step == CurrentStep)
+            return "onboarding-step-active";
+        if (step < CurrentStep)
+            return "onboarding-step-complete";
+        return "onboarding-step-inactive";
+    }
+
+    private void NextStep()
+    {
+        if (CurrentStep < TotalSteps - 1)
+            CurrentStep++;
+    }
+
+    private void PreviousStep()
+    {
+        if (CurrentStep > 0)
+            CurrentStep--;
+    }
+
+    private async Task Complete()
+    {
+        await OnComplete.InvokeAsync();
+    }
+
+    // Step Components as render fragments for cleaner code
+    private RenderFragment WelcomeStep => __builder =>
+    {
+        <div class="text-center py-6">
+            <div class="text-6xl mb-6">🥗</div>
+            <h2 class="text-2xl lg:text-3xl font-bold text-healthy-text mb-3">
+                Welcome to PoNovaWeight!
+            </h2>
+            <p class="text-healthy-muted text-sm lg:text-base leading-relaxed">
+                Your personal companion for mindful eating and OMAD (One Meal A Day) tracking.
+                Let's get you set up in just a few steps.
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-3 gap-4 mt-6">
+            <div class="text-center p-3 bg-healthy-bg rounded-xl">
+                <div class="text-2xl mb-2">📊</div>
+                <div class="text-xs text-healthy-muted">Track Progress</div>
+            </div>
+            <div class="text-center p-3 bg-healthy-bg rounded-xl">
+                <div class="text-2xl mb-2">🔥</div>
+                <div class="text-xs text-healthy-muted">Build Streaks</div>
+            </div>
+            <div class="text-center p-3 bg-healthy-bg rounded-xl">
+                <div class="text-2xl mb-2">📸</div>
+                <div class="text-xs text-healthy-muted">AI Meal Scan</div>
+            </div>
+        </div>
+    };
+
+    private RenderFragment OmadExplainerStep => __builder =>
+    {
+        <div class="text-center py-4">
+            <div class="text-5xl mb-4">🍽️</div>
+            <h2 class="text-xl lg:text-2xl font-bold text-healthy-text mb-3">
+                What is OMAD?
+            </h2>
+            <p class="text-healthy-muted text-sm leading-relaxed mb-6">
+                <strong>One Meal A Day</strong> is an intermittent fasting approach where you consume 
+                all your daily nutrition in a single meal, typically within a 1-hour window.
+            </p>
+        </div>
+        
+        <div class="space-y-3">
+            <div class="flex items-start gap-3 p-3 bg-green-50 rounded-xl">
+                <span class="text-xl">✅</span>
+                <div>
+                    <div class="text-sm font-medium text-healthy-text">Simple to Follow</div>
+                    <div class="text-xs text-healthy-muted">No calorie counting, just one meal</div>
+                </div>
+            </div>
+            <div class="flex items-start gap-3 p-3 bg-green-50 rounded-xl">
+                <span class="text-xl">🔥</span>
+                <div>
+                    <div class="text-sm font-medium text-healthy-text">Streak Motivation</div>
+                    <div class="text-xs text-healthy-muted">Build consecutive OMAD days for momentum</div>
+                </div>
+            </div>
+            <div class="flex items-start gap-3 p-3 bg-green-50 rounded-xl">
+                <span class="text-xl">⚖️</span>
+                <div>
+                    <div class="text-sm font-medium text-healthy-text">Weight Tracking</div>
+                    <div class="text-xs text-healthy-muted">Monitor trends over time</div>
+                </div>
+            </div>
+        </div>
+    };
+
+    private RenderFragment FoodCategoriesStep => __builder =>
+    {
+        <div class="text-center py-4">
+            <div class="text-5xl mb-4">🥬</div>
+            <h2 class="text-xl lg:text-2xl font-bold text-healthy-text mb-3">
+                Track Your Food Groups
+            </h2>
+            <p class="text-healthy-muted text-sm leading-relaxed mb-6">
+                Log servings across 6 food categories to ensure balanced nutrition.
+                Each category has daily targets to guide you.
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-3">
+            <div class="flex items-center gap-3 p-3 bg-healthy-bg rounded-xl">
+                <span class="text-2xl">🥩</span>
+                <div>
+                    <div class="text-sm font-semibold text-healthy-text">Proteins</div>
+                    <div class="text-[10px] text-healthy-muted">3 servings/day</div>
+                </div>
+            </div>
+            <div class="flex items-center gap-3 p-3 bg-healthy-bg rounded-xl">
+                <span class="text-2xl">🥬</span>
+                <div>
+                    <div class="text-sm font-semibold text-healthy-text">Vegetables</div>
+                    <div class="text-[10px] text-healthy-muted">4 servings/day</div>
+                </div>
+            </div>
+            <div class="flex items-center gap-3 p-3 bg-healthy-bg rounded-xl">
+                <span class="text-2xl">🍎</span>
+                <div>
+                    <div class="text-sm font-semibold text-healthy-text">Fruits</div>
+                    <div class="text-[10px] text-healthy-muted">3 servings/day</div>
+                </div>
+            </div>
+            <div class="flex items-center gap-3 p-3 bg-healthy-bg rounded-xl">
+                <span class="text-2xl">🍞</span>
+                <div>
+                    <div class="text-sm font-semibold text-healthy-text">Starches</div>
+                    <div class="text-[10px] text-healthy-muted">2 servings/day</div>
+                </div>
+            </div>
+            <div class="flex items-center gap-3 p-3 bg-healthy-bg rounded-xl">
+                <span class="text-2xl">🥑</span>
+                <div>
+                    <div class="text-sm font-semibold text-healthy-text">Fats</div>
+                    <div class="text-[10px] text-healthy-muted">3 servings/day</div>
+                </div>
+            </div>
+            <div class="flex items-center gap-3 p-3 bg-healthy-bg rounded-xl">
+                <span class="text-2xl">🧀</span>
+                <div>
+                    <div class="text-sm font-semibold text-healthy-text">Dairy</div>
+                    <div class="text-[10px] text-healthy-muted">2 max/day</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-4 p-3 bg-healthy-water/10 rounded-xl flex items-center gap-3">
+            <span class="text-2xl">💧</span>
+            <div>
+                <div class="text-sm font-semibold text-healthy-water">Water Tracking</div>
+                <div class="text-[10px] text-healthy-muted">Aim for 8 glasses daily</div>
+            </div>
+        </div>
+    };
+
+    private RenderFragment GetStartedStep => __builder =>
+    {
+        <div class="text-center py-6">
+            <div class="text-6xl mb-6">🚀</div>
+            <h2 class="text-2xl lg:text-3xl font-bold text-healthy-text mb-3">
+                You're All Set!
+            </h2>
+            <p class="text-healthy-muted text-sm lg:text-base leading-relaxed mb-6">
+                Time to start your wellness journey. Log your first meal and begin 
+                building your OMAD streak!
+            </p>
+        </div>
+        
+        <div class="space-y-4">
+            <div class="p-4 bg-gradient-to-r from-healthy-primary/10 to-healthy-secondary/10 rounded-xl border border-healthy-primary/20">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-healthy-primary flex items-center justify-center">
+                        <span class="text-white text-lg">1</span>
+                    </div>
+                    <div>
+                        <div class="text-sm font-semibold text-healthy-text">Log your meal</div>
+                        <div class="text-xs text-healthy-muted">Tap + buttons or scan with AI</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-4 bg-gradient-to-r from-healthy-primary/10 to-healthy-secondary/10 rounded-xl border border-healthy-primary/20">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-healthy-secondary flex items-center justify-center">
+                        <span class="text-white text-lg">2</span>
+                    </div>
+                    <div>
+                        <div class="text-sm font-semibold text-healthy-text">Mark OMAD status</div>
+                        <div class="text-xs text-healthy-muted">Did you eat one meal today?</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-4 bg-gradient-to-r from-healthy-primary/10 to-healthy-secondary/10 rounded-xl border border-healthy-primary/20">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-healthy-accent flex items-center justify-center">
+                        <span class="text-white text-lg">3</span>
+                    </div>
+                    <div>
+                        <div class="text-sm font-semibold text-healthy-text">Track your weight</div>
+                        <div class="text-xs text-healthy-muted">Optional, but helps see progress</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-6 text-center">
+            <p class="text-xs text-healthy-muted">
+                💡 <strong>Pro tip:</strong> Log at the same time each day for best habit formation
+            </p>
+        </div>
+    };
+}

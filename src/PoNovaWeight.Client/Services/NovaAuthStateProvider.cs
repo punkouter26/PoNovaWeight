@@ -8,38 +8,16 @@ namespace PoNovaWeight.Client.Services;
 /// Custom AuthenticationStateProvider for Blazor WASM.
 /// Fetches auth state from the server API.
 /// </summary>
-public class NovaAuthStateProvider : AuthenticationStateProvider
+public class NovaAuthStateProvider(ApiClient apiClient) : AuthenticationStateProvider
 {
-    private readonly ApiClient _apiClient;
     private AuthStatus? _cachedStatus;
-
-    public NovaAuthStateProvider(ApiClient apiClient)
-    {
-        _apiClient = apiClient;
-    }
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
         try
         {
-            _cachedStatus = await _apiClient.GetCurrentUserAsync();
-
-            if (_cachedStatus?.IsAuthenticated == true && _cachedStatus.User is not null)
-            {
-                var claims = new List<Claim>
-                {
-                    new(ClaimTypes.Email, _cachedStatus.User.Email),
-                    new(ClaimTypes.Name, _cachedStatus.User.DisplayName)
-                };
-
-                if (!string.IsNullOrEmpty(_cachedStatus.User.PictureUrl))
-                {
-                    claims.Add(new Claim("picture", _cachedStatus.User.PictureUrl));
-                }
-
-                var identity = new ClaimsIdentity(claims, "Google");
-                return new AuthenticationState(new ClaimsPrincipal(identity));
-            }
+            _cachedStatus = await apiClient.GetCurrentUserAsync();
+            return BuildAuthenticationState(_cachedStatus);
         }
         catch
         {
@@ -55,29 +33,26 @@ public class NovaAuthStateProvider : AuthenticationStateProvider
     public void NotifyAuthStateChanged(AuthStatus? status)
     {
         _cachedStatus = status;
-        NotifyAuthenticationStateChanged(GetAuthenticationStateFromCache());
+        NotifyAuthenticationStateChanged(Task.FromResult(BuildAuthenticationState(_cachedStatus)));
     }
 
-    private Task<AuthenticationState> GetAuthenticationStateFromCache()
+    private static AuthenticationState BuildAuthenticationState(AuthStatus? status)
     {
-        if (_cachedStatus?.IsAuthenticated == true && _cachedStatus.User is not null)
+        if (status?.IsAuthenticated != true || status.User is null)
+            return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
+
+        var claims = new List<Claim>
         {
-            var claims = new List<Claim>
-            {
-                new(ClaimTypes.Email, _cachedStatus.User.Email),
-                new(ClaimTypes.Name, _cachedStatus.User.DisplayName)
-            };
+            new(ClaimTypes.Email, status.User.Email),
+            new(ClaimTypes.Name, status.User.DisplayName)
+        };
 
-            if (!string.IsNullOrEmpty(_cachedStatus.User.PictureUrl))
-            {
-                claims.Add(new Claim("picture", _cachedStatus.User.PictureUrl));
-            }
-
-            var identity = new ClaimsIdentity(claims, "Google");
-            return Task.FromResult(new AuthenticationState(new ClaimsPrincipal(identity)));
+        if (!string.IsNullOrEmpty(status.User.PictureUrl))
+        {
+            claims.Add(new Claim("picture", status.User.PictureUrl));
         }
 
-        return Task.FromResult(new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity())));
+        return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(claims, "Google")));
     }
 
     /// <summary>

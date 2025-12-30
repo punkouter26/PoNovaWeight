@@ -12,18 +12,11 @@ public record GetDailyLogQuery(DateOnly Date, string UserId = "dev-user") : IReq
 /// <summary>
 /// Handler for GetDailyLogQuery.
 /// </summary>
-public class GetDailyLogHandler : IRequestHandler<GetDailyLogQuery, DailyLogDto?>
+public class GetDailyLogHandler(IDailyLogRepository repository) : IRequestHandler<GetDailyLogQuery, DailyLogDto?>
 {
-    private readonly IDailyLogRepository _repository;
-
-    public GetDailyLogHandler(IDailyLogRepository repository)
-    {
-        _repository = repository;
-    }
-
     public async Task<DailyLogDto?> Handle(GetDailyLogQuery request, CancellationToken cancellationToken)
     {
-        var entity = await _repository.GetAsync(request.UserId, request.Date, cancellationToken);
+        var entity = await repository.GetAsync(request.UserId, request.Date, cancellationToken);
 
         if (entity is null)
         {

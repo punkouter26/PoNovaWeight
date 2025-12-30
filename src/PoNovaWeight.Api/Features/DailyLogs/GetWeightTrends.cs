@@ -13,21 +13,14 @@ public record GetWeightTrendsQuery(int Days = 30, string UserId = "dev-user") : 
 /// Handler for GetWeightTrendsQuery.
 /// Implements carry-forward gap-filling for missing days.
 /// </summary>
-public class GetWeightTrendsHandler : IRequestHandler<GetWeightTrendsQuery, WeightTrendsDto>
+public class GetWeightTrendsHandler(IDailyLogRepository repository) : IRequestHandler<GetWeightTrendsQuery, WeightTrendsDto>
 {
-    private readonly IDailyLogRepository _repository;
-
-    public GetWeightTrendsHandler(IDailyLogRepository repository)
-    {
-        _repository = repository;
-    }
-
     public async Task<WeightTrendsDto> Handle(GetWeightTrendsQuery request, CancellationToken cancellationToken)
     {
         var today = DateOnly.FromDateTime(DateTime.Today);
         var startDate = today.AddDays(-request.Days + 1);
 
-        var entities = await _repository.GetRangeAsync(
+        var entities = await repository.GetRangeAsync(
             request.UserId,
             startDate,
             today,

@@ -5,13 +5,13 @@ using PoNovaWeight.Shared.DTOs;
 
 namespace PoNovaWeight.Client.Tests.Components;
 
-public class CalendarGridTests : TestContext
+public class CalendarGridTests : BunitContext
 {
     [Fact]
     public void CalendarGrid_RendersMonthHeader()
     {
         // Arrange & Act
-        var cut = RenderComponent<CalendarGrid>(parameters => parameters
+        var cut = Render<CalendarGrid>(parameters => parameters
             .Add(p => p.Year, 2025)
             .Add(p => p.Month, 12)
             .Add(p => p.Days, new List<DailyLogSummary>()));
@@ -24,7 +24,7 @@ public class CalendarGridTests : TestContext
     public void CalendarGrid_RendersDayOfWeekHeaders()
     {
         // Arrange & Act
-        var cut = RenderComponent<CalendarGrid>(parameters => parameters
+        var cut = Render<CalendarGrid>(parameters => parameters
             .Add(p => p.Year, 2025)
             .Add(p => p.Month, 1)
             .Add(p => p.Days, new List<DailyLogSummary>()));
@@ -41,7 +41,7 @@ public class CalendarGridTests : TestContext
     public void CalendarGrid_RendersDaysOfMonth()
     {
         // Arrange & Act
-        var cut = RenderComponent<CalendarGrid>(parameters => parameters
+        var cut = Render<CalendarGrid>(parameters => parameters
             .Add(p => p.Year, 2025)
             .Add(p => p.Month, 1)
             .Add(p => p.Days, new List<DailyLogSummary>()));
@@ -62,7 +62,7 @@ public class CalendarGridTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<CalendarGrid>(parameters => parameters
+        var cut = Render<CalendarGrid>(parameters => parameters
             .Add(p => p.Year, 2025)
             .Add(p => p.Month, 1)
             .Add(p => p.Days, days));
@@ -81,7 +81,7 @@ public class CalendarGridTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<CalendarGrid>(parameters => parameters
+        var cut = Render<CalendarGrid>(parameters => parameters
             .Add(p => p.Year, 2025)
             .Add(p => p.Month, 1)
             .Add(p => p.Days, days));
@@ -94,7 +94,7 @@ public class CalendarGridTests : TestContext
     public void CalendarGrid_ShowsGray_ForDaysWithNoData()
     {
         // Arrange - no days provided, all should be gray
-        var cut = RenderComponent<CalendarGrid>(parameters => parameters
+        var cut = Render<CalendarGrid>(parameters => parameters
             .Add(p => p.Year, 2025)
             .Add(p => p.Month, 1)
             .Add(p => p.Days, new List<DailyLogSummary>()));
@@ -113,7 +113,7 @@ public class CalendarGridTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<CalendarGrid>(parameters => parameters
+        var cut = Render<CalendarGrid>(parameters => parameters
             .Add(p => p.Year, 2025)
             .Add(p => p.Month, 1)
             .Add(p => p.Days, days));
@@ -127,7 +127,7 @@ public class CalendarGridTests : TestContext
     {
         // Arrange
         (int Year, int Month) receivedMonth = default;
-        var cut = RenderComponent<CalendarGrid>(parameters => parameters
+        var cut = Render<CalendarGrid>(parameters => parameters
             .Add(p => p.Year, 2025)
             .Add(p => p.Month, 6)
             .Add(p => p.Days, new List<DailyLogSummary>())
@@ -146,7 +146,7 @@ public class CalendarGridTests : TestContext
     public void CalendarGrid_RendersLegend()
     {
         // Arrange & Act
-        var cut = RenderComponent<CalendarGrid>(parameters => parameters
+        var cut = Render<CalendarGrid>(parameters => parameters
             .Add(p => p.Year, 2025)
             .Add(p => p.Month, 1)
             .Add(p => p.Days, new List<DailyLogSummary>()));
@@ -167,7 +167,7 @@ public class CalendarGridTests : TestContext
             new() { Date = new DateOnly(2024, 1, 15), OmadCompliant = true }
         };
 
-        var cut = RenderComponent<CalendarGrid>(parameters => parameters
+        var cut = Render<CalendarGrid>(parameters => parameters
             .Add(p => p.Year, 2024)
             .Add(p => p.Month, 1)
             .Add(p => p.Days, days)

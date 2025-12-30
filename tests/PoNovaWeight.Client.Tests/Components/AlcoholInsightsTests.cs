@@ -6,7 +6,7 @@ using Xunit;
 
 namespace PoNovaWeight.Client.Tests.Components;
 
-public class AlcoholInsightsTests : TestContext
+public class AlcoholInsightsTests : BunitContext
 {
     [Fact]
     public void Render_ShowsNoDataMessage_WhenNoData()
@@ -20,11 +20,11 @@ public class AlcoholInsightsTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<AlcoholInsights>(parameters => parameters
+        var cut = Render<AlcoholInsights>(parameters => parameters
             .Add(p => p.Correlation, correlation));
 
         // Assert
-        cut.Markup.Should().Contain("No weight data yet");
+        cut.Markup.Should().Contain("Need more data for correlation");
     }
 
     [Fact]
@@ -39,11 +39,11 @@ public class AlcoholInsightsTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<AlcoholInsights>(parameters => parameters
+        var cut = Render<AlcoholInsights>(parameters => parameters
             .Add(p => p.Correlation, correlation));
 
         // Assert
-        cut.Markup.Should().Contain("No alcohol days logged");
+        cut.Markup.Should().Contain("Need more data for correlation");
     }
 
     [Fact]
@@ -58,11 +58,11 @@ public class AlcoholInsightsTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<AlcoholInsights>(parameters => parameters
+        var cut = Render<AlcoholInsights>(parameters => parameters
             .Add(p => p.Correlation, correlation));
 
         // Assert
-        cut.Markup.Should().Contain("No non-alcohol days logged");
+        cut.Markup.Should().Contain("Need more data for correlation");
     }
 
     [Fact]
@@ -80,7 +80,7 @@ public class AlcoholInsightsTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<AlcoholInsights>(parameters => parameters
+        var cut = Render<AlcoholInsights>(parameters => parameters
             .Add(p => p.Correlation, correlation));
 
         // Assert
@@ -105,7 +105,7 @@ public class AlcoholInsightsTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<AlcoholInsights>(parameters => parameters
+        var cut = Render<AlcoholInsights>(parameters => parameters
             .Add(p => p.Correlation, correlation));
 
         // Assert
@@ -129,7 +129,7 @@ public class AlcoholInsightsTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<AlcoholInsights>(parameters => parameters
+        var cut = Render<AlcoholInsights>(parameters => parameters
             .Add(p => p.Correlation, correlation));
 
         // Assert
@@ -153,7 +153,7 @@ public class AlcoholInsightsTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<AlcoholInsights>(parameters => parameters
+        var cut = Render<AlcoholInsights>(parameters => parameters
             .Add(p => p.Correlation, correlation));
 
         // Assert
@@ -164,15 +164,15 @@ public class AlcoholInsightsTests : TestContext
     public void Render_ShowsTitle_WithBeerEmoji()
     {
         // Arrange
-        var correlation = new AlcoholCorrelationDto 
-        { 
+        var correlation = new AlcoholCorrelationDto
+        {
             HasSufficientData = false,
             DaysWithAlcohol = 0,
             DaysWithoutAlcohol = 0
         };
 
         // Act
-        var cut = RenderComponent<AlcoholInsights>(parameters => parameters
+        var cut = Render<AlcoholInsights>(parameters => parameters
             .Add(p => p.Correlation, correlation));
 
         // Assert

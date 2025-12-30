@@ -1,6 +1,0 @@
-{
-  "name": "github-oidc-master",
-  "issuer": "https://token.actions.githubusercontent.com",
-  "subject": "repo:punkouter26/PoNovaWeight:ref:refs/heads/master",
-  "audiences": ["api://AzureADTokenExchange"]
-}

@@ -1,7 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using PoNovaWeight.Api.Infrastructure;
 using PoNovaWeight.Shared.DTOs;
-using System.Security.Claims;
 
 namespace PoNovaWeight.Api.Features.MealScan;
 
@@ -30,8 +30,7 @@ public static class Endpoints
         IMediator mediator,
         CancellationToken cancellationToken)
     {
-        var userId = httpContext.User.FindFirstValue(ClaimTypes.Email) ?? throw new UnauthorizedAccessException();
-        var command = new ScanMealCommand(request, userId);
+        var command = new ScanMealCommand(request, httpContext.GetUserId());
         var result = await mediator.Send(command, cancellationToken);
 
         // Return 200 even for non-success results (the success flag indicates the analysis outcome)

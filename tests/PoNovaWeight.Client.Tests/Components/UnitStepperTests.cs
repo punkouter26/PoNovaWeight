@@ -5,14 +5,14 @@ using PoNovaWeight.Shared.Contracts;
 
 namespace PoNovaWeight.Client.Tests.Components;
 
-public class UnitStepperTests : TestContext
+public class UnitStepperTests : BunitContext
 {
     [Fact]
     public void UnitStepper_TapPlus_IncrementsValue()
     {
         // Arrange
         int receivedDelta = 0;
-        var cut = RenderComponent<UnitStepper>(parameters => parameters
+        var cut = Render<UnitStepper>(parameters => parameters
             .Add(p => p.Category, UnitCategory.Proteins)
             .Add(p => p.Current, 5)
             .Add(p => p.OnValueChanged, EventCallback.Factory.Create<int>(this, delta => receivedDelta = delta)));
@@ -30,7 +30,7 @@ public class UnitStepperTests : TestContext
     {
         // Arrange
         int receivedDelta = 0;
-        var cut = RenderComponent<UnitStepper>(parameters => parameters
+        var cut = Render<UnitStepper>(parameters => parameters
             .Add(p => p.Category, UnitCategory.Proteins)
             .Add(p => p.Current, 5)
             .Add(p => p.OnValueChanged, EventCallback.Factory.Create<int>(this, delta => receivedDelta = delta)));
@@ -47,7 +47,7 @@ public class UnitStepperTests : TestContext
     public void UnitStepper_MinusAtZero_ButtonIsDisabled()
     {
         // Arrange
-        var cut = RenderComponent<UnitStepper>(parameters => parameters
+        var cut = Render<UnitStepper>(parameters => parameters
             .Add(p => p.Category, UnitCategory.Proteins)
             .Add(p => p.Current, 0)
             .Add(p => p.OnValueChanged, EventCallback.Factory.Create<int>(this, _ => { })));
@@ -61,7 +61,7 @@ public class UnitStepperTests : TestContext
     public void UnitStepper_DisplaysCurrentValue()
     {
         // Arrange
-        var cut = RenderComponent<UnitStepper>(parameters => parameters
+        var cut = Render<UnitStepper>(parameters => parameters
             .Add(p => p.Category, UnitCategory.Proteins)
             .Add(p => p.Current, 10)
             .Add(p => p.OnValueChanged, EventCallback.Factory.Create<int>(this, _ => { })));
@@ -74,7 +74,7 @@ public class UnitStepperTests : TestContext
     public void UnitStepper_DisplaysCategoryName()
     {
         // Arrange
-        var cut = RenderComponent<UnitStepper>(parameters => parameters
+        var cut = Render<UnitStepper>(parameters => parameters
             .Add(p => p.Category, UnitCategory.Vegetables)
             .Add(p => p.Current, 3)
             .Add(p => p.OnValueChanged, EventCallback.Factory.Create<int>(this, _ => { })));
@@ -87,7 +87,7 @@ public class UnitStepperTests : TestContext
     public void UnitStepper_OverTarget_ShowsWarning()
     {
         // Arrange - Proteins target is 15, set to 16 to exceed
-        var cut = RenderComponent<UnitStepper>(parameters => parameters
+        var cut = Render<UnitStepper>(parameters => parameters
             .Add(p => p.Category, UnitCategory.Proteins)
             .Add(p => p.Current, 16)
             .Add(p => p.OnValueChanged, EventCallback.Factory.Create<int>(this, _ => { })));
@@ -101,7 +101,7 @@ public class UnitStepperTests : TestContext
     public void UnitStepper_UnderTarget_NoWarning()
     {
         // Arrange - Proteins target is 15, set to 10
-        var cut = RenderComponent<UnitStepper>(parameters => parameters
+        var cut = Render<UnitStepper>(parameters => parameters
             .Add(p => p.Category, UnitCategory.Proteins)
             .Add(p => p.Current, 10)
             .Add(p => p.OnValueChanged, EventCallback.Factory.Create<int>(this, _ => { })));
@@ -127,7 +127,7 @@ public class UnitStepperTests : TestContext
         foreach (var (category, expectedTarget) in testCases)
         {
             // Arrange
-            var cut = RenderComponent<UnitStepper>(parameters => parameters
+            var cut = Render<UnitStepper>(parameters => parameters
                 .Add(p => p.Category, category)
                 .Add(p => p.Current, 0)
                 .Add(p => p.OnValueChanged, EventCallback.Factory.Create<int>(this, _ => { })));

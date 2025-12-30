@@ -13,22 +13,15 @@ public record GetWeeklySummaryQuery(DateOnly Date, string UserId = "dev-user") :
 /// <summary>
 /// Handler for GetWeeklySummaryQuery.
 /// </summary>
-public class GetWeeklySummaryHandler : IRequestHandler<GetWeeklySummaryQuery, WeeklySummaryDto>
+public class GetWeeklySummaryHandler(IDailyLogRepository repository) : IRequestHandler<GetWeeklySummaryQuery, WeeklySummaryDto>
 {
-    private readonly IDailyLogRepository _repository;
-
-    public GetWeeklySummaryHandler(IDailyLogRepository repository)
-    {
-        _repository = repository;
-    }
-
     public async Task<WeeklySummaryDto> Handle(GetWeeklySummaryQuery request, CancellationToken cancellationToken)
     {
         // Calculate week boundaries (Sunday to Saturday)
         var (weekStart, weekEnd) = DailyLogDtoValidator.GetWeekBounds(request.Date);
 
         // Fetch all daily logs for the week
-        var entities = await _repository.GetRangeAsync(request.UserId, weekStart, weekEnd, cancellationToken);
+        var entities = await repository.GetRangeAsync(request.UserId, weekStart, weekEnd, cancellationToken);
 
         // Create a dictionary for quick lookup
         var logsByDate = entities.ToDictionary(e => e.GetDate());

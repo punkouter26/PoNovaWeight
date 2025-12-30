@@ -1,6 +1,6 @@
 using MediatR;
+using PoNovaWeight.Api.Infrastructure;
 using PoNovaWeight.Shared.DTOs;
-using System.Security.Claims;
 
 namespace PoNovaWeight.Api.Features.DailyLogs;
 
@@ -17,8 +17,7 @@ public static class Endpoints
         // GET /api/daily-logs/{date}
         group.MapGet("/{date}", async (DateOnly date, HttpContext httpContext, IMediator mediator, CancellationToken cancellationToken) =>
         {
-            var userId = httpContext.User.FindFirstValue(ClaimTypes.Email) ?? throw new UnauthorizedAccessException();
-            var result = await mediator.Send(new GetDailyLogQuery(date, userId), cancellationToken);
+            var result = await mediator.Send(new GetDailyLogQuery(date, httpContext.GetUserId()), cancellationToken);
             return result is not null ? Results.Ok(result) : Results.NotFound();
         })
         .WithName("GetDailyLog")
@@ -29,8 +28,7 @@ public static class Endpoints
         // PUT /api/daily-logs
         group.MapPut("/", async (DailyLogDto dailyLog, HttpContext httpContext, IMediator mediator, CancellationToken cancellationToken) =>
         {
-            var userId = httpContext.User.FindFirstValue(ClaimTypes.Email) ?? throw new UnauthorizedAccessException();
-            var result = await mediator.Send(new UpsertDailyLogCommand(dailyLog, userId), cancellationToken);
+            var result = await mediator.Send(new UpsertDailyLogCommand(dailyLog, httpContext.GetUserId()), cancellationToken);
             return Results.Ok(result);
         })
         .WithName("UpsertDailyLog")
@@ -40,8 +38,7 @@ public static class Endpoints
         // POST /api/daily-logs/increment
         group.MapPost("/increment", async (IncrementUnitRequest request, HttpContext httpContext, IMediator mediator, CancellationToken cancellationToken) =>
         {
-            var userId = httpContext.User.FindFirstValue(ClaimTypes.Email) ?? throw new UnauthorizedAccessException();
-            var result = await mediator.Send(new IncrementUnitCommand(request, userId), cancellationToken);
+            var result = await mediator.Send(new IncrementUnitCommand(request, httpContext.GetUserId()), cancellationToken);
             return Results.Ok(result);
         })
         .WithName("IncrementUnit")
@@ -51,8 +48,7 @@ public static class Endpoints
         // POST /api/daily-logs/water
         group.MapPost("/water", async (UpdateWaterRequest request, HttpContext httpContext, IMediator mediator, CancellationToken cancellationToken) =>
         {
-            var userId = httpContext.User.FindFirstValue(ClaimTypes.Email) ?? throw new UnauthorizedAccessException();
-            var result = await mediator.Send(new UpdateWaterCommand(request, userId), cancellationToken);
+            var result = await mediator.Send(new UpdateWaterCommand(request, httpContext.GetUserId()), cancellationToken);
             return Results.Ok(result);
         })
         .WithName("UpdateWater")
@@ -62,8 +58,7 @@ public static class Endpoints
         // GET /api/daily-logs/monthly/{year}/{month}
         group.MapGet("/monthly/{year:int}/{month:int}", async (int year, int month, HttpContext httpContext, IMediator mediator, CancellationToken cancellationToken) =>
         {
-            var userId = httpContext.User.FindFirstValue(ClaimTypes.Email) ?? throw new UnauthorizedAccessException();
-            var result = await mediator.Send(new GetMonthlyLogsQuery(year, month, userId), cancellationToken);
+            var result = await mediator.Send(new GetMonthlyLogsQuery(year, month, httpContext.GetUserId()), cancellationToken);
             return Results.Ok(result);
         })
         .WithName("GetMonthlyLogs")
@@ -73,8 +68,7 @@ public static class Endpoints
         // GET /api/daily-logs/streak
         group.MapGet("/streak", async (HttpContext httpContext, IMediator mediator, CancellationToken cancellationToken) =>
         {
-            var userId = httpContext.User.FindFirstValue(ClaimTypes.Email) ?? throw new UnauthorizedAccessException();
-            var result = await mediator.Send(new CalculateStreakQuery(userId), cancellationToken);
+            var result = await mediator.Send(new CalculateStreakQuery(httpContext.GetUserId()), cancellationToken);
             return Results.Ok(result);
         })
         .WithName("GetStreak")
@@ -84,8 +78,7 @@ public static class Endpoints
         // GET /api/daily-logs/trends?days=30
         group.MapGet("/trends", async (int days, HttpContext httpContext, IMediator mediator, CancellationToken cancellationToken) =>
         {
-            var userId = httpContext.User.FindFirstValue(ClaimTypes.Email) ?? throw new UnauthorizedAccessException();
-            var result = await mediator.Send(new GetWeightTrendsQuery(days, userId), cancellationToken);
+            var result = await mediator.Send(new GetWeightTrendsQuery(days, httpContext.GetUserId()), cancellationToken);
             return Results.Ok(result);
         })
         .WithName("GetWeightTrends")
@@ -95,8 +88,7 @@ public static class Endpoints
         // GET /api/daily-logs/alcohol-correlation?days=90
         group.MapGet("/alcohol-correlation", async (int days, HttpContext httpContext, IMediator mediator, CancellationToken cancellationToken) =>
         {
-            var userId = httpContext.User.FindFirstValue(ClaimTypes.Email) ?? throw new UnauthorizedAccessException();
-            var result = await mediator.Send(new GetAlcoholCorrelationQuery(days, userId), cancellationToken);
+            var result = await mediator.Send(new GetAlcoholCorrelationQuery(days, httpContext.GetUserId()), cancellationToken);
             return Results.Ok(result);
         })
         .WithName("GetAlcoholCorrelation")
@@ -106,8 +98,7 @@ public static class Endpoints
         // DELETE /api/daily-logs/{date}
         group.MapDelete("/{date}", async (DateOnly date, HttpContext httpContext, IMediator mediator, CancellationToken cancellationToken) =>
         {
-            var userId = httpContext.User.FindFirstValue(ClaimTypes.Email) ?? throw new UnauthorizedAccessException();
-            var deleted = await mediator.Send(new DeleteDailyLogCommand(date, userId), cancellationToken);
+            var deleted = await mediator.Send(new DeleteDailyLogCommand(date, httpContext.GetUserId()), cancellationToken);
             return deleted ? Results.NoContent() : Results.NotFound();
         })
         .WithName("DeleteDailyLog")

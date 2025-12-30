@@ -137,8 +137,8 @@ resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
           name: 'api'
           image: containerImage
           resources: {
-            cpu: json('0.5')
-            memory: '1Gi'
+            cpu: json('0.25')
+            memory: '0.5Gi'
           }
           env: [
             {

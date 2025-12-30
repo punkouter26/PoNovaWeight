@@ -4,13 +4,13 @@ using PoNovaWeight.Client.Components;
 
 namespace PoNovaWeight.Client.Tests.Components;
 
-public class OmadSectionTests : TestContext
+public class OmadSectionTests : BunitContext
 {
     [Fact]
     public void OmadSection_RendersWithNullValues()
     {
         // Act
-        var cut = RenderComponent<OmadSection>(parameters => parameters
+        var cut = Render<OmadSection>(parameters => parameters
             .Add(p => p.Weight, null)
             .Add(p => p.OmadCompliant, null)
             .Add(p => p.AlcoholConsumed, null));
@@ -26,7 +26,7 @@ public class OmadSectionTests : TestContext
     public void OmadSection_DisplaysWeight_WhenProvided()
     {
         // Act
-        var cut = RenderComponent<OmadSection>(parameters => parameters
+        var cut = Render<OmadSection>(parameters => parameters
             .Add(p => p.Weight, 175.5m)
             .Add(p => p.OmadCompliant, null)
             .Add(p => p.AlcoholConsumed, null));
@@ -41,7 +41,7 @@ public class OmadSectionTests : TestContext
     {
         // Arrange
         bool? receivedValue = null;
-        var cut = RenderComponent<OmadSection>(parameters => parameters
+        var cut = Render<OmadSection>(parameters => parameters
             .Add(p => p.Weight, null)
             .Add(p => p.OmadCompliant, null)
             .Add(p => p.AlcoholConsumed, null)
@@ -60,7 +60,7 @@ public class OmadSectionTests : TestContext
     {
         // Arrange
         bool? receivedValue = null;
-        var cut = RenderComponent<OmadSection>(parameters => parameters
+        var cut = Render<OmadSection>(parameters => parameters
             .Add(p => p.Weight, null)
             .Add(p => p.OmadCompliant, null)
             .Add(p => p.AlcoholConsumed, null)
@@ -79,7 +79,7 @@ public class OmadSectionTests : TestContext
     {
         // Arrange
         bool? receivedValue = true; // Start non-null to verify it becomes null
-        var cut = RenderComponent<OmadSection>(parameters => parameters
+        var cut = Render<OmadSection>(parameters => parameters
             .Add(p => p.Weight, null)
             .Add(p => p.OmadCompliant, true) // Start with true
             .Add(p => p.AlcoholConsumed, null)
@@ -98,7 +98,7 @@ public class OmadSectionTests : TestContext
     {
         // Arrange
         bool? receivedValue = false; // Set non-null initial to verify it becomes null
-        var cut = RenderComponent<OmadSection>(parameters => parameters
+        var cut = Render<OmadSection>(parameters => parameters
             .Add(p => p.Weight, null)
             .Add(p => p.OmadCompliant, false) // Start with false
             .Add(p => p.AlcoholConsumed, null)
@@ -116,7 +116,7 @@ public class OmadSectionTests : TestContext
     public void OmadSection_ShowsWarning_WhenWeightChangeExceeds5Lbs()
     {
         // Arrange
-        var cut = RenderComponent<OmadSection>(parameters => parameters
+        var cut = Render<OmadSection>(parameters => parameters
             .Add(p => p.Weight, 180m)
             .Add(p => p.PreviousDayWeight, 170m) // 10 lb difference
             .Add(p => p.OmadCompliant, null)
@@ -131,7 +131,7 @@ public class OmadSectionTests : TestContext
     public void OmadSection_NoWarning_WhenWeightChangeWithin5Lbs()
     {
         // Arrange
-        var cut = RenderComponent<OmadSection>(parameters => parameters
+        var cut = Render<OmadSection>(parameters => parameters
             .Add(p => p.Weight, 175m)
             .Add(p => p.PreviousDayWeight, 173m) // 2 lb difference
             .Add(p => p.OmadCompliant, null)
@@ -145,7 +145,7 @@ public class OmadSectionTests : TestContext
     public void OmadSection_ClearWeight_ShowsButton_WhenWeightExists()
     {
         // Arrange
-        var cut = RenderComponent<OmadSection>(parameters => parameters
+        var cut = Render<OmadSection>(parameters => parameters
             .Add(p => p.Weight, 175m)
             .Add(p => p.OmadCompliant, null)
             .Add(p => p.AlcoholConsumed, null));
@@ -159,7 +159,7 @@ public class OmadSectionTests : TestContext
     public void OmadSection_ClearWeight_NotShown_WhenNoWeight()
     {
         // Arrange
-        var cut = RenderComponent<OmadSection>(parameters => parameters
+        var cut = Render<OmadSection>(parameters => parameters
             .Add(p => p.Weight, null)
             .Add(p => p.OmadCompliant, null)
             .Add(p => p.AlcoholConsumed, null));

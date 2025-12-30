@@ -76,10 +76,8 @@ graph LR
     subgraph Components
         DayCard["DayCard"]
         UnitStepper["UnitStepper"]
-        ProgressBar["ProgressBar"]
         WaterTracker["WaterTracker"]
         CameraCapture["CameraCapture"]
-        InstallPrompt["InstallPrompt"]
     end
 
     subgraph Services
@@ -89,7 +87,6 @@ graph LR
 
     Dashboard --> DayCard
     DayDetail --> UnitStepper
-    DayDetail --> ProgressBar
     DayDetail --> WaterTracker
     MealScan --> CameraCapture
     Dashboard --> ApiClient

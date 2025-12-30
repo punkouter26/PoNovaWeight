@@ -1,25 +1,35 @@
 @namespace PoNovaWeight.Client.Components
 
-<div class="weight-trend-chart bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-    <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">
+<div class="weight-trend-chart bg-healthy-card rounded-xl shadow-healthy border border-healthy-light p-4">
+    <h3 class="text-sm font-semibold mb-4 text-healthy-text flex items-center gap-2">
+        <span>📈</span>
         Weight Trends
         @if (TotalDaysLogged > 0)
         {
-            <span class="text-sm font-normal text-gray-500 dark:text-gray-400 ml-2">
-                (@TotalDaysLogged days logged)
+            <span class="text-xs font-normal text-healthy-muted ml-auto">
+                @TotalDaysLogged days logged
             </span>
         }
     </h3>
 
     @if (!HasData)
     {
-        <div class="flex flex-col items-center justify-center py-8 text-gray-500 dark:text-gray-400">
-            <svg class="w-12 h-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-            </svg>
-            <span>No weight data yet</span>
-            <span class="text-sm">Start logging to see trends</span>
+        <!-- Enhanced Empty State -->
+        <div class="flex flex-col items-center justify-center py-8 px-4">
+            <div class="w-16 h-16 rounded-full bg-gradient-to-br from-healthy-light to-healthy-bg flex items-center justify-center mb-4">
+                <span class="text-3xl">⚖️</span>
+            </div>
+            <h4 class="text-sm font-semibold text-healthy-text mb-1">No weight data yet</h4>
+            <p class="text-xs text-healthy-muted text-center max-w-xs mb-4">
+                Track your weight to see trends over time and correlate with your eating habits.
+            </p>
+            <a href="/day/@DateOnly.FromDateTime(DateTime.Today).ToString("yyyy-MM-dd")"
+               class="inline-flex items-center gap-1 text-xs font-medium text-healthy-primary hover:text-healthy-dark transition-colors">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                </svg>
+                Log your first weight
+            </a>
         </div>
     }
     else
@@ -32,31 +42,31 @@
             <div class="flex items-center gap-2">
                 @if (WeightChange.HasValue)
                 {
-                    <span class="text-lg font-bold @(WeightChange > 0 ? "text-red-600" : WeightChange < 0 ? "text-green-600" : "text-gray-600")">
+                    <span class="text-lg font-bold @(WeightChange > 0 ? "text-healthy-fruit" : WeightChange < 0 ? "text-healthy-primary" : "text-healthy-muted")">
                         @(WeightChange > 0 ? "+" : "")@WeightChange.Value.ToString("F1") lbs
                     </span>
                     @if (WeightChange > 0)
                     {
-                        <svg class="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                        <svg class="w-5 h-5 text-healthy-fruit" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
                         </svg>
                     }
                     else if (WeightChange < 0)
                     {
-                        <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                        <svg class="w-5 h-5 text-healthy-primary" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                         </svg>
                     }
                 }
                 else
                 {
-                    <span class="text-gray-500">--</span>
+                    <span class="text-healthy-muted">--</span>
                 }
             </div>
         </div>
 
         <!-- Simple Chart Visualization -->
-        <div class="relative h-48 mb-4">
+        <div class="relative h-40 lg:h-48 mb-4">
             @if (DataPoints.Any(p => p.Weight.HasValue))
             {
                 <div class="flex items-end justify-between h-full gap-0.5">
@@ -74,23 +84,23 @@
                                 
                                 <!-- Tooltip on hover -->
                                 <div class="absolute bottom-full mb-2 hidden group-hover:block z-10">
-                                    <div class="bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-nowrap">
+                                    <div class="bg-healthy-text text-white text-xs rounded-lg py-2 px-3 whitespace-nowrap shadow-lg">
                                         <div class="font-medium">@point.Date.ToString("MMM d, yyyy")</div>
                                         <div>@point.Weight.Value.ToString("F1") lbs</div>
                                         @if (point.IsCarryForward)
                                         {
-                                            <div class="text-gray-300">(carry-forward)</div>
+                                            <div class="text-gray-300 text-[10px]">(carry-forward)</div>
                                         }
                                         @if (point.AlcoholConsumed == true)
                                         {
-                                            <div>🍺 Alcohol</div>
+                                            <div class="text-[10px]">🍺 Alcohol</div>
                                         }
                                     </div>
                                 </div>
                             }
                             else
                             {
-                                <div class="w-full h-1 bg-gray-200 dark:bg-gray-600 rounded"></div>
+                                <div class="w-full h-1 bg-healthy-light rounded"></div>
                             }
                         </div>
                     }
@@ -99,17 +109,17 @@
         </div>
 
         <!-- Legend -->
-        <div class="flex flex-wrap gap-4 text-xs text-gray-600 dark:text-gray-400">
+        <div class="flex flex-wrap justify-center gap-4 text-[10px] text-healthy-muted">
             <div class="flex items-center gap-1">
-                <div class="w-3 h-3 bg-blue-500 rounded"></div>
+                <div class="w-2.5 h-2.5 bg-healthy-primary rounded"></div>
                 <span>Logged</span>
             </div>
             <div class="flex items-center gap-1">
-                <div class="w-3 h-3 bg-blue-300 rounded"></div>
+                <div class="w-2.5 h-2.5 bg-healthy-secondary rounded"></div>
                 <span>Carry-forward</span>
             </div>
             <div class="flex items-center gap-1">
-                <div class="w-3 h-3 bg-amber-500 rounded"></div>
+                <div class="w-2.5 h-2.5 bg-healthy-grain rounded"></div>
                 <span>🍺 Alcohol day</span>
             </div>
         </div>
@@ -147,10 +157,10 @@
     {
         if (point.AlcoholConsumed == true)
         {
-            return "bg-amber-500";
+            return "bg-healthy-grain";
         }
 
-        return point.IsCarryForward ? "bg-blue-300" : "bg-blue-500";
+        return point.IsCarryForward ? "bg-healthy-secondary" : "bg-healthy-primary";
     }
 
     /// <summary>

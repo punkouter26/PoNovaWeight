@@ -1,16 +1,16 @@
 @using PoNovaWeight.Shared.DTOs
 
-<div class="bg-healthy-card rounded-xl shadow-healthy p-4">
+<div class="bg-healthy-card rounded-xl shadow-healthy border border-healthy-light p-4">
     <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
-            <div class="text-4xl">🔥</div>
+            <div class="text-4xl lg:text-5xl">@(Streak?.CurrentStreak > 0 ? "🔥" : "🌱")</div>
             <div>
-                <div class="text-3xl font-bold text-healthy-text">@Streak?.CurrentStreak</div>
-                <div class="text-xs text-healthy-muted">Day OMAD Streak</div>
+                <div class="text-3xl lg:text-4xl font-bold text-healthy-text">@(Streak?.CurrentStreak ?? 0)</div>
+                <div class="text-xs lg:text-sm text-healthy-muted">Day OMAD Streak</div>
             </div>
         </div>
         
-        @if (Streak?.StreakStartDate.HasValue == true)
+        @if (Streak?.StreakStartDate.HasValue == true && Streak.CurrentStreak > 0)
         {
             <div class="text-right">
                 <div class="text-xs text-healthy-muted">Started</div>
@@ -24,26 +24,48 @@
     @if (Streak?.CurrentStreak > 0)
     {
         <div class="mt-3 pt-3 border-t border-healthy-light">
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 flex-wrap">
                 @for (int i = 0; i < Math.Min(Streak.CurrentStreak, 7); i++)
                 {
-                    <div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
+                    <div class="w-8 h-8 lg:w-9 lg:h-9 rounded-full bg-healthy-primary flex items-center justify-center shadow-sm">
                         <span class="text-white text-xs">✓</span>
                     </div>
                 }
                 @if (Streak.CurrentStreak > 7)
                 {
-                    <div class="text-xs text-healthy-muted">+@(Streak.CurrentStreak - 7) more</div>
+                    <div class="text-xs text-healthy-muted font-medium bg-healthy-light px-2 py-1 rounded-full">
+                        +@(Streak.CurrentStreak - 7) more
+                    </div>
                 }
             </div>
+            @if (Streak.CurrentStreak >= 7)
+            {
+                <div class="mt-2 text-[10px] text-healthy-primary font-medium">
+                    🎉 Amazing! You've maintained OMAD for a full week!
+                </div>
+            }
         </div>
     }
     else
     {
-        <div class="mt-3 pt-3 border-t border-healthy-light text-center">
-            <p class="text-sm text-healthy-muted">
-                Start your OMAD streak today! 💪
-            </p>
+        <!-- Enhanced Empty State -->
+        <div class="mt-3 pt-3 border-t border-healthy-light">
+            <div class="flex items-center gap-3 p-3 bg-gradient-to-r from-healthy-primary/5 to-healthy-secondary/5 rounded-lg">
+                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-healthy-primary/10 flex items-center justify-center">
+                    <span class="text-lg">💪</span>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-healthy-text">Start your streak today!</p>
+                    <p class="text-xs text-healthy-muted">Mark today as OMAD to begin building momentum</p>
+                </div>
+            </div>
+            <a href="/day/@DateOnly.FromDateTime(DateTime.Today).ToString("yyyy-MM-dd")"
+               class="mt-3 flex items-center justify-center gap-1 text-xs font-medium text-healthy-primary hover:text-healthy-dark transition-colors">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                </svg>
+                Log today's meal
+            </a>
         </div>
     }
 </div>

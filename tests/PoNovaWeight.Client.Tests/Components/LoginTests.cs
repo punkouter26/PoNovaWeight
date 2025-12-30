@@ -6,7 +6,7 @@ using PoNovaWeight.Client.Pages;
 
 namespace PoNovaWeight.Client.Tests.Components;
 
-public class LoginTests : TestContext
+public class LoginTests : BunitContext
 {
     public LoginTests()
     {
@@ -18,7 +18,7 @@ public class LoginTests : TestContext
     public void Login_RendersSignInButton()
     {
         // Act
-        var cut = RenderComponent<Login>();
+        var cut = Render<Login>();
 
         // Assert
         cut.Markup.Should().Contain("Sign in with Google");
@@ -28,7 +28,7 @@ public class LoginTests : TestContext
     public void Login_ContainsGoogleLoginLink()
     {
         // Act
-        var cut = RenderComponent<Login>();
+        var cut = Render<Login>();
 
         // Assert
         var link = cut.Find("a[href*='/api/auth/login']");
@@ -39,7 +39,7 @@ public class LoginTests : TestContext
     public void Login_DisplaysAppTitle()
     {
         // Act
-        var cut = RenderComponent<Login>();
+        var cut = Render<Login>();
 
         // Assert
         cut.Markup.Should().Contain("NovaWeight");
@@ -50,7 +50,7 @@ public class LoginTests : TestContext
     public void Login_HasGoogleLogo()
     {
         // Act
-        var cut = RenderComponent<Login>();
+        var cut = Render<Login>();
 
         // Assert
         var svg = cut.Find("svg");
@@ -68,7 +68,7 @@ public class LoginTests : TestContext
         // and verify the component's URL generation logic
 
         // Act
-        var cut = RenderComponent<Login>();
+        var cut = Render<Login>();
 
         // Assert - Component should have link to auth endpoint
         var link = cut.Find("a[href*='/api/auth/login']");
@@ -82,7 +82,7 @@ public class LoginTests : TestContext
     public void Login_WithoutReturnUrl_DefaultsToRoot()
     {
         // Act
-        var cut = RenderComponent<Login>();
+        var cut = Render<Login>();
 
         // Assert - Default return URL should be root
         cut.Markup.Should().Contain("/api/auth/login?returnUrl=%2F");

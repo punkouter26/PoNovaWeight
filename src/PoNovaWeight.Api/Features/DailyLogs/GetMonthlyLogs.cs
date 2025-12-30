@@ -12,21 +12,14 @@ public record GetMonthlyLogsQuery(int Year, int Month, string UserId = "dev-user
 /// <summary>
 /// Handler for GetMonthlyLogsQuery.
 /// </summary>
-public class GetMonthlyLogsHandler : IRequestHandler<GetMonthlyLogsQuery, MonthlyLogsDto>
+public class GetMonthlyLogsHandler(IDailyLogRepository repository) : IRequestHandler<GetMonthlyLogsQuery, MonthlyLogsDto>
 {
-    private readonly IDailyLogRepository _repository;
-
-    public GetMonthlyLogsHandler(IDailyLogRepository repository)
-    {
-        _repository = repository;
-    }
-
     public async Task<MonthlyLogsDto> Handle(GetMonthlyLogsQuery request, CancellationToken cancellationToken)
     {
         var startDate = new DateOnly(request.Year, request.Month, 1);
         var endDate = startDate.AddMonths(1).AddDays(-1);
 
-        var entities = await _repository.GetRangeAsync(
+        var entities = await repository.GetRangeAsync(
             request.UserId,
             startDate,
             endDate,

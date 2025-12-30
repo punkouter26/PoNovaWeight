@@ -13,26 +13,19 @@ public record IncrementUnitCommand(IncrementUnitRequest Request, string UserId =
 /// <summary>
 /// Handler for IncrementUnitCommand.
 /// </summary>
-public class IncrementUnitHandler : IRequestHandler<IncrementUnitCommand, DailyLogDto>
+public class IncrementUnitHandler(IDailyLogRepository repository) : IRequestHandler<IncrementUnitCommand, DailyLogDto>
 {
-    private readonly IDailyLogRepository _repository;
-
-    public IncrementUnitHandler(IDailyLogRepository repository)
-    {
-        _repository = repository;
-    }
-
     public async Task<DailyLogDto> Handle(IncrementUnitCommand request, CancellationToken cancellationToken)
     {
         // Get existing entity or create a new one
-        var entity = await _repository.GetAsync(request.UserId, request.Request.Date, cancellationToken)
+        var entity = await repository.GetAsync(request.UserId, request.Request.Date, cancellationToken)
             ?? DailyLogEntity.Create(request.UserId, request.Request.Date);
 
         // Apply the delta to the appropriate category
         ApplyDelta(entity, request.Request.Category, request.Request.Delta);
 
         // Persist changes
-        await _repository.UpsertAsync(entity, cancellationToken);
+        await repository.UpsertAsync(entity, cancellationToken);
 
         return new DailyLogDto
         {

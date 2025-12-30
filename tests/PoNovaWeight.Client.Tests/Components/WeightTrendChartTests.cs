@@ -5,20 +5,20 @@ using Xunit;
 
 namespace PoNovaWeight.Client.Tests.Components;
 
-public class WeightTrendChartTests : TestContext
+public class WeightTrendChartTests : BunitContext
 {
     [Fact]
     public void Render_ShowsNoDataMessage_WhenEmpty()
     {
         // Arrange & Act
-        var cut = RenderComponent<WeightTrendChart>(parameters => parameters
+        var cut = Render<WeightTrendChart>(parameters => parameters
             .Add(p => p.DataPoints, new List<WeightTrendChart.TrendDataPoint>())
             .Add(p => p.TotalDaysLogged, 0)
             .Add(p => p.WeightChange, null));
 
         // Assert
         cut.Markup.Should().Contain("No weight data yet");
-        cut.Markup.Should().Contain("Start logging to see trends");
+        cut.Markup.Should().Contain("Log your first weight");
     }
 
     [Fact]
@@ -31,14 +31,14 @@ public class WeightTrendChartTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<WeightTrendChart>(parameters => parameters
+        var cut = Render<WeightTrendChart>(parameters => parameters
             .Add(p => p.DataPoints, dataPoints)
             .Add(p => p.TotalDaysLogged, 5)
             .Add(p => p.WeightChange, -2.5m));
 
         // Assert
         cut.Markup.Should().Contain("Weight Trends");
-        cut.Markup.Should().Contain("(5 days logged)");
+        cut.Markup.Should().Contain("5 days logged");
     }
 
     [Fact]
@@ -51,14 +51,14 @@ public class WeightTrendChartTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<WeightTrendChart>(parameters => parameters
+        var cut = Render<WeightTrendChart>(parameters => parameters
             .Add(p => p.DataPoints, dataPoints)
             .Add(p => p.TotalDaysLogged, 3)
             .Add(p => p.WeightChange, 3.5m));
 
         // Assert
         cut.Markup.Should().Contain("+3.5 lbs");
-        cut.Markup.Should().Contain("text-red-600");
+        cut.Markup.Should().Contain("text-healthy-fruit");
     }
 
     [Fact]
@@ -71,14 +71,14 @@ public class WeightTrendChartTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<WeightTrendChart>(parameters => parameters
+        var cut = Render<WeightTrendChart>(parameters => parameters
             .Add(p => p.DataPoints, dataPoints)
             .Add(p => p.TotalDaysLogged, 10)
             .Add(p => p.WeightChange, -5.0m));
 
         // Assert
         cut.Markup.Should().Contain("-5.0 lbs");
-        cut.Markup.Should().Contain("text-green-600");
+        cut.Markup.Should().Contain("text-healthy-primary");
     }
 
     [Fact]
@@ -91,7 +91,7 @@ public class WeightTrendChartTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<WeightTrendChart>(parameters => parameters
+        var cut = Render<WeightTrendChart>(parameters => parameters
             .Add(p => p.DataPoints, dataPoints)
             .Add(p => p.TotalDaysLogged, 7)
             .Add(p => p.WeightChange, 0m));
@@ -112,13 +112,13 @@ public class WeightTrendChartTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<WeightTrendChart>(parameters => parameters
+        var cut = Render<WeightTrendChart>(parameters => parameters
             .Add(p => p.DataPoints, dataPoints)
             .Add(p => p.TotalDaysLogged, 2)
             .Add(p => p.WeightChange, 2m));
 
         // Assert
-        cut.Markup.Should().Contain("bg-blue-500");
+        cut.Markup.Should().Contain("bg-healthy-primary");
     }
 
     [Fact]
@@ -132,13 +132,13 @@ public class WeightTrendChartTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<WeightTrendChart>(parameters => parameters
+        var cut = Render<WeightTrendChart>(parameters => parameters
             .Add(p => p.DataPoints, dataPoints)
             .Add(p => p.TotalDaysLogged, 1)
             .Add(p => p.WeightChange, 0m));
 
         // Assert
-        cut.Markup.Should().Contain("bg-blue-300");
+        cut.Markup.Should().Contain("bg-healthy-secondary");
     }
 
     [Fact]
@@ -151,13 +151,13 @@ public class WeightTrendChartTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<WeightTrendChart>(parameters => parameters
+        var cut = Render<WeightTrendChart>(parameters => parameters
             .Add(p => p.DataPoints, dataPoints)
             .Add(p => p.TotalDaysLogged, 1)
             .Add(p => p.WeightChange, null));
 
         // Assert
-        cut.Markup.Should().Contain("bg-amber-500");
+        cut.Markup.Should().Contain("bg-healthy-grain");
     }
 
     [Fact]
@@ -170,7 +170,7 @@ public class WeightTrendChartTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<WeightTrendChart>(parameters => parameters
+        var cut = Render<WeightTrendChart>(parameters => parameters
             .Add(p => p.DataPoints, dataPoints)
             .Add(p => p.TotalDaysLogged, 1)
             .Add(p => p.WeightChange, null));

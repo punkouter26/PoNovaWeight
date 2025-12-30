@@ -12,15 +12,8 @@ public record UpsertDailyLogCommand(DailyLogDto DailyLog, string UserId = "dev-u
 /// <summary>
 /// Handler for UpsertDailyLogCommand.
 /// </summary>
-public class UpsertDailyLogHandler : IRequestHandler<UpsertDailyLogCommand, DailyLogDto>
+public class UpsertDailyLogHandler(IDailyLogRepository repository) : IRequestHandler<UpsertDailyLogCommand, DailyLogDto>
 {
-    private readonly IDailyLogRepository _repository;
-
-    public UpsertDailyLogHandler(IDailyLogRepository repository)
-    {
-        _repository = repository;
-    }
-
     public async Task<DailyLogDto> Handle(UpsertDailyLogCommand request, CancellationToken cancellationToken)
     {
         var entity = DailyLogEntity.Create(request.UserId, request.DailyLog.Date);
@@ -37,7 +30,7 @@ public class UpsertDailyLogHandler : IRequestHandler<UpsertDailyLogCommand, Dail
         entity.OmadCompliant = request.DailyLog.OmadCompliant;
         entity.AlcoholConsumed = request.DailyLog.AlcoholConsumed;
 
-        await _repository.UpsertAsync(entity, cancellationToken);
+        await repository.UpsertAsync(entity, cancellationToken);
 
         return request.DailyLog;
     }

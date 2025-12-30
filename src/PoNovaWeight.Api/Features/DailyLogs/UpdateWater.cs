@@ -13,15 +13,8 @@ public record UpdateWaterCommand(UpdateWaterRequest Request, string UserId = "de
 /// <summary>
 /// Handler for UpdateWaterCommand.
 /// </summary>
-public class UpdateWaterHandler : IRequestHandler<UpdateWaterCommand, DailyLogDto>
+public class UpdateWaterHandler(IDailyLogRepository repository) : IRequestHandler<UpdateWaterCommand, DailyLogDto>
 {
-    private readonly IDailyLogRepository _repository;
-
-    public UpdateWaterHandler(IDailyLogRepository repository)
-    {
-        _repository = repository;
-    }
-
     public async Task<DailyLogDto> Handle(UpdateWaterCommand request, CancellationToken cancellationToken)
     {
         // Validate water segments range
@@ -32,14 +25,14 @@ public class UpdateWaterHandler : IRequestHandler<UpdateWaterCommand, DailyLogDt
         }
 
         // Get existing entity or create a new one
-        var entity = await _repository.GetAsync(request.UserId, request.Request.Date, cancellationToken)
+        var entity = await repository.GetAsync(request.UserId, request.Request.Date, cancellationToken)
             ?? DailyLogEntity.Create(request.UserId, request.Request.Date);
 
         // Update water segments
         entity.WaterSegments = request.Request.Segments;
 
         // Persist changes
-        await _repository.UpsertAsync(entity, cancellationToken);
+        await repository.UpsertAsync(entity, cancellationToken);
 
         return new DailyLogDto
         {

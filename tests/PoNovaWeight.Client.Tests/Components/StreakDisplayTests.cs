@@ -5,7 +5,7 @@ using PoNovaWeight.Shared.DTOs;
 
 namespace PoNovaWeight.Client.Tests.Components;
 
-public class StreakDisplayTests : TestContext
+public class StreakDisplayTests : BunitContext
 {
     [Fact]
     public void StreakDisplay_ShowsZeroStreak_WithMotivation()
@@ -14,12 +14,12 @@ public class StreakDisplayTests : TestContext
         var streak = new StreakDto { CurrentStreak = 0, StreakStartDate = null };
 
         // Act
-        var cut = RenderComponent<StreakDisplay>(parameters => parameters
+        var cut = Render<StreakDisplay>(parameters => parameters
             .Add(p => p.Streak, streak));
 
         // Assert
         cut.Markup.Should().Contain("0");
-        cut.Markup.Should().Contain("Start your OMAD streak today!");
+        cut.Markup.Should().Contain("Start your streak today!");
     }
 
     [Fact]
@@ -33,7 +33,7 @@ public class StreakDisplayTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<StreakDisplay>(parameters => parameters
+        var cut = Render<StreakDisplay>(parameters => parameters
             .Add(p => p.Streak, streak));
 
         // Assert
@@ -53,7 +53,7 @@ public class StreakDisplayTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<StreakDisplay>(parameters => parameters
+        var cut = Render<StreakDisplay>(parameters => parameters
             .Add(p => p.Streak, streak));
 
         // Assert
@@ -72,7 +72,7 @@ public class StreakDisplayTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<StreakDisplay>(parameters => parameters
+        var cut = Render<StreakDisplay>(parameters => parameters
             .Add(p => p.Streak, streak));
 
         // Assert - should have 7 checkmark circles (the rounded-full divs containing ✓)
@@ -91,7 +91,7 @@ public class StreakDisplayTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<StreakDisplay>(parameters => parameters
+        var cut = Render<StreakDisplay>(parameters => parameters
             .Add(p => p.Streak, streak));
 
         // Assert
@@ -105,7 +105,7 @@ public class StreakDisplayTests : TestContext
         var streak = new StreakDto { CurrentStreak = 3, StreakStartDate = DateOnly.FromDateTime(DateTime.Today.AddDays(-2)) };
 
         // Act
-        var cut = RenderComponent<StreakDisplay>(parameters => parameters
+        var cut = Render<StreakDisplay>(parameters => parameters
             .Add(p => p.Streak, streak));
 
         // Assert
@@ -116,7 +116,7 @@ public class StreakDisplayTests : TestContext
     public void StreakDisplay_HandlesNullStreak()
     {
         // Act
-        var cut = RenderComponent<StreakDisplay>(parameters => parameters
+        var cut = Render<StreakDisplay>(parameters => parameters
             .Add(p => p.Streak, null));
 
         // Assert - should not throw and render something

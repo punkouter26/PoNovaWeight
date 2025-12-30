@@ -24,6 +24,13 @@ public class GlobalExceptionHandler : IExceptionHandler
 
         var problemDetails = exception switch
         {
+            UnauthorizedAccessException unauthorizedEx => new ProblemDetails
+            {
+                Status = StatusCodes.Status401Unauthorized,
+                Title = "Unauthorized",
+                Detail = unauthorizedEx.Message,
+                Type = "https://tools.ietf.org/html/rfc7807"
+            },
             ArgumentException argEx => new ProblemDetails
             {
                 Status = StatusCodes.Status400BadRequest,

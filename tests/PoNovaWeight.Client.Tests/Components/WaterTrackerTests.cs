@@ -6,13 +6,13 @@ namespace PoNovaWeight.Client.Tests.Components;
 /// <summary>
 /// bUnit tests for WaterTracker component.
 /// </summary>
-public class WaterTrackerTests : TestContext
+public class WaterTrackerTests : BunitContext
 {
     [Fact]
     public void WaterTracker_Renders_EightSegments()
     {
         // Act
-        var cut = RenderComponent<WaterTracker>(parameters => parameters
+        var cut = Render<WaterTracker>(parameters => parameters
             .Add(p => p.FilledSegments, 0)
             .Add(p => p.OnSegmentChanged, _ => { }));
 
@@ -30,7 +30,7 @@ public class WaterTrackerTests : TestContext
         foreach (var filled in fillLevels)
         {
             // Act
-            var cut = RenderComponent<WaterTracker>(parameters => parameters
+            var cut = Render<WaterTracker>(parameters => parameters
                 .Add(p => p.FilledSegments, filled)
                 .Add(p => p.OnSegmentChanged, _ => { }));
 
@@ -45,7 +45,7 @@ public class WaterTrackerTests : TestContext
     {
         // Test 1: Click on segment triggers callback with correct value
         int? clickedValue = null;
-        var cut1 = RenderComponent<WaterTracker>(parameters => parameters
+        var cut1 = Render<WaterTracker>(parameters => parameters
             .Add(p => p.FilledSegments, 0)
             .Add(p => p.OnSegmentChanged, segment => clickedValue = segment));
         var segments1 = cut1.FindAll("[data-water-segment]");
@@ -54,7 +54,7 @@ public class WaterTrackerTests : TestContext
 
         // Test 2: Click on filled segment sets to that index
         int? toggleValue = null;
-        var cut2 = RenderComponent<WaterTracker>(parameters => parameters
+        var cut2 = Render<WaterTracker>(parameters => parameters
             .Add(p => p.FilledSegments, 5)
             .Add(p => p.OnSegmentChanged, segment => toggleValue = segment));
         var segments2 = cut2.FindAll("[data-water-segment]");
@@ -63,7 +63,7 @@ public class WaterTrackerTests : TestContext
 
         // Test 3: Click first segment fills one
         int? firstClick = null;
-        var cut3 = RenderComponent<WaterTracker>(parameters => parameters
+        var cut3 = Render<WaterTracker>(parameters => parameters
             .Add(p => p.FilledSegments, 0)
             .Add(p => p.OnSegmentChanged, segment => firstClick = segment));
         cut3.FindAll("[data-water-segment]")[0].Click();
@@ -71,7 +71,7 @@ public class WaterTrackerTests : TestContext
 
         // Test 4: Click last segment fills all
         int? lastClick = null;
-        var cut4 = RenderComponent<WaterTracker>(parameters => parameters
+        var cut4 = Render<WaterTracker>(parameters => parameters
             .Add(p => p.FilledSegments, 0)
             .Add(p => p.OnSegmentChanged, segment => lastClick = segment));
         cut4.FindAll("[data-water-segment]")[7].Click();
@@ -82,13 +82,13 @@ public class WaterTrackerTests : TestContext
     public void WaterTracker_CheckmarkDisplay_BasedOnCompletionStatus()
     {
         // At 8 segments - shows checkmark
-        var cutComplete = RenderComponent<WaterTracker>(parameters => parameters
+        var cutComplete = Render<WaterTracker>(parameters => parameters
             .Add(p => p.FilledSegments, 8)
             .Add(p => p.OnSegmentChanged, _ => { }));
         Assert.Contains("✓", cutComplete.Markup);
 
         // Below 8 segments - no checkmark
-        var cutIncomplete = RenderComponent<WaterTracker>(parameters => parameters
+        var cutIncomplete = Render<WaterTracker>(parameters => parameters
             .Add(p => p.FilledSegments, 7)
             .Add(p => p.OnSegmentChanged, _ => { }));
         Assert.DoesNotContain("✓", cutIncomplete.Markup);
@@ -98,7 +98,7 @@ public class WaterTrackerTests : TestContext
     public void WaterTracker_BasicRendering_ShowsLabelAndSegments()
     {
         // Act
-        var cut = RenderComponent<WaterTracker>(parameters => parameters
+        var cut = Render<WaterTracker>(parameters => parameters
             .Add(p => p.FilledSegments, 0)
             .Add(p => p.OnSegmentChanged, _ => { }));
 

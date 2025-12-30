@@ -14,22 +14,15 @@ public record CalculateStreakQuery(string UserId = "dev-user") : IRequest<Streak
 /// Calculates streak from stored logs on-demand.
 /// Only explicit OmadCompliant = false breaks streak; null (unlogged) does not.
 /// </summary>
-public class CalculateStreakHandler : IRequestHandler<CalculateStreakQuery, StreakDto>
+public class CalculateStreakHandler(IDailyLogRepository repository) : IRequestHandler<CalculateStreakQuery, StreakDto>
 {
-    private readonly IDailyLogRepository _repository;
-
-    public CalculateStreakHandler(IDailyLogRepository repository)
-    {
-        _repository = repository;
-    }
-
     public async Task<StreakDto> Handle(CalculateStreakQuery request, CancellationToken cancellationToken)
     {
         // Query the last 365 days of logs
         var today = DateOnly.FromDateTime(DateTime.Today);
         var startDate = today.AddDays(-365);
 
-        var entities = await _repository.GetRangeAsync(
+        var entities = await repository.GetRangeAsync(
             request.UserId,
             startDate,
             today,

@@ -1,50 +1,130 @@
 @inherits LayoutComponentBase
 @using PoNovaWeight.Client.Components
 @inject NovaAuthStateProvider AuthStateProvider
+@inject NavigationManager Navigation
 
-<div class="min-h-screen bg-healthy-bg">
-    <!-- Compact healthy header -->
-    <header class="healthy-header sticky top-0 z-10">
-        <div class="max-w-md mx-auto px-3 py-2 flex items-center justify-between">
-            <a href="/" class="flex items-center gap-2">
-                <span class="text-lg">🥗</span>
-                <span class="font-semibold tracking-tight">PoNovaWeight</span>
-            </a>
-            <div class="flex items-center gap-2">
-                <span class="text-xs opacity-90 bg-white/20 px-2 py-1 rounded-full">
-                    @DateTime.Today.ToString("ddd, MMM d")
-                </span>
-                @if (AuthStateProvider.CachedUser is not null)
-                {
-                    <span class="text-xs opacity-90 truncate max-w-[120px]" title="@AuthStateProvider.CachedUser.Email">
-                        @AuthStateProvider.CachedUser.Email
-                    </span>
-                    <a href="@AuthService.GetLogoutUrl()" 
-                       class="text-xs opacity-90 bg-white/20 hover:bg-white/30 px-2 py-1 rounded-full transition-colors"
-                       title="Sign out">
-                        Sign out
-                    </a>
-                }
-                <UserMenu />
-            </div>
+<div class="min-h-screen bg-healthy-bg lg:flex">
+    <!-- Desktop Sidebar Navigation (hidden on mobile) -->
+    <aside class="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 bg-gradient-to-b from-healthy-primary to-healthy-dark text-white">
+        <!-- Logo -->
+        <div class="flex items-center gap-3 px-6 py-5 border-b border-white/10">
+            <span class="text-2xl">🥗</span>
+            <span class="text-xl font-bold tracking-tight">PoNovaWeight</span>
         </div>
-    </header>
+        
+        <!-- Desktop Nav Links -->
+        <nav class="flex-1 px-4 py-6 space-y-2">
+            <a href="/" class="@GetDesktopNavClass("/")">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                </svg>
+                <span>Dashboard</span>
+            </a>
+            <a href="/calendar" class="@GetDesktopNavClass("/calendar")">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                <span>Calendar</span>
+            </a>
+            <a href="/day/@DateOnly.FromDateTime(DateTime.Today).ToString("yyyy-MM-dd")" class="@GetDesktopNavClass("/day/")">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                </svg>
+                <span>Log Today</span>
+            </a>
+        </nav>
+        
+        <!-- Desktop User Info -->
+        <div class="px-4 py-4 border-t border-white/10">
+            <div class="flex items-center gap-3 px-3 py-2 rounded-lg bg-white/10">
+                <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-sm font-bold">
+                    @(AuthStateProvider.CachedUser?.Email?.Substring(0, 1).ToUpper() ?? "U")
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="text-xs opacity-90 truncate">@AuthStateProvider.CachedUser?.Email</div>
+                    <div class="text-[10px] opacity-70">@DateTime.Today.ToString("ddd, MMM d")</div>
+                </div>
+            </div>
+            <a href="@AuthService.GetLogoutUrl()" 
+               class="mt-3 flex items-center gap-2 px-3 py-2 text-sm opacity-80 hover:opacity-100 hover:bg-white/10 rounded-lg transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                </svg>
+                Sign out
+            </a>
+        </div>
+    </aside>
 
-    <!-- Main content area with compact padding -->
-    <main class="max-w-md mx-auto px-3 py-3 pb-16">
-        @Body
-    </main>
+    <!-- Main Content Area -->
+    <div class="flex-1 lg:ml-64">
+        <!-- Mobile Header (hidden on desktop) -->
+        <header class="healthy-header sticky top-0 z-10 lg:hidden">
+            <div class="max-w-md mx-auto px-3 py-2 flex items-center justify-between">
+                <a href="/" class="flex items-center gap-2">
+                    <span class="text-lg">🥗</span>
+                    <span class="font-semibold tracking-tight">PoNovaWeight</span>
+                </a>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs opacity-90 bg-white/20 px-2 py-1 rounded-full">
+                        @DateTime.Today.ToString("ddd, MMM d")
+                    </span>
+                    @if (AuthStateProvider.CachedUser is not null)
+                    {
+                        <span class="text-xs opacity-90 truncate max-w-[120px]" title="@AuthStateProvider.CachedUser.Email">
+                            @AuthStateProvider.CachedUser.Email
+                        </span>
+                        <a href="@AuthService.GetLogoutUrl()" 
+                           class="text-xs opacity-90 bg-white/20 hover:bg-white/30 px-2 py-1 rounded-full transition-colors"
+                           title="Sign out">
+                            Sign out
+                        </a>
+                    }
+                    <UserMenu />
+                </div>
+            </div>
+        </header>
 
-    <!-- Compact bottom navigation -->
-    <nav class="bottom-nav fixed bottom-0 left-0 right-0 safe-area-bottom z-40">
+        <!-- Desktop Header Bar -->
+        <header class="hidden lg:block bg-healthy-card border-b border-healthy-light sticky top-0 z-10">
+            <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+                <div>
+                    <h1 class="text-lg font-semibold text-healthy-text">@GetPageTitle()</h1>
+                    <p class="text-sm text-healthy-muted">@DateTime.Today.ToString("dddd, MMMM d, yyyy")</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <a href="/day/@DateOnly.FromDateTime(DateTime.Today).ToString("yyyy-MM-dd")"
+                       class="flex items-center gap-2 px-4 py-2 bg-healthy-primary text-white rounded-lg hover:bg-healthy-dark transition-colors text-sm font-medium">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                        </svg>
+                        Log Today
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main content area -->
+        <main class="max-w-md lg:max-w-5xl mx-auto px-3 lg:px-6 py-3 lg:py-6 pb-20 lg:pb-6">
+            @Body
+        </main>
+    </div>
+
+    <!-- Mobile Bottom Navigation (hidden on desktop) -->
+    <nav class="bottom-nav fixed bottom-0 left-0 right-0 safe-area-bottom z-40 lg:hidden">
         <div class="max-w-md mx-auto flex justify-around">
-            <a href="/" class="bottom-nav-item bottom-nav-item-active">
+            <a href="/" class="bottom-nav-item @(IsCurrentPage("/") ? "bottom-nav-item-active" : "")">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                 </svg>
                 <span class="text-[10px] font-medium">Home</span>
             </a>
-            <a href="/calendar" class="bottom-nav-item">
+            <a href="/day/@DateOnly.FromDateTime(DateTime.Today).ToString("yyyy-MM-dd")" class="bottom-nav-item @(IsCurrentPage("/day/") ? "bottom-nav-item-active" : "")">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                </svg>
+                <span class="text-[10px] font-medium">Log</span>
+            </a>
+            <a href="/calendar" class="bottom-nav-item @(IsCurrentPage("/calendar") ? "bottom-nav-item-active" : "")">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                 </svg>
@@ -52,7 +132,36 @@
             </a>
         </div>
     </nav>
-    
-    <!-- PWA Install Prompt -->
-    <InstallPrompt />
 </div>
+
+@code {
+    private bool IsCurrentPage(string path)
+    {
+        var uri = new Uri(Navigation.Uri);
+        if (path == "/")
+            return uri.AbsolutePath == "/";
+        return uri.AbsolutePath.StartsWith(path);
+    }
+
+    private string GetDesktopNavClass(string path)
+    {
+        var isActive = IsCurrentPage(path);
+        var baseClass = "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors";
+        return isActive 
+            ? $"{baseClass} bg-white/20 text-white" 
+            : $"{baseClass} text-white/80 hover:bg-white/10 hover:text-white";
+    }
+
+    private string GetPageTitle()
+    {
+        var uri = new Uri(Navigation.Uri);
+        return uri.AbsolutePath switch
+        {
+            "/" => "Dashboard",
+            "/calendar" => "Calendar",
+            var p when p.StartsWith("/day/") => "Daily Log",
+            var p when p.StartsWith("/scan/") => "Scan Meal",
+            _ => "PoNovaWeight"
+        };
+    }
+}
