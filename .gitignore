@@ -98,3 +98,4 @@ test-results/
 docs/coverage/
 *.lcov
 coverage.cobertura.xml
+.azure
