@@ -4,6 +4,7 @@ using Azure.Identity;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.HttpOverrides;
 using PoNovaWeight.Api.Features.Auth;
 using PoNovaWeight.Api.Features.DailyLogs;
 using PoNovaWeight.Api.Features.Health;
@@ -158,7 +159,18 @@ try
     builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
     builder.Services.AddProblemDetails();
 
+    // Configure forwarded headers for running behind reverse proxy (Azure Container Apps)
+    builder.Services.Configure<ForwardedHeadersOptions>(options =>
+    {
+        options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+        options.KnownNetworks.Clear();
+        options.KnownProxies.Clear();
+    });
+
     var app = builder.Build();
+
+    // Use forwarded headers (must be first in pipeline)
+    app.UseForwardedHeaders();
 
     // Initialize Table Storage (create tables if not exist)
     using (var scope = app.Services.CreateScope())
