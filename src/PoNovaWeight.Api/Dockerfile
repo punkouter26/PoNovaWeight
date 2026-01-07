@@ -14,7 +14,6 @@ COPY src/PoNovaWeight.AppHost/PoNovaWeight.AppHost.csproj src/PoNovaWeight.AppHo
 COPY src/PoNovaWeight.ServiceDefaults/PoNovaWeight.ServiceDefaults.csproj src/PoNovaWeight.ServiceDefaults/
 COPY tests/PoNovaWeight.Api.Tests/PoNovaWeight.Api.Tests.csproj tests/PoNovaWeight.Api.Tests/
 COPY tests/PoNovaWeight.Client.Tests/PoNovaWeight.Client.Tests.csproj tests/PoNovaWeight.Client.Tests/
-COPY tests/PoNovaWeight.E2E/PoNovaWeight.E2E.csproj tests/PoNovaWeight.E2E/
 
 # Restore dependencies (fresh restore in container)
 RUN dotnet restore src/PoNovaWeight.Api/PoNovaWeight.Api.csproj
