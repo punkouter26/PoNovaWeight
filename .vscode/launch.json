@@ -2,6 +2,17 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Launch Aspire",
+      "type": "dotnet",
+      "request": "launch",
+      "projectPath": "${workspaceFolder}/src/PoNovaWeight.AppHost/PoNovaWeight.AppHost.csproj",
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bLogin to the dashboard at\\s+(https?://\\S+)",
+        "uriFormat": "%s"
+      }
+    },
+    {
       "name": "Launch API (Debug)",
       "type": "coreclr",
       "request": "launch",

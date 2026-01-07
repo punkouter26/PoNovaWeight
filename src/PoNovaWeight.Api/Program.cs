@@ -58,7 +58,7 @@ try
     if (isAspireOrchestrated)
     {
         // Aspire integration - automatic connection via service discovery
-        builder.AddAzureTableClient("tables", settings =>
+        builder.AddAzureTableServiceClient("tables", settings =>
         {
             // Disable health checks due to bug in AspNetCore.HealthChecks.Azure.Data.Tables
             // that sends invalid OData filter ($filter=false) causing 400 errors
@@ -68,9 +68,10 @@ try
     }
     else
     {
-        // Fallback for non-Aspire scenarios (tests, standalone)
+        // Non-Aspire scenarios (tests, standalone) - require explicit connection string
         var connectionString = builder.Configuration.GetConnectionString("AzureStorage")
-            ?? "UseDevelopmentStorage=true";
+            ?? throw new InvalidOperationException(
+                "Azure Storage connection string is required. Set 'ConnectionStrings:AzureStorage' in configuration or run with Aspire.");
         builder.Services.AddSingleton(new TableServiceClient(connectionString));
     }
 
@@ -78,8 +79,13 @@ try
     builder.Services.AddSingleton<IDailyLogRepository, DailyLogRepository>();
     builder.Services.AddSingleton<IUserRepository, UserRepository>();
 
-    // Google OAuth + Cookie Authentication
-    builder.Services.AddAuthentication(options =>
+    // Google OAuth + Cookie Authentication - credentials required
+    var googleClientId = builder.Configuration["Google:ClientId"]
+        ?? throw new InvalidOperationException("Google:ClientId is required. Set it in configuration or user secrets.");
+    var googleClientSecret = builder.Configuration["Google:ClientSecret"]
+        ?? throw new InvalidOperationException("Google:ClientSecret is required. Set it in configuration or user secrets.");
+
+    var authBuilder = builder.Services.AddAuthentication(options =>
     {
         options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
         options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
@@ -88,7 +94,10 @@ try
     {
         options.Cookie.Name = "nova-session";
         options.Cookie.HttpOnly = true;
-        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        // Use SameAsRequest in development (HTTP), Always in production (HTTPS)
+        options.Cookie.SecurePolicy = builder.Environment.IsDevelopment() 
+            ? CookieSecurePolicy.SameAsRequest 
+            : CookieSecurePolicy.Always;
         options.Cookie.SameSite = SameSiteMode.Lax; // Lax required for OAuth redirects
         options.ExpireTimeSpan = TimeSpan.FromDays(30);
         options.SlidingExpiration = true;
@@ -98,62 +107,62 @@ try
             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
             return Task.CompletedTask;
         };
-    })
-    .AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
-    {
-        options.ClientId = builder.Configuration["Google:ClientId"] ?? "";
-        options.ClientSecret = builder.Configuration["Google:ClientSecret"] ?? "";
-        options.CallbackPath = "/signin-google";
-        options.SaveTokens = false;
-        options.Events.OnCreatingTicket = async context =>
-        {
-            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
-            var email = context.Principal?.FindFirstValue(ClaimTypes.Email);
-            var name = context.Principal?.FindFirstValue(ClaimTypes.Name);
-            var picture = context.Principal?.Claims.FirstOrDefault(c => c.Type == "picture")?.Value;
-
-            if (!string.IsNullOrEmpty(email))
-            {
-                var userRepo = context.HttpContext.RequestServices.GetRequiredService<IUserRepository>();
-                var existingUser = await userRepo.GetAsync(email);
-
-                if (existingUser is not null)
-                {
-                    // Update last login time
-                    existingUser.LastLoginUtc = DateTimeOffset.UtcNow;
-                    existingUser.DisplayName = name ?? existingUser.DisplayName;
-                    existingUser.PictureUrl = picture ?? existingUser.PictureUrl;
-                    await userRepo.UpsertAsync(existingUser);
-                    logger.LogInformation("User signed in: {Email} (returning user)", email);
-                }
-                else
-                {
-                    // Create new user
-                    var newUser = UserEntity.Create(email, name ?? email, picture);
-                    await userRepo.UpsertAsync(newUser);
-                    logger.LogInformation("User signed in: {Email} (new user)", email);
-                }
-            }
-        };
     });
+
+    // Add Google OAuth
+    authBuilder.AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
+        {
+            options.ClientId = googleClientId!;
+            options.ClientSecret = googleClientSecret!;
+            options.CallbackPath = "/signin-google";
+            options.SaveTokens = false;
+            options.Events.OnCreatingTicket = async context =>
+            {
+                var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+                var email = context.Principal?.FindFirstValue(ClaimTypes.Email);
+                var name = context.Principal?.FindFirstValue(ClaimTypes.Name);
+                var picture = context.Principal?.Claims.FirstOrDefault(c => c.Type == "picture")?.Value;
+
+                if (!string.IsNullOrEmpty(email))
+                {
+                    var userRepo = context.HttpContext.RequestServices.GetRequiredService<IUserRepository>();
+                    var existingUser = await userRepo.GetAsync(email);
+
+                    if (existingUser is not null)
+                    {
+                        // Update last login time
+                        existingUser.LastLoginUtc = DateTimeOffset.UtcNow;
+                        existingUser.DisplayName = name ?? existingUser.DisplayName;
+                        existingUser.PictureUrl = picture ?? existingUser.PictureUrl;
+                        await userRepo.UpsertAsync(existingUser);
+                        logger.LogInformation("User signed in: {Email} (returning user)", email);
+                    }
+                    else
+                    {
+                        // Create new user
+                        var newUser = UserEntity.Create(email, name ?? email, picture);
+                        await userRepo.UpsertAsync(newUser);
+                        logger.LogInformation("User signed in: {Email} (new user)", email);
+                    }
+                }
+            };
+        });
 
     builder.Services.AddAuthorization();
 
-    // Azure OpenAI
-    var openAiEndpoint = builder.Configuration["AzureOpenAI:Endpoint"];
-    var openAiApiKey = builder.Configuration["AzureOpenAI:ApiKey"];
-    if (!string.IsNullOrEmpty(openAiEndpoint) && !string.IsNullOrEmpty(openAiApiKey) && !openAiApiKey.StartsWith("YOUR-"))
-    {
-        builder.Services.AddSingleton(new AzureOpenAIClient(
-            new Uri(openAiEndpoint),
-            new Azure.AzureKeyCredential(openAiApiKey)));
-        builder.Services.AddSingleton<IMealAnalysisService, MealAnalysisService>();
-    }
-    else
-    {
-        // Register a stub service for development without OpenAI
-        builder.Services.AddSingleton<IMealAnalysisService, StubMealAnalysisService>();
-    }
+    // Azure OpenAI - credentials required
+    var openAiEndpoint = builder.Configuration["AzureOpenAI:Endpoint"]
+        ?? throw new InvalidOperationException("AzureOpenAI:Endpoint is required. Set it in configuration or user secrets.");
+    var openAiApiKey = builder.Configuration["AzureOpenAI:ApiKey"]
+        ?? throw new InvalidOperationException("AzureOpenAI:ApiKey is required. Set it in configuration or user secrets.");
+    
+    if (openAiApiKey.StartsWith("YOUR-"))
+        throw new InvalidOperationException("AzureOpenAI:ApiKey contains a placeholder value. Set a real API key.");
+
+    builder.Services.AddSingleton(new AzureOpenAIClient(
+        new Uri(openAiEndpoint),
+        new Azure.AzureKeyCredential(openAiApiKey)));
+    builder.Services.AddSingleton<IMealAnalysisService, MealAnalysisService>();
 
     // Exception handling
     builder.Services.AddExceptionHandler<GlobalExceptionHandler>();

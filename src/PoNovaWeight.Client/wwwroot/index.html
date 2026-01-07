@@ -24,7 +24,6 @@
     
     <!-- Styles -->
     <link href="css/app.css" rel="stylesheet" />
-    <link href="PoNovaWeight.Client.styles.css" rel="stylesheet" />
     
     <!-- Preconnect for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -56,33 +55,6 @@
 
     <!-- Blazor WASM script -->
     <script src="_framework/blazor.webassembly.js"></script>
-    
-    <!-- Service Worker Registration -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then(function(registration) {
-                        console.log('Service Worker registered with scope:', registration.scope);
-                        
-                        // Check for updates
-                        registration.addEventListener('updatefound', function() {
-                            const newWorker = registration.installing;
-                            newWorker.addEventListener('statechange', function() {
-                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                    // New service worker available
-                                    console.log('New service worker available');
-                                    // Could show update prompt here
-                                }
-                            });
-                        });
-                    })
-                    .catch(function(error) {
-                        console.log('Service Worker registration failed:', error);
-                    });
-            });
-        }
-    </script>
 </body>
 
 </html>

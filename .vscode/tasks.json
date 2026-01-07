@@ -86,6 +86,56 @@
       "args": ["--silent", "--location", "${workspaceFolder}/azurite", "--debug", "${workspaceFolder}/azurite/debug.log"],
       "isBackground": true,
       "problemMatcher": []
+    },
+    {
+      "label": "aspire-cli",
+      "type": "shell",
+      "command": "aspire",
+      "args": ["run"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "open-client",
+      "type": "shell",
+      "command": "Start-Process",
+      "args": ["http://localhost:5000"],
+      "problemMatcher": [],
+      "dependsOn": []
+    },
+    {
+      "label": "open-dashboard",
+      "type": "shell",
+      "command": "Start-Process",
+      "args": ["https://localhost:15888"],
+      "problemMatcher": [],
+      "dependsOn": []
+    },
+    {
+      "label": "aspire-dev",
+      "dependsOn": ["aspire-cli", "open-urls"],
+      "dependsOrder": "parallel",
+      "problemMatcher": [],
+      "runOptions": {
+        "runOn": "default"
+      }
+    },
+    {
+      "label": "open-urls",
+      "type": "shell",
+      "command": "Start-Sleep -Seconds 5; Start-Process 'http://localhost:5000'; Start-Process 'https://localhost:15888'",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared"
+      }
     }
   ]
 }

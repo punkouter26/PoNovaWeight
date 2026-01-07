@@ -7,7 +7,7 @@ var storage = builder.AddAzureStorage("storage")
 
 var tableStorage = storage.AddTables("tables");
 
-// API service with storage references
+// API service with storage references (also serves Blazor WebAssembly client)
 var api = builder.AddProject<Projects.PoNovaWeight_Api>("api")
     .WithReference(tableStorage)
     .WaitFor(storage)

@@ -18,12 +18,22 @@ public static class Endpoints
         group.MapGet("/{date}", async (DateOnly date, HttpContext httpContext, IMediator mediator, CancellationToken cancellationToken) =>
         {
             var result = await mediator.Send(new GetDailyLogQuery(date, httpContext.GetUserId()), cancellationToken);
-            return result is not null ? Results.Ok(result) : Results.NotFound();
+            // Return empty log with 200 instead of 404 to avoid console errors in client
+            return Results.Ok(result ?? new DailyLogDto 
+            { 
+                Date = date,
+                Proteins = 0,
+                Vegetables = 0,
+                Fruits = 0,
+                Starches = 0,
+                Fats = 0,
+                Dairy = 0,
+                WaterSegments = 0
+            });
         })
         .WithName("GetDailyLog")
         .WithSummary("Get daily log for a specific date")
-        .Produces<DailyLogDto>(StatusCodes.Status200OK)
-        .Produces(StatusCodes.Status404NotFound);
+        .Produces<DailyLogDto>(StatusCodes.Status200OK);
 
         // PUT /api/daily-logs
         group.MapPut("/", async (DailyLogDto dailyLog, HttpContext httpContext, IMediator mediator, CancellationToken cancellationToken) =>
