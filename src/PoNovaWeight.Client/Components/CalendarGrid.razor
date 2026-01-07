@@ -4,7 +4,8 @@
     <!-- Month Header -->
     <div class="flex items-center justify-between mb-4">
         <button @onclick="PreviousMonth" 
-                class="p-2 rounded-full hover:bg-healthy-light transition-colors">
+                class="p-2 rounded-full hover:bg-healthy-light transition-colors"
+                aria-label="Previous month">
             <svg class="w-5 h-5 text-healthy-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
             </svg>
@@ -12,7 +13,8 @@
         <h2 class="text-lg font-semibold text-healthy-text">@MonthYearDisplay</h2>
         <button @onclick="NextMonth" 
                 class="p-2 rounded-full hover:bg-healthy-light transition-colors"
-                disabled="@IsCurrentMonth">
+                disabled="@IsCurrentMonth"
+                aria-label="Next month">
             <svg class="w-5 h-5 @(IsCurrentMonth ? "text-healthy-light" : "text-healthy-muted")" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
             </svg>

@@ -15,9 +15,9 @@ namespace PoNovaWeight.Api.Tests.Integration;
 [Collection("Integration Tests")]
 public class EndpointTests
 {
-    private readonly WebApplicationFactory<Program> _factory;
+    private readonly CustomWebApplicationFactory _factory;
 
-    public EndpointTests(WebApplicationFactory<Program> factory)
+    public EndpointTests(CustomWebApplicationFactory factory)
     {
         _factory = factory;
     }

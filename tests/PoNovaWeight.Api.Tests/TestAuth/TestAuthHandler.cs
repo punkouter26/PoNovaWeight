@@ -6,14 +6,18 @@ using Microsoft.Extensions.Logging;
 
 namespace PoNovaWeight.Api.Tests.TestAuth;
 
-#pragma warning disable CS0618 // ISystemClock is obsolete in .NET 10; acceptable for test handler
+/// <summary>
+/// Test authentication handler for integration tests.
+/// </summary>
 public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
 {
-    public TestAuthHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
-        : base(options, logger, encoder, clock)
+    public TestAuthHandler(
+        IOptionsMonitor<AuthenticationSchemeOptions> options,
+        ILoggerFactory logger,
+        UrlEncoder encoder)
+        : base(options, logger, encoder)
     {
     }
-#pragma warning restore CS0618
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {

@@ -13,7 +13,7 @@ A personal food journaling Progressive Web App (PWA) designed for tracking daily
 ### Technical Features
 - **Progressive Web App**: Installable to home screen with offline support
 - **Mobile-First Design**: Optimized for smartphone use with touch-friendly controls
-- **Passcode Protection**: Simple 4-digit passcode to protect AI features and data
+- **Google OAuth Authentication**: Secure sign-in with Google account
 
 ## Technology Stack
 
@@ -65,9 +65,9 @@ The application will be available at:
 - **API**: https://localhost:5001/api
 - **Swagger**: https://localhost:5001/swagger
 
-### 4. Default Passcode
+### 4. Authentication
 
-The default development passcode is `1234`. Configure a different passcode in production via the `Auth:Passcode` configuration setting.
+The application uses Google OAuth for authentication. Configure credentials in `appsettings.Development.json` or via environment variables (see Configuration below).
 
 ## Configuration
 
@@ -76,10 +76,11 @@ The default development passcode is `1234`. Configure a different passcode in pr
 ```json
 {
   "ConnectionStrings": {
-    "TableStorage": "UseDevelopmentStorage=true"
+    "AzureStorage": "UseDevelopmentStorage=true"
   },
-  "Auth": {
-    "Passcode": "1234"
+  "Google": {
+    "ClientId": "<your-google-client-id>",
+    "ClientSecret": "<your-google-client-secret>"
   },
   "OpenAI": {
     "Endpoint": "<your-azure-openai-endpoint>",
@@ -96,12 +97,12 @@ Set the following environment variables or app settings:
 
 | Setting | Description |
 |---------|-------------|
-| `ConnectionStrings__TableStorage` | Azure Storage connection string |
-| `Auth__Passcode` | 4-digit passcode for app access |
-| `OpenAI__Endpoint` | Azure OpenAI endpoint URL |
-| `OpenAI__ApiKey` | Azure OpenAI API key |
-| `OpenAI__DeploymentName` | GPT-4o deployment name |
-| `OpenAI__UseStub` | Set to `false` in production |
+| `ConnectionStrings__AzureStorage` | Azure Storage connection string |
+| `Google__ClientId` | Google OAuth client ID |
+| `Google__ClientSecret` | Google OAuth client secret |
+| `AzureOpenAI__Endpoint` | Azure OpenAI endpoint URL |
+| `AzureOpenAI__ApiKey` | Azure OpenAI API key |
+| `AzureOpenAI__DeploymentName` | GPT-4o deployment name |
 
 ## Project Structure
 
@@ -110,7 +111,7 @@ PoNovaWeight/
 ├── src/
 │   ├── PoNovaWeight.Api/           # ASP.NET Core API
 │   │   ├── Features/               # MediatR handlers by feature
-│   │   │   ├── Auth/               # Passcode authentication
+│   │   │   ├── Auth/               # Google OAuth authentication
 │   │   │   ├── DailyLogs/          # Daily log CRUD operations
 │   │   │   ├── MealScan/           # AI meal analysis
 │   │   │   └── WeeklySummary/      # Weekly aggregation
@@ -174,9 +175,9 @@ azd up
 | PUT | `/api/daily-logs/{date}/water` | Update water segments |
 | GET | `/api/weekly-summary` | Get 7-day summary |
 | POST | `/api/meal-scan` | Analyze meal photo with AI |
-| POST | `/api/auth/verify` | Verify passcode |
-| GET | `/api/auth/status` | Check auth status |
-| POST | `/api/auth/logout` | Clear session |
+| GET | `/api/auth/login` | Initiate Google OAuth sign-in |
+| GET | `/api/auth/logout` | Sign out and clear session |
+| GET | `/api/auth/me` | Get current user info |
 
 ## Nova Unit System
 

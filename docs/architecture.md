@@ -113,7 +113,7 @@ graph TB
         UpdateWater["UpdateWater"]
         GetWeeklySummary["GetWeeklySummary"]
         ScanMeal["ScanMeal"]
-        VerifyPasscode["VerifyPasscode"]
+        GetCurrentUser["GetCurrentUser"]
     end
 
     subgraph Infrastructure
@@ -128,7 +128,7 @@ graph TB
     DailyLogs --> UpdateWater
     WeeklySummary --> GetWeeklySummary
     MealScanEndpoint --> ScanMeal
-    Auth --> VerifyPasscode
+    Auth --> GetCurrentUser
 
     GetDailyLog --> Repository
     SaveDailyLog --> Repository
@@ -261,15 +261,15 @@ stateDiagram-v2
     CheckAuth --> Login: Not Authenticated
     CheckAuth --> Dashboard: Has Valid Session
 
-    Login --> VerifyPasscode: Enter 4-digit code
-    VerifyPasscode --> Login: Invalid
-    VerifyPasscode --> SetCookie: Valid
+    Login --> GoogleOAuth: Click "Sign in with Google"
+    GoogleOAuth --> Callback: Google redirects with token
+    Callback --> SetCookie: Create session
     SetCookie --> Dashboard: Store Session
 
     Dashboard --> [*]: User Navigates
 
-    note right of CheckAuth: SessionService.CheckAuthStatusAsync()
-    note right of SetCookie: nova_session cookie (HttpOnly)
+    note right of CheckAuth: NovaAuthStateProvider.GetAuthenticationStateAsync()
+    note right of SetCookie: Cookie Authentication (HttpOnly)
 ```
 
 ## Deployment Architecture
@@ -315,11 +315,11 @@ graph TB
 
 ## Security Considerations
 
-1. **Passcode Protection**: Simple 4-digit code prevents unauthorized access
+1. **Google OAuth Authentication**: Secure sign-in via Google identity provider
 2. **Session Cookies**: HttpOnly, Secure, SameSite=Strict cookies
 3. **Single User MVP**: No multi-tenant concerns for initial release
-4. **API Protection**: AuthMiddleware validates session on protected routes
-5. **AI Cost Control**: Passcode gates access to AI features
+4. **API Protection**: `[Authorize]` attribute protects routes requiring authentication
+5. **Per-User Data Isolation**: PartitionKey uses UserID for data separation
 
 ## Performance Considerations
 

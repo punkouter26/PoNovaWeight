@@ -11,7 +11,7 @@ public class AuthEndpointsTests
 {
     private readonly HttpClient _client;
 
-    public AuthEndpointsTests(WebApplicationFactory<Program> factory)
+    public AuthEndpointsTests(CustomWebApplicationFactory factory)
     {
         _client = factory.CreateClient(new WebApplicationFactoryClientOptions
         {

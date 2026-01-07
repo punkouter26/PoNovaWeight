@@ -61,7 +61,7 @@ Features: Auth (Google OAuth + Cookie), DailyLogs (CRUD), MealScan (AI analysis)
 
 1. **Daily Log**: Blazor Component → ApiClient → Minimal API → MediatR Handler → Repository → Azure Table Storage
 2. **Meal Scan**: Camera → Compress to 800px → API → Azure OpenAI Vision → User confirms → Upsert log
-3. **Auth**: Login → VerifyPasscode → HttpOnly Cookie → SessionService validates
+3. **Auth**: Login → Google OAuth → Cookie Authentication → NovaAuthStateProvider validates
 
 ### Repository Pattern
 
@@ -86,9 +86,8 @@ Features: Auth (Google OAuth + Cookie), DailyLogs (CRUD), MealScan (AI analysis)
 
 Local development uses `appsettings.Development.json` with:
 - `UseDevelopmentStorage=true` for Azurite
-- Google OAuth credentials
-- Azure OpenAI endpoint/key
-- `DefaultPassCode` for auth testing
+- Google OAuth credentials (`Google:ClientId`, `Google:ClientSecret`)
+- Azure OpenAI endpoint/key (`AzureOpenAI:Endpoint`, `AzureOpenAI:ApiKey`)
 
 Production uses environment variables configured via Azure Container Apps.
 

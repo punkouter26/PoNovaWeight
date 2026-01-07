@@ -22,7 +22,8 @@
     <div class="flex items-center gap-2">
         <button @onclick="Decrement" 
                 disabled="@(Current <= 0)"
-                class="stepper-btn stepper-btn-minus disabled:opacity-40 disabled:cursor-not-allowed">
+                class="stepper-btn stepper-btn-minus disabled:opacity-40 disabled:cursor-not-allowed"
+                aria-label="Decrease @CategoryName">
             −
         </button>
         
@@ -31,7 +32,8 @@
         </span>
         
         <button @onclick="Increment" 
-                class="stepper-btn stepper-btn-plus">
+                class="stepper-btn stepper-btn-plus"
+                aria-label="Increase @CategoryName">
             +
         </button>
     </div>

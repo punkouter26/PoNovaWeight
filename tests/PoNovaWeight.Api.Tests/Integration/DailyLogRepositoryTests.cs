@@ -1,5 +1,6 @@
 using Azure.Data.Tables;
 using PoNovaWeight.Api.Infrastructure.TableStorage;
+using Xunit;
 
 namespace PoNovaWeight.Api.Tests.Integration;
 
@@ -17,6 +18,7 @@ public class DailyLogRepositoryTests : IAsyncLifetime
     private readonly TableServiceClient _tableServiceClient;
     private readonly DailyLogRepository _repository;
     private readonly List<(string PartitionKey, string RowKey)> _createdEntities = new();
+    private string? _azuriteSkipReason;
 
     public DailyLogRepositoryTests()
     {
@@ -32,14 +34,27 @@ public class DailyLogRepositoryTests : IAsyncLifetime
         }
         catch (Exception ex)
         {
-            // Skip tests if Azurite is not running
-            throw new SkipException($"Azurite not available: {ex.Message}. Start Azurite with: azurite --silent");
+            // Store skip reason instead of throwing - tests will check this flag
+            _azuriteSkipReason = $"Azurite not available: {ex.Message}. Start Azurite with: azurite --silent";
         }
+    }
+
+    /// <summary>
+    /// Skips the test if Azurite is not available.
+    /// </summary>
+    private void SkipIfAzuriteNotAvailable()
+    {
+        Skip.If(_azuriteSkipReason is not null, _azuriteSkipReason ?? "Azurite not available");
     }
 
     public async Task DisposeAsync()
     {
-        // Clean up test data
+        // Clean up test data only if Azurite was available
+        if (_azuriteSkipReason is not null)
+        {
+            return;
+        }
+
         var tableClient = _tableServiceClient.GetTableClient("DailyLogs");
         foreach (var (partitionKey, rowKey) in _createdEntities)
         {
@@ -57,7 +72,7 @@ public class DailyLogRepositoryTests : IAsyncLifetime
     [SkippableFact]
     public async Task UpsertAsync_NewEntity_CreatesEntity()
     {
-        Skip.If(!IsAzuriteAvailable(), "Azurite is not running");
+        SkipIfAzuriteNotAvailable();
 
         // Arrange
         var date = DateOnly.FromDateTime(DateTime.UtcNow);
@@ -78,7 +93,7 @@ public class DailyLogRepositoryTests : IAsyncLifetime
     [SkippableFact]
     public async Task UpsertAsync_ExistingEntity_UpdatesEntity()
     {
-        Skip.If(!IsAzuriteAvailable(), "Azurite is not running");
+        SkipIfAzuriteNotAvailable();
 
         // Arrange
         var date = DateOnly.FromDateTime(DateTime.UtcNow);
@@ -101,7 +116,7 @@ public class DailyLogRepositoryTests : IAsyncLifetime
     [SkippableFact]
     public async Task GetAsync_NonExistentEntity_ReturnsNull()
     {
-        Skip.If(!IsAzuriteAvailable(), "Azurite is not running");
+        SkipIfAzuriteNotAvailable();
 
         // Arrange
         var nonExistentDate = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-10));
@@ -116,7 +131,7 @@ public class DailyLogRepositoryTests : IAsyncLifetime
     [SkippableFact]
     public async Task GetRangeAsync_WithMultipleEntities_ReturnsOrderedList()
     {
-        Skip.If(!IsAzuriteAvailable(), "Azurite is not running");
+        SkipIfAzuriteNotAvailable();
 
         // Arrange
         var startDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-3));
@@ -142,7 +157,7 @@ public class DailyLogRepositoryTests : IAsyncLifetime
     [SkippableFact]
     public async Task GetRangeAsync_EmptyRange_ReturnsEmptyList()
     {
-        Skip.If(!IsAzuriteAvailable(), "Azurite is not running");
+        SkipIfAzuriteNotAvailable();
 
         // Arrange
         var startDate = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-5));
@@ -158,7 +173,7 @@ public class DailyLogRepositoryTests : IAsyncLifetime
     [SkippableFact]
     public async Task GetRangeAsync_MultipleUsers_ReturnsOnlyRequestedUser()
     {
-        Skip.If(!IsAzuriteAvailable(), "Azurite is not running");
+        SkipIfAzuriteNotAvailable();
 
         // Arrange
         var date = DateOnly.FromDateTime(DateTime.UtcNow);
@@ -191,49 +206,5 @@ public class DailyLogRepositoryTests : IAsyncLifetime
             Dairy = 1,
             WaterSegments = 4
         };
-    }
-
-    private static bool IsAzuriteAvailable()
-    {
-        try
-        {
-            var client = new TableServiceClient(ConnectionString);
-            // Try to list tables - this will fail if Azurite isn't running
-            var tables = client.Query().Take(1).ToList();
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
-    }
-}
-
-/// <summary>
-/// Custom exception for skippable tests when Azurite is not available.
-/// </summary>
-public class SkipException : Exception
-{
-    public SkipException(string message) : base(message) { }
-}
-
-/// <summary>
-/// Attribute for skippable facts.
-/// </summary>
-public class SkippableFactAttribute : FactAttribute
-{
-}
-
-/// <summary>
-/// Static helper for skipping tests.
-/// </summary>
-public static class Skip
-{
-    public static void If(bool condition, string reason)
-    {
-        if (condition)
-        {
-            throw new SkipException(reason);
-        }
     }
 }
