@@ -26,6 +26,18 @@ try
 {
     var builder = WebApplication.CreateBuilder(args);
 
+    // Add Azure Key Vault configuration
+    // Uses DefaultAzureCredential which works with:
+    // - Local: Azure CLI, Visual Studio, VS Code credentials
+    // - Azure: Managed Identity
+    var keyVaultUri = builder.Configuration["KeyVault:VaultUri"];
+    if (!string.IsNullOrEmpty(keyVaultUri))
+    {
+        builder.Configuration.AddAzureKeyVault(
+            new Uri(keyVaultUri),
+            new DefaultAzureCredential());
+    }
+
     // Add Aspire service defaults for OpenTelemetry, health checks, and resilience
     builder.AddServiceDefaults();
 
