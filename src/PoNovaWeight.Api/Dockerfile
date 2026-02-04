@@ -4,7 +4,6 @@ WORKDIR /src
 
 # Copy solution and project files (excluding obj directories via .dockerignore)
 COPY PoNovaWeight.sln .
-COPY global.json .
 COPY Directory.Build.props .
 COPY Directory.Packages.props .
 COPY src/PoNovaWeight.Api/PoNovaWeight.Api.csproj src/PoNovaWeight.Api/
