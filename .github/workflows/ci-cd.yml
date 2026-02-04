@@ -1,5 +1,5 @@
 # CI/CD Pipeline for PoNovaWeight
-# Deploys to Azure Container Apps using OIDC Federated Credentials
+# Builds, tests, and deploys to Azure Container Apps using OIDC Federated Credentials
 
 name: CI/CD Pipeline
 
@@ -17,11 +17,35 @@ env:
   CONTAINER_APP_NAME: 'ponovaweight-api'
   ACR_NAME: 'ponovaweightacr'
   IMAGE_NAME: 'ponovaweight-api'
+  DOTNET_VERSION: '10.0.x'
 
 jobs:
+  build-and-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+      
+      - name: Restore dependencies
+        run: dotnet restore
+      
+      - name: Build solution
+        run: dotnet build --no-restore --configuration Release
+      
+      - name: Run unit and integration tests
+        run: dotnet test --no-build --configuration Release --verbosity normal --filter "Category!=Docker"
+
   deploy:
     name: Deploy to Azure
     runs-on: ubuntu-latest
+    needs: build-and-test
     
     steps:
       - name: Checkout code
@@ -51,9 +75,22 @@ jobs:
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
             --image ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
       
-      - name: Verify deployment
+      - name: Verify deployment with retry
         run: |
-          sleep 30
           FQDN=$(az containerapp show --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --query properties.configuration.ingress.fqdn -o tsv)
           echo "Deployed to: https://$FQDN"
-          curl -sf "https://$FQDN/health" || echo "Health check pending"
+          echo "Waiting for health check..."
+          
+          # Retry health check up to 10 times with 15 second intervals
+          for i in {1..10}; do
+            echo "Health check attempt $i/10..."
+            if curl -sf "https://$FQDN/health" --max-time 10; then
+              echo "✅ Health check passed!"
+              exit 0
+            fi
+            echo "Health check failed, waiting 15 seconds..."
+            sleep 15
+          done
+          
+          echo "❌ Health check failed after 10 attempts"
+          exit 1
