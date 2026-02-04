@@ -56,4 +56,4 @@ jobs:
           sleep 30
           FQDN=$(az containerapp show --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --query properties.configuration.ingress.fqdn -o tsv)
           echo "Deployed to: https://$FQDN"
-          curl -sf "https://$FQDN/api/health" || echo "Health check pending"
+          curl -sf "https://$FQDN/health" || echo "Health check pending"
