@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using PoNovaWeight.Api.Infrastructure.TableStorage;
 using PoNovaWeight.Shared.DTOs;
 
 namespace PoNovaWeight.Api.Features.Auth;
@@ -11,6 +12,9 @@ namespace PoNovaWeight.Api.Features.Auth;
 /// </summary>
 public static class Endpoints
 {
+    /// <summary>
+    /// Maps authentication endpoints including dev-login for Development environment.
+    /// </summary>
     public static IEndpointRouteBuilder MapAuthEndpoints(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/api/auth")
@@ -31,11 +35,91 @@ public static class Endpoints
             .WithDescription("Returns the current user's authentication status and profile.")
             .Produces<AuthStatus>(StatusCodes.Status200OK);
 
+        // Development-only endpoint for bypassing OAuth
+        // This enables testing without real Google credentials
+        var env = app.ServiceProvider.GetRequiredService<IWebHostEnvironment>();
+        if (env.IsDevelopment())
+        {
+            group.MapPost("/dev-login", DevLogin)
+                .WithName("DevLogin")
+                .WithDescription("[DEV ONLY] Bypasses OAuth to sign in with a test user.")
+                .Produces<AuthStatus>(StatusCodes.Status200OK);
+        }
+
         return app;
     }
 
-    private static IResult Login(HttpContext context, string? returnUrl = "/")
+    /// <summary>
+    /// Development-only login endpoint that bypasses OAuth.
+    /// Creates a cookie-based session for the specified email without Google OAuth.
+    /// </summary>
+    private static async Task<IResult> DevLogin(
+        HttpContext context,
+        IUserRepository userRepository,
+        ILoggerFactory loggerFactory,
+        string? email = "dev-user@local")
     {
+        var logger = loggerFactory.CreateLogger("Auth");
+        
+        // Ensure user exists in repository
+        var userEmail = email ?? "dev-user@local";
+        var existingUser = await userRepository.GetAsync(userEmail);
+        
+        if (existingUser is null)
+        {
+            var newUser = UserEntity.Create(userEmail, "Dev User", null);
+            await userRepository.UpsertAsync(newUser);
+            logger.LogInformation("[DEV] Created test user: {Email}", userEmail);
+        }
+        else
+        {
+            existingUser.LastLoginUtc = DateTimeOffset.UtcNow;
+            await userRepository.UpsertAsync(existingUser);
+        }
+
+        // Create claims and sign in
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.Email, userEmail),
+            new(ClaimTypes.Name, "Dev User")
+        };
+
+        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        var principal = new ClaimsPrincipal(identity);
+
+        await context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+        
+        logger.LogInformation("[DEV] User signed in via dev-login: {Email}", userEmail);
+
+        return Results.Ok(AuthStatus.Authenticated(new UserInfo
+        {
+            Email = userEmail,
+            DisplayName = "Dev User",
+            PictureUrl = null
+        }));
+    }
+
+    private static IResult Login(HttpContext context, IAuthenticationSchemeProvider schemeProvider, string? returnUrl = "/")
+    {
+        // Check if Google OAuth is configured
+        var googleScheme = schemeProvider.GetSchemeAsync(GoogleDefaults.AuthenticationScheme).GetAwaiter().GetResult();
+        if (googleScheme is null)
+        {
+            // Google OAuth not configured - in development, redirect to dev-login info
+            var env = context.RequestServices.GetRequiredService<IWebHostEnvironment>();
+            if (env.IsDevelopment())
+            {
+                return Results.Problem(
+                    title: "Google OAuth Not Configured",
+                    detail: "Use POST /api/auth/dev-login?email=your@email.com to sign in during development.",
+                    statusCode: StatusCodes.Status503ServiceUnavailable);
+            }
+            return Results.Problem(
+                title: "Authentication Unavailable",
+                detail: "Google OAuth is not configured.",
+                statusCode: StatusCodes.Status503ServiceUnavailable);
+        }
+
         var properties = new AuthenticationProperties
         {
             RedirectUri = returnUrl ?? "/"

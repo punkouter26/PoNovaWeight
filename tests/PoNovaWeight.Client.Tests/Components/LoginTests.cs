@@ -1,8 +1,11 @@
 using Bunit;
 using FluentAssertions;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using PoNovaWeight.Client.Pages;
+using PoNovaWeight.Client.Services;
 
 namespace PoNovaWeight.Client.Tests.Components;
 
@@ -12,6 +15,16 @@ public class LoginTests : BunitContext
     {
         // Register NavigationManager for the Login page
         Services.AddSingleton<NavigationManager>(new FakeNavigationManager());
+        
+        // Register HttpClient for the Login page
+        Services.AddSingleton(new HttpClient { BaseAddress = new Uri("http://localhost/") });
+        
+        // Register mock AuthService dependencies
+        var mockApiClient = new Mock<ApiClient>(MockBehavior.Loose, new HttpClient { BaseAddress = new Uri("http://localhost/") });
+        var mockAuthStateProvider = new Mock<NovaAuthStateProvider>(MockBehavior.Loose, mockApiClient.Object);
+        Services.AddSingleton(mockApiClient.Object);
+        Services.AddSingleton<AuthenticationStateProvider>(mockAuthStateProvider.Object);
+        Services.AddSingleton(new AuthService(mockApiClient.Object, mockAuthStateProvider.Object));
     }
 
     [Fact]

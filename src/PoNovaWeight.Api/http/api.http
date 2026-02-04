@@ -6,6 +6,10 @@
 ### Authentication
 ### =====================
 
+### Dev Login (Development only - bypasses OAuth)
+### Creates a cookie-based session without Google OAuth
+POST {{baseUrl}}/api/auth/dev-login?email=dev-user@local
+
 ### Get Current User (check auth status)
 GET {{baseUrl}}/api/auth/me
 
@@ -21,6 +25,15 @@ GET {{baseUrl}}/api/auth/me
 
 ### Health Check
 GET {{baseUrl}}/api/health
+
+### Aspire Health Check
+GET {{baseUrl}}/health
+
+### OpenAPI Spec
+GET {{baseUrl}}/openapi/v1.json
+
+### Swagger UI (open in browser)
+# https://localhost:5001/swagger
 
 ### Get Daily Log
 GET {{baseUrl}}/api/daily-logs/2025-01-01

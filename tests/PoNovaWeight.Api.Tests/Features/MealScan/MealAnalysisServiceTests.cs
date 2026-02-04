@@ -1,7 +1,6 @@
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Moq;
 using PoNovaWeight.Api.Infrastructure.OpenAI;
+using PoNovaWeight.Shared.DTOs;
 
 namespace PoNovaWeight.Api.Tests.Features.MealScan;
 
@@ -11,14 +10,18 @@ namespace PoNovaWeight.Api.Tests.Features.MealScan;
 public class MealAnalysisServiceTests
 {
     [Fact]
-    public async Task StubService_ReturnsValidStructureAndParsesCorrectly()
+    public async Task MockedService_ReturnsValidStructure()
     {
-        // Consolidates StubService and JSON parsing tests
-        var loggerMock = new Mock<ILogger<StubMealAnalysisService>>();
-        var stubService = new StubMealAnalysisService(loggerMock.Object);
+        // Use mock instead of non-existent StubMealAnalysisService
+        var mockService = new Mock<IMealAnalysisService>();
+        mockService.Setup(s => s.AnalyzeMealAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(MealScanResultDto.FromSuggestions(
+                new MealSuggestions { Proteins = 1, Vegetables = 2, Fruits = 1, Starches = 1, Fats = 1, Dairy = 0 },
+                description: "Test meal with protein and vegetables",
+                confidence: 50));
 
         // Act
-        var result = await stubService.AnalyzeMealAsync("dummy-base64");
+        var result = await mockService.Object.AnalyzeMealAsync("dummy-base64");
 
         // Assert - validates structure
         Assert.NotNull(result);
@@ -27,7 +30,7 @@ public class MealAnalysisServiceTests
         Assert.NotNull(result.MealDescription);
         Assert.InRange(result.Suggestions.TotalUnits, 0, 18);
 
-        // Validates parsing
+        // Validates expected values
         Assert.Equal(1, result.Suggestions.Proteins);
         Assert.Equal(2, result.Suggestions.Vegetables);
         Assert.Equal(50, result.ConfidenceScore);

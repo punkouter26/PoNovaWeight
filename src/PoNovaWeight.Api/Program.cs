@@ -5,15 +5,16 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.ResponseCompression;
 using PoNovaWeight.Api.Features.Auth;
 using PoNovaWeight.Api.Features.DailyLogs;
-using PoNovaWeight.Api.Features.Health;
 using PoNovaWeight.Api.Features.MealScan;
 using PoNovaWeight.Api.Features.WeeklySummary;
 using PoNovaWeight.Api.Infrastructure;
 using PoNovaWeight.Api.Infrastructure.OpenAI;
 using PoNovaWeight.Api.Infrastructure.TableStorage;
 using PoNovaWeight.Shared.Validation;
+using Scalar.AspNetCore;
 using Serilog;
 using System.Security.Claims;
 
@@ -26,6 +27,13 @@ try
 {
     var builder = WebApplication.CreateBuilder(args);
 
+    // Configuration priority (highest wins):
+    // 1. Environment variables
+    // 2. User secrets (development only) - fallback for local dev
+    // 3. Azure Key Vault - primary source for secrets
+    // 4. appsettings.{Environment}.json
+    // 5. appsettings.json
+
     // Add Azure Key Vault configuration
     // Uses DefaultAzureCredential which works with:
     // - Local: Azure CLI, Visual Studio, VS Code credentials
@@ -33,9 +41,21 @@ try
     var keyVaultUri = builder.Configuration["KeyVault:VaultUri"];
     if (!string.IsNullOrEmpty(keyVaultUri))
     {
-        builder.Configuration.AddAzureKeyVault(
-            new Uri(keyVaultUri),
-            new DefaultAzureCredential());
+        try
+        {
+            builder.Configuration.AddAzureKeyVault(
+                new Uri(keyVaultUri),
+                new DefaultAzureCredential());
+            Log.Information("Azure Key Vault configured: {VaultUri}", keyVaultUri);
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "Failed to connect to Azure Key Vault ({VaultUri}). Falling back to user secrets.", keyVaultUri);
+        }
+    }
+    else
+    {
+        Log.Information("Key Vault not configured - using user secrets and environment variables only");
     }
 
     // Add Aspire service defaults for OpenTelemetry, health checks, and resilience
@@ -52,6 +72,18 @@ try
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddOpenApi();
+
+    // Response compression for Blazor WASM assets
+    builder.Services.AddResponseCompression(options =>
+    {
+        options.EnableForHttps = true;
+        options.Providers.Add<BrotliCompressionProvider>();
+        options.Providers.Add<GzipCompressionProvider>();
+        options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+            ["application/octet-stream", "application/wasm"]);
+    });
+    builder.Services.Configure<BrotliCompressionProviderOptions>(options => options.Level = System.IO.Compression.CompressionLevel.Fastest);
+    builder.Services.Configure<GzipCompressionProviderOptions>(options => options.Level = System.IO.Compression.CompressionLevel.Fastest);
 
     // MediatR
     builder.Services.AddMediatR(cfg =>
@@ -81,7 +113,9 @@ try
     else
     {
         // Non-Aspire scenarios (tests, standalone) - require explicit connection string
-        var connectionString = builder.Configuration.GetConnectionString("AzureStorage")
+        // Reads from PoNovaWeight:AzureStorage:ConnectionString (Key Vault) or ConnectionStrings:AzureStorage (local/fallback)
+        var connectionString = builder.Configuration["PoNovaWeight:AzureStorage:ConnectionString"]
+            ?? builder.Configuration.GetConnectionString("AzureStorage")
             ?? throw new InvalidOperationException(
                 "Azure Storage connection string is required. Set 'ConnectionStrings:AzureStorage' in configuration or run with Aspire.");
         builder.Services.AddSingleton(new TableServiceClient(connectionString));
@@ -91,16 +125,24 @@ try
     builder.Services.AddSingleton<IDailyLogRepository, DailyLogRepository>();
     builder.Services.AddSingleton<IUserRepository, UserRepository>();
 
-    // Google OAuth + Cookie Authentication - credentials required
-    var googleClientId = builder.Configuration["Google:ClientId"]
-        ?? throw new InvalidOperationException("Google:ClientId is required. Set it in configuration or user secrets.");
-    var googleClientSecret = builder.Configuration["Google:ClientSecret"]
-        ?? throw new InvalidOperationException("Google:ClientSecret is required. Set it in configuration or user secrets.");
+    // Google OAuth + Cookie Authentication
+    // Reads from PoNovaWeight:Google:* (Key Vault) or Google:* (local/fallback)
+    var googleClientId = builder.Configuration["PoNovaWeight:Google:ClientId"]
+        ?? builder.Configuration["Google:ClientId"];
+    var googleClientSecret = builder.Configuration["PoNovaWeight:Google:ClientSecret"]
+        ?? builder.Configuration["Google:ClientSecret"];
+
+    var hasGoogleCredentials = !string.IsNullOrEmpty(googleClientId) && !string.IsNullOrEmpty(googleClientSecret);
+
+    if (!hasGoogleCredentials && !builder.Environment.IsDevelopment())
+    {
+        throw new InvalidOperationException("Google OAuth credentials are required in production. Set Google:ClientId and Google:ClientSecret in configuration.");
+    }
 
     var authBuilder = builder.Services.AddAuthentication(options =>
     {
         options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = hasGoogleCredentials ? GoogleDefaults.AuthenticationScheme : CookieAuthenticationDefaults.AuthenticationScheme;
     })
     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
     {
@@ -121,60 +163,73 @@ try
         };
     });
 
-    // Add Google OAuth
-    authBuilder.AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
-        {
-            options.ClientId = googleClientId!;
-            options.ClientSecret = googleClientSecret!;
-            options.CallbackPath = "/signin-google";
-            options.SaveTokens = false;
-            options.Events.OnCreatingTicket = async context =>
+    // Add Google OAuth only when credentials are available
+    if (hasGoogleCredentials)
+    {
+        authBuilder.AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
             {
-                var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
-                var email = context.Principal?.FindFirstValue(ClaimTypes.Email);
-                var name = context.Principal?.FindFirstValue(ClaimTypes.Name);
-                var picture = context.Principal?.Claims.FirstOrDefault(c => c.Type == "picture")?.Value;
-
-                if (!string.IsNullOrEmpty(email))
+                options.ClientId = googleClientId!;
+                options.ClientSecret = googleClientSecret!;
+                options.CallbackPath = "/signin-google";
+                options.SaveTokens = false;
+                options.Events.OnCreatingTicket = async context =>
                 {
-                    var userRepo = context.HttpContext.RequestServices.GetRequiredService<IUserRepository>();
-                    var existingUser = await userRepo.GetAsync(email);
+                    var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+                    var email = context.Principal?.FindFirstValue(ClaimTypes.Email);
+                    var name = context.Principal?.FindFirstValue(ClaimTypes.Name);
+                    var picture = context.Principal?.Claims.FirstOrDefault(c => c.Type == "picture")?.Value;
 
-                    if (existingUser is not null)
+                    if (!string.IsNullOrEmpty(email))
                     {
-                        // Update last login time
-                        existingUser.LastLoginUtc = DateTimeOffset.UtcNow;
-                        existingUser.DisplayName = name ?? existingUser.DisplayName;
-                        existingUser.PictureUrl = picture ?? existingUser.PictureUrl;
-                        await userRepo.UpsertAsync(existingUser);
-                        logger.LogInformation("User signed in: {Email} (returning user)", email);
+                        var userRepo = context.HttpContext.RequestServices.GetRequiredService<IUserRepository>();
+                        var existingUser = await userRepo.GetAsync(email);
+
+                        if (existingUser is not null)
+                        {
+                            // Update last login time
+                            existingUser.LastLoginUtc = DateTimeOffset.UtcNow;
+                            existingUser.DisplayName = name ?? existingUser.DisplayName;
+                            existingUser.PictureUrl = picture ?? existingUser.PictureUrl;
+                            await userRepo.UpsertAsync(existingUser);
+                            logger.LogInformation("User signed in: {Email} (returning user)", email);
+                        }
+                        else
+                        {
+                            // Create new user
+                            var newUser = UserEntity.Create(email, name ?? email, picture);
+                            await userRepo.UpsertAsync(newUser);
+                            logger.LogInformation("User signed in: {Email} (new user)", email);
+                        }
                     }
-                    else
-                    {
-                        // Create new user
-                        var newUser = UserEntity.Create(email, name ?? email, picture);
-                        await userRepo.UpsertAsync(newUser);
-                        logger.LogInformation("User signed in: {Email} (new user)", email);
-                    }
-                }
-            };
-        });
+                };
+            });
+    }
+    else
+    {
+        Log.Warning("Google OAuth not configured - authentication will use dev login only");
+    }
 
     builder.Services.AddAuthorization();
 
-    // Azure OpenAI - credentials required
-    var openAiEndpoint = builder.Configuration["AzureOpenAI:Endpoint"]
-        ?? throw new InvalidOperationException("AzureOpenAI:Endpoint is required. Set it in configuration or user secrets.");
-    var openAiApiKey = builder.Configuration["AzureOpenAI:ApiKey"]
-        ?? throw new InvalidOperationException("AzureOpenAI:ApiKey is required. Set it in configuration or user secrets.");
-    
-    if (openAiApiKey.StartsWith("YOUR-"))
-        throw new InvalidOperationException("AzureOpenAI:ApiKey contains a placeholder value. Set a real API key.");
+    // Azure OpenAI - optional for local development (meal scan will be disabled)
+    var openAiEndpoint = builder.Configuration["PoNovaWeight:AzureOpenAI:Endpoint"]
+        ?? builder.Configuration["AzureOpenAI:Endpoint"];
+    var openAiApiKey = builder.Configuration["PoNovaWeight:AzureOpenAI:ApiKey"]
+        ?? builder.Configuration["AzureOpenAI:ApiKey"];
 
-    builder.Services.AddSingleton(new AzureOpenAIClient(
-        new Uri(openAiEndpoint),
-        new Azure.AzureKeyCredential(openAiApiKey)));
-    builder.Services.AddSingleton<IMealAnalysisService, MealAnalysisService>();
+    if (!string.IsNullOrEmpty(openAiEndpoint) && !string.IsNullOrEmpty(openAiApiKey) && !openAiApiKey.StartsWith("YOUR-"))
+    {
+        builder.Services.AddSingleton(new AzureOpenAIClient(
+            new Uri(openAiEndpoint),
+            new Azure.AzureKeyCredential(openAiApiKey)));
+        builder.Services.AddSingleton<IMealAnalysisService, MealAnalysisService>();
+    }
+    else
+    {
+        // Use stub service when OpenAI is not configured
+        builder.Services.AddSingleton<IMealAnalysisService, StubMealAnalysisService>();
+        Log.Warning("Azure OpenAI not configured - meal scanning will return mock data");
+    }
 
     // Exception handling
     builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
@@ -208,12 +263,15 @@ try
     // Configure the HTTP request pipeline
     if (app.Environment.IsDevelopment())
     {
+        // OpenAPI spec at /openapi/v1.json + Scalar UI at /scalar/v1
         app.MapOpenApi();
+        app.MapScalarApiReference();
         app.UseWebAssemblyDebugging();
     }
 
     app.UseExceptionHandler();
     app.UseSerilogRequestLogging();
+    app.UseResponseCompression();
     app.UseHttpsRedirection();
     app.UseBlazorFrameworkFiles();
     app.UseStaticFiles();
@@ -223,11 +281,10 @@ try
     app.UseAuthentication();
     app.UseAuthorization();
 
-    // Map Aspire default endpoints (health checks, etc.)
+    // Map Aspire default endpoints (health checks at /health and /alive)
     app.MapDefaultEndpoints();
 
-    // Map endpoints
-    app.MapHealthEndpoints();
+    // Map feature endpoints
     app.MapAuthEndpoints();
     app.MapDailyLogEndpoints();
     app.MapWeeklySummaryEndpoints();

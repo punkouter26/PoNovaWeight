@@ -28,8 +28,8 @@ public class EndpointTests
         // Arrange
         var client = CreateClientWithMockedDependencies();
 
-        // Act
-        var response = await client.GetAsync("/api/health");
+        // Act - uses Aspire default /health endpoint
+        var response = await client.GetAsync("/health");
 
         // Assert
         response.EnsureSuccessStatusCode();
@@ -70,7 +70,7 @@ public class EndpointTests
     }
 
     [Fact]
-    public async Task GetDailyLog_NonExistentEntry_ReturnsNotFound()
+    public async Task GetDailyLog_NonExistentEntry_ReturnsEmptyLog()
     {
         // Arrange
         var testDate = DateOnly.FromDateTime(DateTime.UtcNow);
@@ -79,8 +79,12 @@ public class EndpointTests
         // Act
         var response = await client.GetAsync($"/api/daily-logs/{testDate:yyyy-MM-dd}");
 
-        // Assert - API returns 404 when no entry exists
-        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        // Assert - API returns 200 with empty log (not 404) to avoid client console errors
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var log = await response.Content.ReadFromJsonAsync<DailyLogDto>();
+        Assert.NotNull(log);
+        Assert.Equal(testDate, log.Date);
+        Assert.Equal(0, log.Proteins);
     }
 
     [Fact]

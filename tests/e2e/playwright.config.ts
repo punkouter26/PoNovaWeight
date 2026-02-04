@@ -43,6 +43,11 @@ export default defineConfig({
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
+    // Mobile viewport testing per PoTest requirements
+    {
+      name: 'mobile',
+      use: { ...devices['Pixel 5'] },
+    },
   ],
 
   /* Timeout for each test */
@@ -55,11 +60,12 @@ export default defineConfig({
 
   /* Start the Aspire AppHost before running tests */
   webServer: {
-    command: 'dotnet run --project ../../src/PoNovaWeight.AppHost/PoNovaWeight.AppHost.csproj',
+    command: 'dotnet run --project ../../src/PoNovaWeight.AppHost/PoNovaWeight.AppHost.csproj --no-build',
     url: 'http://localhost:5000/health',
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: true,
     timeout: 120000,
     stdout: 'pipe',
     stderr: 'pipe',
+    ignoreHTTPSErrors: true,
   },
 });

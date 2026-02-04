@@ -1,0 +1,20 @@
+# Exclude build outputs
+**/bin/
+**/obj/
+
+# Exclude package managers
+**/node_modules/
+
+# Exclude Azurite data
+azurite/
+
+# Exclude test results and coverage
+**/TestResults/
+**/coverage/
+
+# Exclude IDE/editor files
+.vs/
+*.user
+
+# Exclude generated files
+**/wwwroot/css/app.css
