@@ -110,7 +110,7 @@ public class TrendsEndpointTests
                         options.DefaultScheme = "Test";
                         options.DefaultChallengeScheme = "Test";
                     })
-                    .AddScheme<Microsoft.AspNetCore.Authentication.AuthenticationSchemeOptions, PoNovaWeight.Api.Tests.TestAuth.TestAuthHandler>(
+                    .AddScheme<Microsoft.AspNetCore.Authentication.AuthenticationSchemeOptions, PoNovaWeight.Api.Tests.Integration.TestInfrastructure.TestAuthHandler>(
                         "Test", _ => { });
 
                     services.AddAuthorization(options =>

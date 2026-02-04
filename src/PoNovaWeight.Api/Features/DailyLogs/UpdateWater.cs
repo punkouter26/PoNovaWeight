@@ -13,7 +13,7 @@ public record UpdateWaterCommand(UpdateWaterRequest Request, string UserId = "de
 /// <summary>
 /// Handler for UpdateWaterCommand.
 /// </summary>
-public class UpdateWaterHandler(IDailyLogRepository repository) : IRequestHandler<UpdateWaterCommand, DailyLogDto>
+public sealed class UpdateWaterHandler(IDailyLogRepository repository) : IRequestHandler<UpdateWaterCommand, DailyLogDto>
 {
     public async Task<DailyLogDto> Handle(UpdateWaterCommand request, CancellationToken cancellationToken)
     {
@@ -43,7 +43,10 @@ public class UpdateWaterHandler(IDailyLogRepository repository) : IRequestHandle
             Starches = entity.Starches,
             Fats = entity.Fats,
             Dairy = entity.Dairy,
-            WaterSegments = entity.WaterSegments
+            WaterSegments = entity.WaterSegments,
+            Weight = entity.Weight.HasValue ? (decimal)entity.Weight.Value : null,
+            OmadCompliant = entity.OmadCompliant,
+            AlcoholConsumed = entity.AlcoholConsumed
         };
     }
 }

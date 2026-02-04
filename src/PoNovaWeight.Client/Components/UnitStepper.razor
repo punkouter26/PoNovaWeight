@@ -1,47 +1,56 @@
 @using PoNovaWeight.Shared.Contracts
 
-<div class="flex items-center justify-between p-3 bg-healthy-card rounded-xl shadow-healthy border @(IsOverTarget ? "border-healthy-fruit/30" : "border-healthy-light")">
+<div class="flex items-center justify-between p-4 bg-healthy-card rounded-2xl shadow-elevation-2 border @(IsOverTarget ? "border-healthy-danger/30" : "border-healthy-light") dark:bg-dark-card dark:border-dark-border transition-shadow hover:shadow-elevation-3">
     <div class="flex-1">
-        <div class="flex items-center gap-2">
-            <span class="text-base">@GetCategoryEmoji()</span>
-            <span class="text-sm font-semibold text-healthy-text">@CategoryName</span>
-            @if (IsOverTarget)
-            {
-                <span class="text-[9px] px-1.5 py-0.5 bg-healthy-fruit/10 text-healthy-fruit rounded-full">Over</span>
-            }
-            else if (Current >= Target)
-            {
-                <span class="text-[9px] px-1.5 py-0.5 bg-healthy-light text-healthy-primary rounded-full">✓</span>
-            }
-        </div>
-        <div class="text-[11px] text-healthy-muted mt-0.5">
-            @Current / @Target @(UnitCategoryInfo.IsMaxLimit(Category) ? "max" : "target")
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center @GetCategoryBgClass()">
+                @((MarkupString)GetCategoryIcon())
+            </div>
+            <div>
+                <div class="flex items-center gap-2">
+                    <span class="text-base font-semibold text-healthy-text dark:text-dark-text">@CategoryName</span>
+                    @if (IsOverTarget)
+                    {
+                        <span class="text-xs px-2 py-0.5 bg-healthy-danger/10 text-healthy-danger rounded-full font-medium">Over</span>
+                    }
+                    else if (Current >= Target)
+                    {
+                        <span class="w-5 h-5 rounded-full bg-healthy-primary flex items-center justify-center">
+                            <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                        </span>
+                    }
+                </div>
+                <div class="text-sm text-healthy-muted dark:text-dark-muted">
+                    @Current / @Target @(UnitCategoryInfo.IsMaxLimit(Category) ? "max" : "target")
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-3">
         <button @onclick="Decrement" 
                 disabled="@(Current <= 0)"
-                class="stepper-btn stepper-btn-minus disabled:opacity-40 disabled:cursor-not-allowed"
+                class="w-11 h-11 rounded-full flex items-center justify-center text-lg font-bold border border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100 active:scale-95 transition-all shadow-btn hover:shadow-btn-hover disabled:opacity-40 disabled:cursor-not-allowed dark:bg-dark-card dark:border-dark-border dark:text-dark-muted"
                 aria-label="Decrease @CategoryName">
             −
         </button>
         
-        <span class="w-8 text-center text-lg font-bold @(IsOverTarget ? "text-healthy-fruit" : Current >= Target ? "text-healthy-primary" : "text-healthy-text")">
+        <span class="w-10 text-center text-xl font-bold tabular-nums @(IsOverTarget ? "text-healthy-danger" : Current >= Target ? "text-healthy-primary" : "text-healthy-text dark:text-dark-text")">
             @Current
         </span>
         
         <button @onclick="Increment" 
-                class="stepper-btn stepper-btn-plus"
+                disabled="@(Current >= MaxUnits)"
+                class="w-11 h-11 rounded-full flex items-center justify-center text-lg font-bold bg-healthy-primary text-white hover:bg-healthy-dark active:scale-95 transition-all shadow-btn hover:shadow-btn-hover disabled:opacity-40 disabled:cursor-not-allowed"
                 aria-label="Increase @CategoryName">
             +
         </button>
     </div>
 </div>
 
-<!-- Compact progress bar -->
-<div class="progress-bar mt-1.5">
-    <div class="progress-fill @ProgressColorClass" style="width: @ProgressPercent%"></div>
+<!-- Progress bar with better height for visibility -->
+<div class="h-2 mt-2 rounded-full bg-gray-100 dark:bg-dark-border overflow-hidden">
+    <div class="h-full rounded-full transition-all duration-300 @ProgressColorClass" style="width: @ProgressPercent%"></div>
 </div>
 
 @code {
@@ -54,6 +63,7 @@
     [Parameter]
     public EventCallback<int> OnValueChanged { get; set; }
 
+    private const int MaxUnits = 100;
     private string CategoryName => Category.ToString();
     private int Target => UnitCategoryInfo.GetDailyTarget(Category);
     private bool IsOverTarget => Current > Target;
@@ -61,20 +71,31 @@
     private int ProgressPercent => Target > 0 ? Math.Min(100, (int)((double)Current / Target * 100)) : 0;
     
     private string ProgressColorClass => IsOverTarget 
-        ? "progress-fill-danger" 
+        ? "bg-healthy-danger" 
         : Current >= Target 
-            ? "progress-fill-success" 
-            : "progress-fill-warning";
+            ? "bg-healthy-primary" 
+            : "bg-healthy-warning";
 
-    private string GetCategoryEmoji() => Category switch
+    private string GetCategoryBgClass() => Category switch
     {
-        UnitCategory.Proteins => "🥩",
-        UnitCategory.Vegetables => "🥬",
-        UnitCategory.Fruits => "🍎",
-        UnitCategory.Starches => "🍞",
-        UnitCategory.Fats => "🥑",
-        UnitCategory.Dairy => "🧀",
-        _ => "📊"
+        UnitCategory.Proteins => "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+        UnitCategory.Vegetables => "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+        UnitCategory.Fruits => "bg-rose-100 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400",
+        UnitCategory.Starches => "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
+        UnitCategory.Fats => "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
+        UnitCategory.Dairy => "bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-400",
+        _ => "bg-gray-100 text-gray-600"
+    };
+
+    private string GetCategoryIcon() => Category switch
+    {
+        UnitCategory.Proteins => """<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.87c1.355 0 2.697.055 4.024.165C17.155 8.51 18 9.473 18 10.608v2.513m-3-4.87v-1.5m-6 1.5v-1.5m12 9.75l-1.5.75a3.354 3.354 0 01-3 0 3.354 3.354 0 00-3 0 3.354 3.354 0 01-3 0 3.354 3.354 0 00-3 0 3.354 3.354 0 01-3 0L3 16.5m18-4.5a3 3 0 00-3-3h-2.25a3 3 0 00-3 3M21 12a3 3 0 00-3-3h-2.25a3 3 0 00-3 3m0 0V9a3 3 0 00-3-3H6.75a3 3 0 00-3 3v3"/></svg>""",
+        UnitCategory.Vegetables => """<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418"/></svg>""",
+        UnitCategory.Fruits => """<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>""",
+        UnitCategory.Starches => """<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v17.25m0 0c-1.472 0-2.882.265-4.185.75M12 20.25c1.472 0 2.882.265 4.185.75M18.75 4.97A48.416 48.416 0 0012 4.5c-2.291 0-4.545.16-6.75.47m13.5 0c1.01.143 2.01.317 3 .52m-3-.52l2.62 10.726c.122.499-.106 1.028-.589 1.202a5.988 5.988 0 01-2.031.352 5.988 5.988 0 01-2.031-.352c-.483-.174-.711-.703-.59-1.202L18.75 4.971zm-16.5.52c.99-.203 1.99-.377 3-.52m0 0l2.62 10.726c.122.499-.106 1.028-.589 1.202a5.989 5.989 0 01-2.031.352 5.989 5.989 0 01-2.031-.352c-.483-.174-.711-.703-.59-1.202L5.25 4.971z"/></svg>""",
+        UnitCategory.Fats => """<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z"/></svg>""",
+        UnitCategory.Dairy => """<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5"/></svg>""",
+        _ => """<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75z"/></svg>"""
     };
 
     private async Task Increment()

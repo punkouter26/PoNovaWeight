@@ -12,7 +12,7 @@ public record GetDailyLogQuery(DateOnly Date, string UserId = "dev-user") : IReq
 /// <summary>
 /// Handler for GetDailyLogQuery.
 /// </summary>
-public class GetDailyLogHandler(IDailyLogRepository repository) : IRequestHandler<GetDailyLogQuery, DailyLogDto?>
+public sealed class GetDailyLogHandler(IDailyLogRepository repository) : IRequestHandler<GetDailyLogQuery, DailyLogDto?>
 {
     public async Task<DailyLogDto?> Handle(GetDailyLogQuery request, CancellationToken cancellationToken)
     {

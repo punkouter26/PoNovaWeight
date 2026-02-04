@@ -1,6 +1,0 @@
-{
-  "name": "github-oidc-production-env",
-  "issuer": "https://token.actions.githubusercontent.com",
-  "subject": "repo:punkouter26/PoNovaWeight:environment:production",
-  "audiences": ["api://AzureADTokenExchange"]
-}

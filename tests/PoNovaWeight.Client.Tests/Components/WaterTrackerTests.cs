@@ -81,17 +81,17 @@ public class WaterTrackerTests : BunitContext
     [Fact]
     public void WaterTracker_CheckmarkDisplay_BasedOnCompletionStatus()
     {
-        // At 8 segments - shows checkmark
+        // At 8 segments - shows checkmark (SVG icon)
         var cutComplete = Render<WaterTracker>(parameters => parameters
             .Add(p => p.FilledSegments, 8)
             .Add(p => p.OnSegmentChanged, _ => { }));
-        Assert.Contains("✓", cutComplete.Markup);
+        Assert.Contains("M4.5 12.75l6 6 9-13.5", cutComplete.Markup);
 
         // Below 8 segments - no checkmark
         var cutIncomplete = Render<WaterTracker>(parameters => parameters
             .Add(p => p.FilledSegments, 7)
             .Add(p => p.OnSegmentChanged, _ => { }));
-        Assert.DoesNotContain("✓", cutIncomplete.Markup);
+        Assert.DoesNotContain("M4.5 12.75l6 6 9-13.5", cutIncomplete.Markup);
     }
 
     [Fact]

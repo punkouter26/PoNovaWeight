@@ -1,3 +1,5 @@
+using System.Collections.Frozen;
+
 namespace PoNovaWeight.Shared.Contracts;
 
 /// <summary>
@@ -8,8 +10,9 @@ public static class UnitCategoryInfo
 {
     /// <summary>
     /// Target/max values for each category. IsMax indicates if the target is a maximum limit (Dairy) vs a goal.
+    /// Uses FrozenDictionary for optimized read-only lookups.
     /// </summary>
-    public static readonly IReadOnlyDictionary<UnitCategory, (int Target, bool IsMax)> Targets =
+    public static readonly FrozenDictionary<UnitCategory, (int Target, bool IsMax)> Targets =
         new Dictionary<UnitCategory, (int, bool)>
         {
             [UnitCategory.Proteins] = (15, false),
@@ -18,7 +21,7 @@ public static class UnitCategoryInfo
             [UnitCategory.Starches] = (2, false),
             [UnitCategory.Fats] = (4, false),
             [UnitCategory.Dairy] = (3, true) // "max" not "target"
-        };
+        }.ToFrozenDictionary();
 
     /// <summary>
     /// Conversion factor: 1 dairy unit = 2 protein units equivalent.

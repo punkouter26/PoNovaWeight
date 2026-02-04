@@ -9,27 +9,18 @@ namespace PoNovaWeight.Api.Infrastructure.OpenAI;
 /// <summary>
 /// Service for analyzing meal images using Azure OpenAI GPT-4 Vision.
 /// </summary>
-public class MealAnalysisService : IMealAnalysisService
+public class MealAnalysisService(
+    AzureOpenAIClient client,
+    IConfiguration configuration,
+    ILogger<MealAnalysisService> logger) : IMealAnalysisService
 {
-    private readonly AzureOpenAIClient _client;
-    private readonly ILogger<MealAnalysisService> _logger;
-    private readonly string _deploymentName;
-
-    public MealAnalysisService(
-        AzureOpenAIClient client,
-        IConfiguration configuration,
-        ILogger<MealAnalysisService> logger)
-    {
-        _client = client;
-        _logger = logger;
-        _deploymentName = configuration["AzureOpenAI:DeploymentName"] ?? "gpt-4o";
-    }
+    private readonly string _deploymentName = configuration["AzureOpenAI:DeploymentName"] ?? "gpt-4o";
 
     public async Task<MealScanResultDto> AnalyzeMealAsync(string imageBase64, CancellationToken cancellationToken = default)
     {
         try
         {
-            var chatClient = _client.GetChatClient(_deploymentName);
+            var chatClient = client.GetChatClient(_deploymentName);
 
             var systemPrompt = BuildSystemPrompt();
             var userContent = new List<ChatMessageContentPart>
@@ -61,12 +52,12 @@ public class MealAnalysisService : IMealAnalysisService
             }
 
             var jsonResponse = response.Value.Content[0].Text;
-            _logger.LogInformation("OpenAI raw response: {JsonResponse}", jsonResponse);
+            logger.LogInformation("OpenAI raw response: {JsonResponse}", jsonResponse);
             return ParseAnalysisResponse(jsonResponse);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error analyzing meal image");
+            logger.LogError(ex, "Error analyzing meal image");
             return MealScanResultDto.FromError($"Analysis failed: {ex.Message}");
         }
     }

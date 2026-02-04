@@ -12,7 +12,7 @@ public record ScanMealCommand(MealScanRequestDto Request, string UserId = "dev-u
 /// <summary>
 /// Handler for ScanMealCommand.
 /// </summary>
-public class ScanMealHandler : IRequestHandler<ScanMealCommand, MealScanResultDto>
+public sealed class ScanMealHandler : IRequestHandler<ScanMealCommand, MealScanResultDto>
 {
     private readonly IMealAnalysisService _analysisService;
     private readonly ILogger<ScanMealHandler> _logger;

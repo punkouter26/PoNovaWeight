@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
 
-namespace PoNovaWeight.Api.Tests.TestAuth;
+namespace PoNovaWeight.Api.Tests.Integration.TestInfrastructure;
 
 /// <summary>
 /// Test authentication handler for integration tests.

@@ -7,16 +7,9 @@ namespace PoNovaWeight.Client.Services;
 /// <summary>
 /// Client-side authentication service that manages auth state.
 /// </summary>
-public class AuthService
+public class AuthService(ApiClient apiClient, AuthenticationStateProvider authStateProvider)
 {
-    private readonly ApiClient _apiClient;
-    private readonly NovaAuthStateProvider _authStateProvider;
-
-    public AuthService(ApiClient apiClient, AuthenticationStateProvider authStateProvider)
-    {
-        _apiClient = apiClient;
-        _authStateProvider = (NovaAuthStateProvider)authStateProvider;
-    }
+    private readonly NovaAuthStateProvider _authStateProvider = (NovaAuthStateProvider)authStateProvider;
 
     /// <summary>
     /// Gets the current user's authentication status.
@@ -25,7 +18,7 @@ public class AuthService
     {
         try
         {
-            return await _apiClient.GetCurrentUserAsync();
+            return await apiClient.GetCurrentUserAsync();
         }
         catch
         {

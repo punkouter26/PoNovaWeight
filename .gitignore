@@ -99,3 +99,7 @@ docs/coverage/
 *.lcov
 coverage.cobertura.xml
 .azure
+
+# PoTune workflow state
+.potune-state.json
+Metrics.txt

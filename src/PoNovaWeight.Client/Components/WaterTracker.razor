@@ -1,50 +1,52 @@
 @using PoNovaWeight.Shared.Contracts
 
-<div class="bg-healthy-card rounded-xl shadow-healthy border border-healthy-light p-3">
-    <div class="flex items-center justify-between mb-2">
+<div class="bg-white dark:bg-dark-card rounded-2xl shadow-elevation-2 border border-healthy-light dark:border-dark-border p-4">
+    <div class="flex items-center justify-between mb-3">
         <div class="flex items-center gap-2">
-            <span class="text-base">💧</span>
-            <span class="text-sm font-semibold text-healthy-text">Water</span>
+            <div class="w-8 h-8 rounded-lg bg-sky-100 dark:bg-sky-900/30 flex items-center justify-center">
+                <svg class="w-5 h-5 text-healthy-water" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8z"/></svg>
+            </div>
+            <span class="text-sm font-semibold text-healthy-text dark:text-dark-text">Water</span>
             @if (FilledSegments >= UnitCategoryInfo.WaterTargetSegments)
             {
-                <span class="text-[9px] px-1.5 py-0.5 bg-healthy-water/10 text-healthy-water rounded-full">✓</span>
+                <span class="flex items-center justify-center w-5 h-5 bg-healthy-water/10 text-healthy-water rounded-full">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                </span>
             }
         </div>
-        <span class="text-[11px] text-healthy-muted">@FilledSegments/@UnitCategoryInfo.WaterTargetSegments glasses</span>
+        <span class="text-xs text-healthy-muted dark:text-dark-muted font-medium">@FilledSegments/@UnitCategoryInfo.WaterTargetSegments glasses</span>
     </div>
 
-    <!-- Compact 8-segment water tracker -->
-    <div class="flex justify-center gap-1.5">
+    <!-- 8-segment water tracker with 44px touch targets -->
+    <div class="flex justify-center gap-2">
         @for (int i = 0; i < UnitCategoryInfo.WaterTargetSegments; i++)
         {
             var index = i; // Capture for closure
             var filled = index < FilledSegments;
             
             <button @onclick="() => ToggleSegment(index)"
-                    class="water-segment @(filled ? "water-segment-filled" : "water-segment-empty")"
+                    class="w-10 h-11 rounded-xl flex items-center justify-center transition-all duration-200 @(filled ? "bg-healthy-water shadow-sm" : "bg-gray-100 dark:bg-dark-border hover:bg-sky-100 dark:hover:bg-sky-900/30")"
                     data-water-segment="@(index + 1)"
                     aria-label="@(filled ? "Remove" : "Add") water glass @(index + 1)">
-                @if (filled)
-                {
-                    <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8z"/>
-                    </svg>
-                }
+                <svg class="w-4 h-4 @(filled ? "text-white" : "text-gray-400 dark:text-dark-muted")" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8z"/>
+                </svg>
             </button>
         }
     </div>
 
-    <!-- Compact progress bar -->
-    <div class="mt-2">
-        <div class="progress-bar">
-            <div class="progress-fill bg-healthy-water" style="width: @ProgressPercent%"></div>
+    <!-- Progress bar -->
+    <div class="mt-4">
+        <div class="h-2 bg-gray-100 dark:bg-dark-border rounded-full overflow-hidden">
+            <div class="h-full bg-healthy-water rounded-full transition-all duration-300" style="width: @ProgressPercent%"></div>
         </div>
     </div>
 
     @if (FilledSegments >= UnitCategoryInfo.WaterTargetSegments)
     {
-        <div class="mt-1.5 text-center text-[10px] text-healthy-water font-medium">
-            Daily water goal reached! 💦
+        <div class="mt-3 text-center text-sm text-healthy-water font-medium flex items-center justify-center gap-1.5">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8z"/></svg>
+            Daily water goal reached!
         </div>
     }
 </div>

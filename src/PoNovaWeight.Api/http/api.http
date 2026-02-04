@@ -13,12 +13,6 @@ POST {{baseUrl}}/api/auth/dev-login?email=dev-user@local
 ### Get Current User (check auth status)
 GET {{baseUrl}}/api/auth/me
 
-### Login (redirects to Google OAuth - open in browser)
-# GET {{baseUrl}}/api/auth/login
-
-### Logout (redirects to home - open in browser)
-# GET {{baseUrl}}/api/auth/logout
-
 ### =====================
 ### Health & Diagnostics
 ### =====================
@@ -32,8 +26,9 @@ GET {{baseUrl}}/health
 ### OpenAPI Spec
 GET {{baseUrl}}/openapi/v1.json
 
-### Swagger UI (open in browser)
-# https://localhost:5001/swagger
+### =====================
+### Daily Logs
+### =====================
 
 ### Get Daily Log
 GET {{baseUrl}}/api/daily-logs/2025-01-01

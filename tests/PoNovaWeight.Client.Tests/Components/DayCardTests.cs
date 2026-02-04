@@ -76,7 +76,7 @@ public class DayCardTests : BunitContext
             .Add(p => p.Day, todayDay)
             .Add(p => p.ShowWater, false));
         cutToday.Markup.Should().Contain("Today");
-        cutToday.Markup.Should().Contain("day-card-today");
+        cutToday.Markup.Should().Contain("ring-2 ring-healthy-primary");
 
         // Yesterday should not show badge
         var yesterday = DateOnly.FromDateTime(DateTime.Today.AddDays(-1));
@@ -85,7 +85,7 @@ public class DayCardTests : BunitContext
             .Add(p => p.Day, yesterdayDay)
             .Add(p => p.ShowWater, false));
         cutYesterday.Markup.Should().NotContain(">Today<");
-        cutYesterday.Markup.Should().NotContain("day-card-today");
+        cutYesterday.Markup.Should().NotContain("ring-2 ring-healthy-primary");
     }
 
     [Fact]
@@ -127,8 +127,8 @@ public class DayCardTests : BunitContext
             .Add(p => p.Day, dayWithWater)
             .Add(p => p.ShowWater, true));
 
-        // Water is always shown in compact DayCard with water emoji and count
-        cut.Markup.Should().Contain("💧");
+        // Water is always shown in compact DayCard with SVG water icon and count
+        cut.Markup.Should().Contain("text-healthy-water");
         cut.Markup.Should().Contain("5/8");
     }
 

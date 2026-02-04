@@ -13,7 +13,8 @@ public static class Endpoints
     public static IEndpointRouteBuilder MapMealScanEndpoints(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/api/meal-scan")
-            .WithTags("Meal Scan");
+            .WithTags("Meal Scan")
+            .RequireAuthorization();
 
         group.MapPost("/", ScanMeal)
             .WithName("ScanMeal")

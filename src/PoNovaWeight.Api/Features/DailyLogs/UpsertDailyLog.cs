@@ -12,7 +12,7 @@ public record UpsertDailyLogCommand(DailyLogDto DailyLog, string UserId = "dev-u
 /// <summary>
 /// Handler for UpsertDailyLogCommand.
 /// </summary>
-public class UpsertDailyLogHandler(IDailyLogRepository repository) : IRequestHandler<UpsertDailyLogCommand, DailyLogDto>
+public sealed class UpsertDailyLogHandler(IDailyLogRepository repository) : IRequestHandler<UpsertDailyLogCommand, DailyLogDto>
 {
     public async Task<DailyLogDto> Handle(UpsertDailyLogCommand request, CancellationToken cancellationToken)
     {

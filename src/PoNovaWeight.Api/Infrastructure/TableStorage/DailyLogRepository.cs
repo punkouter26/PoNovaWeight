@@ -6,15 +6,10 @@ namespace PoNovaWeight.Api.Infrastructure.TableStorage;
 /// <summary>
 /// Azure Table Storage implementation of daily log repository.
 /// </summary>
-public class DailyLogRepository : IDailyLogRepository
+public class DailyLogRepository(TableServiceClient tableServiceClient) : IDailyLogRepository
 {
     private const string TableName = "DailyLogs";
-    private readonly TableClient _tableClient;
-
-    public DailyLogRepository(TableServiceClient tableServiceClient)
-    {
-        _tableClient = tableServiceClient.GetTableClient(TableName);
-    }
+    private readonly TableClient _tableClient = tableServiceClient.GetTableClient(TableName);
 
     /// <summary>
     /// Ensures the table exists. Should be called at startup.

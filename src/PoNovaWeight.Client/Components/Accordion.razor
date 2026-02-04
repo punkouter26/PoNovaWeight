@@ -1,0 +1,115 @@
+@namespace PoNovaWeight.Client.Components
+
+<div class="bg-white dark:bg-dark-card rounded-2xl shadow-elevation-2 border border-healthy-light dark:border-dark-border overflow-hidden">
+    <!-- Accordion Header -->
+    <button @onclick="Toggle"
+            class="w-full min-h-[44px] p-4 flex items-center justify-between hover:bg-healthy-light/50 dark:hover:bg-dark-border/50 transition-colors">
+        <div class="flex items-center gap-3">
+            @if (!string.IsNullOrEmpty(Icon))
+            {
+                <div class="w-8 h-8 rounded-lg bg-healthy-light dark:bg-healthy-primary/20 flex items-center justify-center text-lg">
+                    @Icon
+                </div>
+            }
+            <div class="text-left">
+                <span class="text-sm font-semibold text-healthy-text dark:text-dark-text">@Title</span>
+                @if (!string.IsNullOrEmpty(Subtitle))
+                {
+                    <span class="ml-2 text-xs text-healthy-muted dark:text-dark-muted">@Subtitle</span>
+                }
+            </div>
+        </div>
+        
+        <!-- Chevron with rotation -->
+        <svg class="w-5 h-5 text-healthy-muted dark:text-dark-muted transition-transform duration-300 @(IsExpanded ? "rotate-180" : "")" 
+             fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
+        </svg>
+    </button>
+    
+    <!-- Accordion Content with CSS Grid animation -->
+    <div class="grid @GetAnimationClass()">
+        <div class="overflow-hidden">
+            @if (IsExpanded || _hasBeenOpened)
+            {
+                <div class="p-4 pt-0 @(IsExpanded ? "" : "invisible")">
+                    @ChildContent
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    /// <summary>
+    /// The title displayed in the accordion header.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public string Title { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Optional subtitle/badge displayed next to the title (e.g., "2 of 6").
+    /// </summary>
+    [Parameter]
+    public string? Subtitle { get; set; }
+
+    /// <summary>
+    /// Optional icon/emoji displayed in the header.
+    /// </summary>
+    [Parameter]
+    public string? Icon { get; set; }
+
+    /// <summary>
+    /// Whether the accordion is currently expanded.
+    /// </summary>
+    [Parameter]
+    public bool IsExpanded { get; set; }
+
+    /// <summary>
+    /// Callback when the expanded state changes.
+    /// </summary>
+    [Parameter]
+    public EventCallback<bool> IsExpandedChanged { get; set; }
+
+    /// <summary>
+    /// The content to display when expanded.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    // Track if accordion has ever been opened (for lazy rendering)
+    private bool _hasBeenOpened;
+    private bool _isFirstRender = true;
+
+    protected override void OnParametersSet()
+    {
+        if (IsExpanded)
+        {
+            _hasBeenOpened = true;
+        }
+    }
+
+    private async Task Toggle()
+    {
+        _isFirstRender = false;
+        IsExpanded = !IsExpanded;
+        
+        if (IsExpanded)
+        {
+            _hasBeenOpened = true;
+        }
+        
+        await IsExpandedChanged.InvokeAsync(IsExpanded);
+    }
+
+    private string GetAnimationClass()
+    {
+        // Skip animation on first render to avoid flash
+        if (_isFirstRender)
+        {
+            return IsExpanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]";
+        }
+        
+        return IsExpanded ? "animate-accordion-open" : "animate-accordion-close";
+    }
+}

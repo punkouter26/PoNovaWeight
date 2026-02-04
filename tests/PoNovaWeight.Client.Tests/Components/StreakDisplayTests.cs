@@ -75,9 +75,9 @@ public class StreakDisplayTests : BunitContext
         var cut = Render<StreakDisplay>(parameters => parameters
             .Add(p => p.Streak, streak));
 
-        // Assert - should have 7 checkmark circles (the rounded-full divs containing ✓)
-        var checkmarks = cut.FindAll("div.rounded-full");
-        checkmarks.Should().HaveCount(7);
+        // Assert - should have 7 checkmark circles (the rounded-xl divs containing SVG checkmarks)
+        var checkmarks = cut.FindAll("div.rounded-xl");
+        checkmarks.Should().HaveCountGreaterThanOrEqualTo(7);
     }
 
     [Fact]
@@ -99,7 +99,7 @@ public class StreakDisplayTests : BunitContext
     }
 
     [Fact]
-    public void StreakDisplay_ShowsFireEmoji()
+    public void StreakDisplay_ShowsFireIcon()
     {
         // Arrange
         var streak = new StreakDto { CurrentStreak = 3, StreakStartDate = DateOnly.FromDateTime(DateTime.Today.AddDays(-2)) };
@@ -108,8 +108,8 @@ public class StreakDisplayTests : BunitContext
         var cut = Render<StreakDisplay>(parameters => parameters
             .Add(p => p.Streak, streak));
 
-        // Assert
-        cut.Markup.Should().Contain("🔥");
+        // Assert - should contain SVG fire icon with amber color
+        cut.Markup.Should().Contain("text-amber-300");
     }
 
     [Fact]

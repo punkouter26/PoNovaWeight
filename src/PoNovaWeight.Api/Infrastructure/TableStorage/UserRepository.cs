@@ -6,15 +6,10 @@ namespace PoNovaWeight.Api.Infrastructure.TableStorage;
 /// <summary>
 /// Azure Table Storage implementation of user repository.
 /// </summary>
-public class UserRepository : IUserRepository
+public class UserRepository(TableServiceClient tableServiceClient) : IUserRepository
 {
     private const string TableName = "Users";
-    private readonly TableClient _tableClient;
-
-    public UserRepository(TableServiceClient tableServiceClient)
-    {
-        _tableClient = tableServiceClient.GetTableClient(TableName);
-    }
+    private readonly TableClient _tableClient = tableServiceClient.GetTableClient(TableName);
 
     /// <inheritdoc/>
     public async Task InitializeAsync(CancellationToken cancellationToken = default)

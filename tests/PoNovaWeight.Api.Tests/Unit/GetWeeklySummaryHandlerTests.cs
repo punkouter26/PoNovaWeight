@@ -1,19 +1,25 @@
 using FluentAssertions;
+using Microsoft.Extensions.Caching.Hybrid;
 using Moq;
 using PoNovaWeight.Api.Features.WeeklySummary;
 using PoNovaWeight.Api.Infrastructure.TableStorage;
+using PoNovaWeight.Api.Tests.TestAuth;
+using PoNovaWeight.Shared.DTOs;
 
 namespace PoNovaWeight.Api.Tests.Unit;
 
 public class GetWeeklySummaryHandlerTests
 {
     private readonly Mock<IDailyLogRepository> _repositoryMock;
+    private readonly HybridCache _cache;
     private readonly GetWeeklySummaryHandler _handler;
 
     public GetWeeklySummaryHandlerTests()
     {
         _repositoryMock = new Mock<IDailyLogRepository>();
-        _handler = new GetWeeklySummaryHandler(_repositoryMock.Object);
+        _cache = new FakeHybridCache();
+        
+        _handler = new GetWeeklySummaryHandler(_repositoryMock.Object, _cache);
     }
 
     [Fact]

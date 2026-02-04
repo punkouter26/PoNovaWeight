@@ -94,7 +94,7 @@ public class UnitStepperTests : BunitContext
 
         // Assert - should show "Over" badge and danger progress bar
         cut.Markup.Should().Contain(">Over<");
-        cut.Markup.Should().Contain("progress-fill-danger");
+        cut.Markup.Should().Contain("bg-healthy-danger");
     }
 
     [Fact]

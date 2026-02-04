@@ -3,6 +3,7 @@ using Moq;
 using PoNovaWeight.Api.Features.DailyLogs;
 using PoNovaWeight.Api.Features.WeeklySummary;
 using PoNovaWeight.Api.Infrastructure.TableStorage;
+using PoNovaWeight.Api.Tests.TestAuth;
 
 namespace PoNovaWeight.Api.Tests.Unit;
 
@@ -20,7 +21,10 @@ public class DailyLogAndWeeklySummaryConsolidatedTests
     {
         _repositoryMock = new Mock<IDailyLogRepository>();
         _dailyLogHandler = new GetDailyLogHandler(_repositoryMock.Object);
-        _weeklySummaryHandler = new GetWeeklySummaryHandler(_repositoryMock.Object);
+        
+        var cache = new FakeHybridCache();
+        
+        _weeklySummaryHandler = new GetWeeklySummaryHandler(_repositoryMock.Object, cache);
     }
 
     #region GetDailyLog Tests

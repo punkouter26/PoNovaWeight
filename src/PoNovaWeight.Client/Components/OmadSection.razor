@@ -16,7 +16,7 @@
                    max="500"
                    placeholder="Enter weight"
                    value="@WeightInputValue"
-                   @oninput="OnWeightInput"
+                   @onchange="OnWeightChange"
                    class="flex-1 px-3 py-2 text-sm rounded-lg border border-healthy-light bg-healthy-bg text-healthy-text placeholder-healthy-muted focus:outline-none focus:ring-2 focus:ring-healthy-primary focus:border-transparent" />
             @if (Weight.HasValue)
             {
@@ -41,7 +41,7 @@
             <span class="text-lg">🍽️</span>
             <span class="text-sm font-medium text-healthy-text">Did you eat OMAD today?</span>
         </div>
-        <div class="flex gap-4">
+        <div class="flex items-center gap-4">
             <label class="flex items-center gap-2 cursor-pointer">
                 <input type="radio" 
                        name="omad" 
@@ -58,6 +58,14 @@
                        class="w-4 h-4 text-healthy-primary focus:ring-healthy-primary" />
                 <span class="text-sm text-healthy-text">No</span>
             </label>
+            @if (OmadCompliant.HasValue)
+            {
+                <button @onclick="ClearOmad" 
+                        class="p-1 text-healthy-muted hover:text-healthy-danger transition-colors text-xs"
+                        title="Clear selection">
+                    ✕ Clear
+                </button>
+            }
         </div>
     </div>
 
@@ -67,7 +75,7 @@
             <span class="text-lg">🍺</span>
             <span class="text-sm font-medium text-healthy-text">Did you drink alcohol today?</span>
         </div>
-        <div class="flex gap-4">
+        <div class="flex items-center gap-4">
             <label class="flex items-center gap-2 cursor-pointer">
                 <input type="radio" 
                        name="alcohol" 
@@ -84,6 +92,14 @@
                        class="w-4 h-4 text-healthy-primary focus:ring-healthy-primary" />
                 <span class="text-sm text-healthy-text">No</span>
             </label>
+            @if (AlcoholConsumed.HasValue)
+            {
+                <button @onclick="ClearAlcohol" 
+                        class="p-1 text-healthy-muted hover:text-healthy-danger transition-colors text-xs"
+                        title="Clear selection">
+                    ✕ Clear
+                </button>
+            }
         </div>
     </div>
 </div>
@@ -122,7 +138,7 @@
             ? Math.Abs(Weight.Value - PreviousDayWeight.Value) 
             : 0m;
 
-    private async Task OnWeightInput(ChangeEventArgs e)
+    private async Task OnWeightChange(ChangeEventArgs e)
     {
         if (decimal.TryParse(e.Value?.ToString(), out var weight))
         {
@@ -143,53 +159,21 @@
 
     private async Task SetOmad(bool value)
     {
-        // If clicking the same value, clear it (toggle off)
-        bool? newValue = OmadCompliant == value ? null : value;
-        await OmadCompliantChanged.InvokeAsync(newValue);
+        await OmadCompliantChanged.InvokeAsync(value);
     }
 
     private async Task SetAlcohol(bool value)
     {
-        // If clicking the same value, clear it (toggle off)
-        bool? newValue = AlcoholConsumed == value ? null : value;
-        await AlcoholConsumedChanged.InvokeAsync(newValue);
+        await AlcoholConsumedChanged.InvokeAsync(value);
     }
 
-    private async Task ToggleOmad()
+    private async Task ClearOmad()
     {
-        // Toggle through: null -> true -> false -> null
-        bool? newValue = OmadCompliant switch
-        {
-            null => true,
-            true => false,
-            false => null
-        };
-        await OmadCompliantChanged.InvokeAsync(newValue);
+        await OmadCompliantChanged.InvokeAsync(null);
     }
 
-    private async Task ToggleAlcohol()
+    private async Task ClearAlcohol()
     {
-        // Toggle through: null -> true -> false -> null
-        bool? newValue = AlcoholConsumed switch
-        {
-            null => true,
-            true => false,
-            false => null
-        };
-        await AlcoholConsumedChanged.InvokeAsync(newValue);
+        await AlcoholConsumedChanged.InvokeAsync(null);
     }
-
-    private static string GetToggleClass(bool? value) => value switch
-    {
-        true => "relative inline-flex h-6 w-11 items-center rounded-full bg-healthy-primary transition-colors focus:outline-none focus:ring-2 focus:ring-healthy-primary focus:ring-offset-2",
-        false => "relative inline-flex h-6 w-11 items-center rounded-full bg-healthy-danger transition-colors focus:outline-none focus:ring-2 focus:ring-healthy-primary focus:ring-offset-2",
-        null => "relative inline-flex h-6 w-11 items-center rounded-full bg-healthy-light transition-colors focus:outline-none focus:ring-2 focus:ring-healthy-primary focus:ring-offset-2"
-    };
-
-    private static string GetToggleKnobClass(bool? value) => value switch
-    {
-        true => "inline-block h-4 w-4 transform rounded-full bg-white transition-transform translate-x-6",
-        false => "inline-block h-4 w-4 transform rounded-full bg-white transition-transform translate-x-1",
-        null => "inline-block h-4 w-4 transform rounded-full bg-white transition-transform translate-x-3"
-    };
 }

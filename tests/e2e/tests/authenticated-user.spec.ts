@@ -52,11 +52,12 @@ test.describe('Authenticated User Tests', () => {
     expect(afterLogout.isAuthenticated).toBe(false);
   });
 
-  test('Multiple users can have separate sessions', async ({ page, context }) => {
+  test('Multiple users can have separate sessions', async ({ page, browser }) => {
     // First user is already logged in from beforeEach
 
-    // Create a new page (isolated cookies)
-    const page2 = await context.newPage();
+    // Create a new isolated context (separate cookies)
+    const context2 = await browser.newContext({ ignoreHTTPSErrors: true });
+    const page2 = await context2.newPage();
     await loginAsUser(page2, 'second-user@local');
 
     // Verify both users have correct sessions
@@ -66,6 +67,6 @@ test.describe('Authenticated User Tests', () => {
     expect(user1Status.user?.email).toBe('e2e-test@local');
     expect(user2Status.user?.email).toBe('second-user@local');
 
-    await page2.close();
+    await context2.close();
   });
 });

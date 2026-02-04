@@ -12,14 +12,14 @@ public record CalculateStreakQuery(string UserId = "dev-user") : IRequest<Streak
 /// <summary>
 /// Handler for CalculateStreakQuery.
 /// Calculates streak from stored logs on-demand.
-/// Only explicit OmadCompliant = false breaks streak; null (unlogged) does not.
+/// Requires consecutive days - gaps break the streak.
 /// </summary>
-public class CalculateStreakHandler(IDailyLogRepository repository) : IRequestHandler<CalculateStreakQuery, StreakDto>
+public sealed class CalculateStreakHandler(IDailyLogRepository repository, TimeProvider timeProvider) : IRequestHandler<CalculateStreakQuery, StreakDto>
 {
     public async Task<StreakDto> Handle(CalculateStreakQuery request, CancellationToken cancellationToken)
     {
         // Query the last 365 days of logs
-        var today = DateOnly.FromDateTime(DateTime.Today);
+        var today = DateOnly.FromDateTime(timeProvider.GetLocalNow().DateTime);
         var startDate = today.AddDays(-365);
 
         var entities = await repository.GetRangeAsync(
@@ -33,46 +33,40 @@ public class CalculateStreakHandler(IDailyLogRepository repository) : IRequestHa
             return new StreakDto { CurrentStreak = 0, StreakStartDate = null };
         }
 
-        // Sort by date descending (most recent first)
-        var sortedLogs = entities
-            .OrderByDescending(e => e.RowKey)
-            .ToList();
+        // Create a dictionary for O(1) lookup by date
+        var logsByDate = entities.ToDictionary(e => e.GetDate());
 
-        // Calculate streak
+        // Calculate streak starting from today, going backwards
+        // Requires consecutive days with OmadCompliant = true
         int streak = 0;
         DateOnly? streakStartDate = null;
-        bool foundFirstCompliant = false;
+        var expectedDate = today;
 
-        foreach (var log in sortedLogs)
+        while (expectedDate >= startDate)
         {
-            var date = log.GetDate();
+            if (!logsByDate.TryGetValue(expectedDate, out var log))
+            {
+                // No log for this date - gap in data, break streak
+                break;
+            }
 
             if (!log.OmadCompliant.HasValue)
             {
-                // Null (unlogged) - skip, doesn't break streak
-                continue;
+                // Null (not logged) - treat as gap, break streak
+                break;
             }
 
             if (log.OmadCompliant == true)
             {
-                // OMAD compliant - increment streak
+                // OMAD compliant on this consecutive day - increment streak
                 streak++;
-                streakStartDate = date;
-                foundFirstCompliant = true;
+                streakStartDate = expectedDate;
+                expectedDate = expectedDate.AddDays(-1);
             }
             else
             {
-                // OmadCompliant = false - breaks the streak
-                if (foundFirstCompliant)
-                {
-                    // We already have some compliant days, stop counting
-                    break;
-                }
-                else
-                {
-                    // Most recent logged day is non-compliant, streak is 0
-                    return new StreakDto { CurrentStreak = 0, StreakStartDate = null };
-                }
+                // OmadCompliant = false - explicitly broke streak
+                break;
             }
         }
 

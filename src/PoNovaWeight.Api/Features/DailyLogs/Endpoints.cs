@@ -12,7 +12,8 @@ public static class Endpoints
     public static void MapDailyLogEndpoints(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/api/daily-logs")
-            .WithTags("Daily Logs");
+            .WithTags("Daily Logs")
+            .RequireAuthorization();
 
         // GET /api/daily-logs/{date}
         group.MapGet("/{date}", async (DateOnly date, HttpContext httpContext, IMediator mediator, CancellationToken cancellationToken) =>
@@ -83,7 +84,8 @@ public static class Endpoints
         })
         .WithName("GetStreak")
         .WithSummary("Calculate the current OMAD streak")
-        .Produces<StreakDto>(StatusCodes.Status200OK);
+        .Produces<StreakDto>(StatusCodes.Status200OK)
+        .CacheOutput("ShortCache");
 
         // GET /api/daily-logs/trends?days=30
         group.MapGet("/trends", async (int days, HttpContext httpContext, IMediator mediator, CancellationToken cancellationToken) =>
@@ -93,7 +95,8 @@ public static class Endpoints
         })
         .WithName("GetWeightTrends")
         .WithSummary("Get weight trend data for the specified number of days")
-        .Produces<WeightTrendsDto>(StatusCodes.Status200OK);
+        .Produces<WeightTrendsDto>(StatusCodes.Status200OK)
+        .CacheOutput("TrendsCache");
 
         // GET /api/daily-logs/alcohol-correlation?days=90
         group.MapGet("/alcohol-correlation", async (int days, HttpContext httpContext, IMediator mediator, CancellationToken cancellationToken) =>
@@ -103,7 +106,8 @@ public static class Endpoints
         })
         .WithName("GetAlcoholCorrelation")
         .WithSummary("Get weight correlation between alcohol and non-alcohol days")
-        .Produces<AlcoholCorrelationDto>(StatusCodes.Status200OK);
+        .Produces<AlcoholCorrelationDto>(StatusCodes.Status200OK)
+        .CacheOutput("TrendsCache");
 
         // DELETE /api/daily-logs/{date}
         group.MapDelete("/{date}", async (DateOnly date, HttpContext httpContext, IMediator mediator, CancellationToken cancellationToken) =>

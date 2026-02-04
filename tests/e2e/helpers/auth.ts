@@ -19,7 +19,9 @@ export async function devLogin(
   request: APIRequestContext,
   email: string = 'dev-user@local'
 ): Promise<{ email: string; displayName: string }> {
-  const response = await request.post(`${BASE_URL}/api/auth/dev-login?email=${encodeURIComponent(email)}`);
+  const response = await request.post(`${BASE_URL}/api/auth/dev-login?email=${encodeURIComponent(email)}`, {
+    ignoreHTTPSErrors: true,
+  });
   
   if (!response.ok()) {
     const body = await response.text();

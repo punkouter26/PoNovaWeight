@@ -1,0 +1,73 @@
+@namespace PoNovaWeight.Client.Components
+
+@if (IsOpen)
+{
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" @onclick="OnCancel">
+        <div class="bg-healthy-card rounded-xl shadow-healthy p-6 m-4 max-w-sm" @onclick:stopPropagation>
+            <h3 class="text-lg font-semibold text-healthy-text mb-2">@Title</h3>
+            <p class="text-sm text-healthy-muted mb-4">
+                @ChildContent
+            </p>
+            <div class="flex gap-3">
+                <button @onclick="OnCancel" 
+                        class="flex-1 py-2 text-sm font-medium text-healthy-muted bg-healthy-light rounded-lg hover:bg-gray-200 transition-colors">
+                    @CancelText
+                </button>
+                <button @onclick="OnConfirm" 
+                        disabled="@IsProcessing"
+                        class="flex-1 py-2 text-sm font-medium text-white @ConfirmButtonClass rounded-lg transition-colors disabled:opacity-50">
+                    @if (IsProcessing)
+                    {
+                        <span>@ProcessingText</span>
+                    }
+                    else
+                    {
+                        <span>@ConfirmText</span>
+                    }
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public bool IsOpen { get; set; }
+
+    [Parameter]
+    public string Title { get; set; } = "Confirm";
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string CancelText { get; set; } = "Cancel";
+
+    [Parameter]
+    public string ConfirmText { get; set; } = "Confirm";
+
+    [Parameter]
+    public string ProcessingText { get; set; } = "Processing...";
+
+    [Parameter]
+    public bool IsProcessing { get; set; }
+
+    [Parameter]
+    public string ConfirmButtonClass { get; set; } = "bg-healthy-primary hover:bg-healthy-dark";
+
+    [Parameter]
+    public EventCallback OnCancelClicked { get; set; }
+
+    [Parameter]
+    public EventCallback OnConfirmClicked { get; set; }
+
+    private async Task OnCancel()
+    {
+        await OnCancelClicked.InvokeAsync();
+    }
+
+    private async Task OnConfirm()
+    {
+        await OnConfirmClicked.InvokeAsync();
+    }
+}

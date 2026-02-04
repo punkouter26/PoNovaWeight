@@ -12,7 +12,7 @@ public record DeleteDailyLogCommand(DateOnly Date, string UserId = "dev-user") :
 /// Handler for DeleteDailyLogCommand.
 /// Returns true if the entry was deleted, false if not found.
 /// </summary>
-public class DeleteDailyLogHandler(IDailyLogRepository repository) : IRequestHandler<DeleteDailyLogCommand, bool>
+public sealed class DeleteDailyLogHandler(IDailyLogRepository repository) : IRequestHandler<DeleteDailyLogCommand, bool>
 {
     public async Task<bool> Handle(DeleteDailyLogCommand request, CancellationToken cancellationToken)
     {

@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,24 +7,24 @@ namespace PoNovaWeight.Api.Infrastructure;
 /// <summary>
 /// Global exception handler that converts exceptions to RFC 7807 ProblemDetails responses.
 /// </summary>
-public class GlobalExceptionHandler : IExceptionHandler
+public sealed class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IExceptionHandler
 {
-    private readonly ILogger<GlobalExceptionHandler> _logger;
-
-    public GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger)
-    {
-        _logger = logger;
-    }
-
     public async ValueTask<bool> TryHandleAsync(
         HttpContext httpContext,
         Exception exception,
         CancellationToken cancellationToken)
     {
-        _logger.LogError(exception, "An unhandled exception occurred: {Message}", exception.Message);
+        logger.LogError(exception, "An unhandled exception occurred: {Message}", exception.Message);
 
         var problemDetails = exception switch
         {
+            ValidationException validationEx => new ProblemDetails
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Title = "Validation Failed",
+                Detail = string.Join("; ", validationEx.Errors.Select(e => e.ErrorMessage)),
+                Type = "https://tools.ietf.org/html/rfc7807"
+            },
             UnauthorizedAccessException unauthorizedEx => new ProblemDetails
             {
                 Status = StatusCodes.Status401Unauthorized,

@@ -13,7 +13,8 @@ public static class Endpoints
     public static void MapWeeklySummaryEndpoints(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/api/weekly-summary")
-            .WithTags("Weekly Summary");
+            .WithTags("Weekly Summary")
+            .RequireAuthorization();
 
         // GET /api/weekly-summary/{date}
         // Direct handler - no MediatR overhead for single-use query

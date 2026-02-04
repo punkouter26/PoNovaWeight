@@ -4,32 +4,32 @@
 @inject ApiClient Api
 @inject NavigationManager Navigation
 
-<PageTitle>@DisplayDate - PoNovaWeight</PageTitle>
+<PageTitle>@DisplayDate | PoNovaWeight</PageTitle>
 
 <div class="space-y-3 lg:max-w-2xl lg:mx-auto">
-    <!-- Compact date header with navigation -->
-    <div class="flex items-center justify-between mb-4 bg-healthy-card rounded-xl shadow-healthy p-2 lg:p-3">
+    <!-- Date header with navigation -->
+    <div class="flex items-center justify-between mb-4 bg-white dark:bg-dark-card rounded-2xl shadow-elevation-2 border border-healthy-light dark:border-dark-border p-3 lg:p-4">
         <button @onclick="GoToPreviousDay" 
-                class="p-1.5 lg:p-2 rounded-full hover:bg-healthy-light transition-colors"
+                class="w-11 h-11 flex items-center justify-center rounded-xl hover:bg-healthy-light dark:hover:bg-dark-border transition-colors"
                 disabled="@IsLoading">
-            <svg class="w-5 h-5 lg:w-6 lg:h-6 text-healthy-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            <svg class="w-5 h-5 lg:w-6 lg:h-6 text-healthy-muted dark:text-dark-muted" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/>
             </svg>
         </button>
         
         <div class="text-center">
-            <h1 class="text-base lg:text-lg font-semibold text-healthy-text">@DisplayDate</h1>
+            <h1 class="text-base lg:text-lg font-semibold text-healthy-text dark:text-dark-text">@DisplayDate</h1>
             @if (IsToday)
             {
-                <span class="text-[10px] lg:text-xs text-healthy-primary font-medium">Today</span>
+                <span class="text-xs text-healthy-primary font-medium">Today</span>
             }
         </div>
         
         <button @onclick="GoToNextDay" 
-                class="p-1.5 lg:p-2 rounded-full hover:bg-healthy-light transition-colors"
+                class="w-11 h-11 flex items-center justify-center rounded-xl hover:bg-healthy-light dark:hover:bg-dark-border transition-colors disabled:opacity-30"
                 disabled="@(IsLoading || IsFuture)">
-            <svg class="w-5 h-5 lg:w-6 lg:h-6 text-healthy-muted @(IsFuture ? "opacity-30" : "")" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            <svg class="w-5 h-5 lg:w-6 lg:h-6 text-healthy-muted dark:text-dark-muted" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/>
             </svg>
         </button>
     </div>
@@ -42,37 +42,44 @@
     }
     else
     {
-        <!-- Desktop: 2-column layout for food categories -->
-        <div class="lg:grid lg:grid-cols-2 lg:gap-3">
-            <!-- Compact unit steppers for each category -->
-            <div class="space-y-2 lg:space-y-3">
-                <UnitStepper Category="UnitCategory.Proteins" 
-                             Current="@DailyLog.Proteins" 
-                             OnValueChanged="@(delta => UpdateUnit(UnitCategory.Proteins, delta))" />
+        <!-- Food Categories Accordion - collapsed by default, optional feature -->
+        <Accordion Title="Food Categories" 
+                   Icon="🍽️" 
+                   Subtitle="@GetFoodCategorySummary()"
+                   IsExpanded="@_foodCategoriesExpanded"
+                   IsExpandedChanged="@(expanded => _foodCategoriesExpanded = expanded)">
+            <!-- Desktop: 2-column layout for food categories -->
+            <div class="lg:grid lg:grid-cols-2 lg:gap-3">
+                <!-- Compact unit steppers for each category -->
+                <div class="space-y-2 lg:space-y-3">
+                    <UnitStepper Category="UnitCategory.Proteins" 
+                                 Current="@DailyLog.Proteins" 
+                                 OnValueChanged="@(delta => UpdateUnit(UnitCategory.Proteins, delta))" />
+                    
+                    <UnitStepper Category="UnitCategory.Vegetables" 
+                                 Current="@DailyLog.Vegetables" 
+                                 OnValueChanged="@(delta => UpdateUnit(UnitCategory.Vegetables, delta))" />
+                    
+                    <UnitStepper Category="UnitCategory.Fruits" 
+                                 Current="@DailyLog.Fruits" 
+                                 OnValueChanged="@(delta => UpdateUnit(UnitCategory.Fruits, delta))" />
+                </div>
                 
-                <UnitStepper Category="UnitCategory.Vegetables" 
-                             Current="@DailyLog.Vegetables" 
-                             OnValueChanged="@(delta => UpdateUnit(UnitCategory.Vegetables, delta))" />
-                
-                <UnitStepper Category="UnitCategory.Fruits" 
-                             Current="@DailyLog.Fruits" 
-                             OnValueChanged="@(delta => UpdateUnit(UnitCategory.Fruits, delta))" />
+                <div class="space-y-2 lg:space-y-3 mt-2 lg:mt-0">
+                    <UnitStepper Category="UnitCategory.Starches" 
+                                 Current="@DailyLog.Starches" 
+                                 OnValueChanged="@(delta => UpdateUnit(UnitCategory.Starches, delta))" />
+                    
+                    <UnitStepper Category="UnitCategory.Fats" 
+                                 Current="@DailyLog.Fats" 
+                                 OnValueChanged="@(delta => UpdateUnit(UnitCategory.Fats, delta))" />
+                    
+                    <UnitStepper Category="UnitCategory.Dairy" 
+                                 Current="@DailyLog.Dairy" 
+                                 OnValueChanged="@(delta => UpdateUnit(UnitCategory.Dairy, delta))" />
+                </div>
             </div>
-            
-            <div class="space-y-2 lg:space-y-3 mt-2 lg:mt-0">
-                <UnitStepper Category="UnitCategory.Starches" 
-                             Current="@DailyLog.Starches" 
-                             OnValueChanged="@(delta => UpdateUnit(UnitCategory.Starches, delta))" />
-                
-                <UnitStepper Category="UnitCategory.Fats" 
-                             Current="@DailyLog.Fats" 
-                             OnValueChanged="@(delta => UpdateUnit(UnitCategory.Fats, delta))" />
-                
-                <UnitStepper Category="UnitCategory.Dairy" 
-                             Current="@DailyLog.Dairy" 
-                             OnValueChanged="@(delta => UpdateUnit(UnitCategory.Dairy, delta))" />
-            </div>
-        </div>
+        </Accordion>
 
         <!-- Water Tracking Section -->
         <div class="mt-3">
@@ -93,29 +100,19 @@
         </div>
 
         <!-- Weight Confirmation Modal -->
-        @if (ShowWeightConfirmation)
-        {
-            <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" @onclick="CancelWeightConfirmation">
-                <div class="bg-healthy-card rounded-xl shadow-healthy p-6 m-4 max-w-sm" @onclick:stopPropagation>
-                    <h3 class="text-lg font-semibold text-healthy-text mb-2">⚠️ Confirm Weight Change</h3>
-                    <p class="text-sm text-healthy-muted mb-4">
-                        Your weight changed by <strong>@WeightChangeDelta lbs</strong> from yesterday 
-                        (@PreviousDayWeight?.ToString("0.#") → @PendingWeight?.ToString("0.#") lbs).
-                        Is this correct?
-                    </p>
-                    <div class="flex gap-3">
-                        <button @onclick="CancelWeightConfirmation" 
-                                class="flex-1 py-2 text-sm font-medium text-healthy-muted bg-healthy-light rounded-lg hover:bg-gray-200 transition-colors">
-                            Cancel
-                        </button>
-                        <button @onclick="ConfirmWeightChange" 
-                                class="flex-1 py-2 text-sm font-medium text-white bg-healthy-primary rounded-lg hover:bg-healthy-dark transition-colors">
-                            Confirm
-                        </button>
-                    </div>
-                </div>
-            </div>
-        }
+        <ConfirmDialog IsOpen="@ShowWeightConfirmation"
+                       Title="⚠️ Confirm Weight Entry"
+                       OnCancelClicked="CancelWeightConfirmation"
+                       OnConfirmClicked="ConfirmWeightChange">
+            @if (IsFirstTimeWeightEntry)
+            {
+                <span>You entered <strong>@PendingWeight?.ToString("0.#") lbs</strong> which is outside the typical range (100-350 lbs). Is this correct?</span>
+            }
+            else
+            {
+                <span>Your weight changed by <strong>@WeightChangeDelta lbs</strong> from yesterday (@PreviousDayWeight?.ToString("0.#") → @PendingWeight?.ToString("0.#") lbs). Is this correct?</span>
+            }
+        </ConfirmDialog>
 
         <!-- Compact Scan Meal Button -->
         <div class="mt-4">
@@ -147,42 +144,32 @@
         }
 
         <!-- Delete Confirmation Modal -->
-        @if (ShowDeleteModal)
-        {
-            <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" @onclick="CancelDelete">
-                <div class="bg-healthy-card rounded-xl shadow-healthy p-6 m-4 max-w-sm" @onclick:stopPropagation>
-                    <h3 class="text-lg font-semibold text-healthy-text mb-2">🗑️ Delete Log Entry?</h3>
-                    <p class="text-sm text-healthy-muted mb-4">
-                        Are you sure you want to delete the log for <strong>@CurrentDate.ToString("MMMM d, yyyy")</strong>? 
-                        This action cannot be undone.
-                    </p>
-                    <div class="flex gap-3">
-                        <button @onclick="CancelDelete" 
-                                class="flex-1 py-2 text-sm font-medium text-healthy-muted bg-healthy-light rounded-lg hover:bg-gray-200 transition-colors">
-                            Cancel
-                        </button>
-                        <button @onclick="ConfirmDelete" 
-                                disabled="@IsDeleting"
-                                class="flex-1 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50">
-                            @if (IsDeleting)
-                            {
-                                <span>Deleting...</span>
-                            }
-                            else
-                            {
-                                <span>Delete</span>
-                            }
-                        </button>
-                    </div>
-                </div>
-            </div>
-        }
+        <ConfirmDialog IsOpen="@ShowDeleteModal"
+                       Title="🗑️ Delete Log Entry?"
+                       ConfirmText="Delete"
+                       ProcessingText="Deleting..."
+                       IsProcessing="@IsDeleting"
+                       ConfirmButtonClass="bg-red-600 hover:bg-red-700"
+                       OnCancelClicked="CancelDelete"
+                       OnConfirmClicked="ConfirmDelete">
+            Are you sure you want to delete the log for <strong>@CurrentDate.ToString("MMMM d, yyyy")</strong>? 
+            This action cannot be undone.
+        </ConfirmDialog>
 
-        <!-- Compact back link -->
+        <!-- Save and Go Back Button -->
         <div class="pt-2">
-            <a href="/" class="block w-full py-2 text-center text-healthy-primary text-sm font-medium hover:bg-healthy-light rounded-lg transition-colors">
-                ← Save
-            </a>
+            <button @onclick="SaveAndGoHome" 
+                    disabled="@IsSaving"
+                    class="block w-full py-2 text-center text-healthy-primary text-sm font-medium hover:bg-healthy-light rounded-lg transition-colors disabled:opacity-50">
+                @if (IsSaving)
+                {
+                    <span>Saving...</span>
+                }
+                else
+                {
+                    <span>✓ Save & Go Home</span>
+                }
+            </button>
         </div>
     }
 </div>
@@ -202,6 +189,7 @@
     private decimal? PreviousDayWeight { get; set; }
     private bool ShowWeightConfirmation { get; set; }
     private decimal? PendingWeight { get; set; }
+    private bool IsFirstTimeWeightEntry { get; set; }
     private decimal WeightChangeDelta => PendingWeight.HasValue && PreviousDayWeight.HasValue 
         ? Math.Abs(PendingWeight.Value - PreviousDayWeight.Value) 
         : 0m;
@@ -209,10 +197,31 @@
     // Delete state
     private bool ShowDeleteModal { get; set; }
     private bool IsDeleting { get; set; }
+    private bool IsSaving { get; set; }
     private bool HasLogData => DailyLog.Proteins > 0 || DailyLog.Vegetables > 0 || DailyLog.Fruits > 0 ||
                                DailyLog.Starches > 0 || DailyLog.Fats > 0 || DailyLog.Dairy > 0 ||
                                DailyLog.WaterSegments > 0 || DailyLog.Weight.HasValue ||
                                DailyLog.OmadCompliant.HasValue || DailyLog.AlcoholConsumed.HasValue;
+
+    // Food categories accordion state (collapsed by default)
+    private bool _foodCategoriesExpanded;
+
+    /// <summary>
+    /// Gets a summary string for the food categories accordion header.
+    /// Shows how many categories have been logged (e.g., "2 of 6 tracked").
+    /// </summary>
+    private string GetFoodCategorySummary()
+    {
+        var filledCount = 0;
+        if (DailyLog.Proteins > 0) filledCount++;
+        if (DailyLog.Vegetables > 0) filledCount++;
+        if (DailyLog.Fruits > 0) filledCount++;
+        if (DailyLog.Starches > 0) filledCount++;
+        if (DailyLog.Fats > 0) filledCount++;
+        if (DailyLog.Dairy > 0) filledCount++;
+
+        return filledCount > 0 ? $"{filledCount} of 6 tracked" : "Optional";
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -324,15 +333,27 @@
 
     private async Task UpdateWeight(decimal? weight)
     {
-        // Check if weight change exceeds 5 lbs threshold
+        // Check if weight change exceeds 5 lbs threshold (when previous weight exists)
         if (weight.HasValue && PreviousDayWeight.HasValue)
         {
             var delta = Math.Abs(weight.Value - PreviousDayWeight.Value);
             if (delta > 5m)
             {
-                // Show confirmation modal
+                // Show confirmation modal for large change
                 PendingWeight = weight;
                 ShowWeightConfirmation = true;
+                IsFirstTimeWeightEntry = false;
+                return;
+            }
+        }
+        // First-time weight entry: confirm if outside reasonable range (100-350 lbs)
+        else if (weight.HasValue && !PreviousDayWeight.HasValue)
+        {
+            if (weight.Value < 100m || weight.Value > 350m)
+            {
+                PendingWeight = weight;
+                ShowWeightConfirmation = true;
+                IsFirstTimeWeightEntry = true;
                 return;
             }
         }
@@ -371,7 +392,8 @@
             {
                 Weight = weight,
                 OmadCompliant = omadCompliant,
-                AlcoholConsumed = alcoholConsumed
+                AlcoholConsumed = alcoholConsumed,
+                ClientDate = DateOnly.FromDateTime(DateTime.Today)
             };
 
             await Api.UpsertDailyLogAsync(updatedLog);
@@ -415,6 +437,25 @@
         {
             IsDeleting = false;
             ShowDeleteModal = false;
+        }
+    }
+
+    private async Task SaveAndGoHome()
+    {
+        IsSaving = true;
+        StateHasChanged();
+
+        try
+        {
+            // Explicitly save the current log with ClientDate for timezone-safe validation
+            var logToSave = DailyLog with { ClientDate = DateOnly.FromDateTime(DateTime.Today) };
+            await Api.UpsertDailyLogAsync(logToSave);
+            Navigation.NavigateTo("/");
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error saving log: {ex.Message}");
+            IsSaving = false;
         }
     }
 }

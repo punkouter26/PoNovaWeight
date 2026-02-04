@@ -258,47 +258,35 @@
 
         try
         {
-            // Apply each non-zero category
-            var tasks = new List<Task>();
-
-            if (SuggestedProteins > 0)
-                tasks.Add(ApplyCategoryAsync(UnitCategory.Proteins, SuggestedProteins));
-            if (SuggestedVegetables > 0)
-                tasks.Add(ApplyCategoryAsync(UnitCategory.Vegetables, SuggestedVegetables));
-            if (SuggestedFruits > 0)
-                tasks.Add(ApplyCategoryAsync(UnitCategory.Fruits, SuggestedFruits));
-            if (SuggestedStarches > 0)
-                tasks.Add(ApplyCategoryAsync(UnitCategory.Starches, SuggestedStarches));
-            if (SuggestedFats > 0)
-                tasks.Add(ApplyCategoryAsync(UnitCategory.Fats, SuggestedFats));
-            if (SuggestedDairy > 0)
-                tasks.Add(ApplyCategoryAsync(UnitCategory.Dairy, SuggestedDairy));
-
-            await Task.WhenAll(tasks);
+            // Fix race condition: GET current log, merge suggested values, single PUT
+            var currentLog = await Api.GetDailyLogAsync(CurrentDate) ?? DailyLogDto.Empty(CurrentDate);
             
-            // Navigate back to home page
-            Navigation.NavigateTo("/");
+            // Merge suggested values with existing log (add to current counts, clamped to max 100)
+            var mergedLog = currentLog with
+            {
+                Proteins = Math.Min(100, currentLog.Proteins + SuggestedProteins),
+                Vegetables = Math.Min(100, currentLog.Vegetables + SuggestedVegetables),
+                Fruits = Math.Min(100, currentLog.Fruits + SuggestedFruits),
+                Starches = Math.Min(100, currentLog.Starches + SuggestedStarches),
+                Fats = Math.Min(100, currentLog.Fats + SuggestedFats),
+                Dairy = Math.Min(100, currentLog.Dairy + SuggestedDairy)
+            };
+            
+            // Single atomic upsert - no race condition
+            await Api.UpsertDailyLogAsync(mergedLog);
+            
+            // Navigate back to day detail page
+            Navigation.NavigateTo($"/day/{CurrentDate:yyyy-MM-dd}");
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error saving meal scan: {ex.Message}");
+            ErrorMessage = "Failed to save meal. Please try again.";
+            Step = ScanStep.Error;
         }
         finally
         {
             IsSaving = false;
-        }
-    }
-
-    private async Task ApplyCategoryAsync(UnitCategory category, int units)
-    {
-        try
-        {
-            await Api.IncrementUnitAsync(new IncrementUnitRequest
-            {
-                Date = CurrentDate,
-                Category = category,
-                Delta = units
-            });
-        }
-        catch (Exception ex)
-        {
-            Console.Error.WriteLine($"Error applying {category}: {ex.Message}");
         }
     }
 

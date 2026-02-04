@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 using PoNovaWeight.Api.Features.DailyLogs;
 using PoNovaWeight.Api.Infrastructure.TableStorage;
@@ -11,11 +12,13 @@ public class GetWeightTrendsTests
 {
     private readonly Mock<IDailyLogRepository> _repositoryMock;
     private readonly GetWeightTrendsHandler _handler;
+    private readonly DateOnly _fixedToday = new(2026, 2, 4);
 
     public GetWeightTrendsTests()
     {
         _repositoryMock = new Mock<IDailyLogRepository>();
-        _handler = new GetWeightTrendsHandler(_repositoryMock.Object);
+        var timeProvider = new FakeTimeProvider(new DateTimeOffset(_fixedToday.ToDateTime(TimeOnly.MinValue)));
+        _handler = new GetWeightTrendsHandler(_repositoryMock.Object, timeProvider);
     }
 
     [Fact]

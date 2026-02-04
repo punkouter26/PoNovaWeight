@@ -3,7 +3,9 @@
 
 <div class="alcohol-insights bg-white dark:bg-gray-800 rounded-lg shadow p-4">
     <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100 flex items-center gap-2">
-        <span>🍺</span>
+        <div class="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+            <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5"/></svg>
+        </div>
         <span>Alcohol Impact</span>
     </h3>
 
@@ -24,8 +26,9 @@
             <div class="grid grid-cols-2 gap-3">
                 <!-- Alcohol Days -->
                 <div class="bg-amber-50 dark:bg-amber-900/20 rounded-lg p-3 text-center">
-                    <div class="text-xs text-amber-700 dark:text-amber-300 mb-1">
-                        🍺 Alcohol Days
+                    <div class="text-xs text-amber-700 dark:text-amber-300 mb-1 flex items-center justify-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5"/></svg>
+                        Alcohol Days
                     </div>
                     <div class="text-xl font-bold text-amber-800 dark:text-amber-200">
                         @Correlation.AverageWeightWithAlcohol?.ToString("F1") lbs
@@ -37,8 +40,9 @@
 
                 <!-- Non-Alcohol Days -->
                 <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-3 text-center">
-                    <div class="text-xs text-green-700 dark:text-green-300 mb-1">
-                        💧 Sober Days
+                    <div class="text-xs text-green-700 dark:text-green-300 mb-1 flex items-center justify-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3.75c2.227 2.466 5.25 6.293 5.25 9.75a5.25 5.25 0 11-10.5 0c0-3.457 3.023-7.284 5.25-9.75z"/></svg>
+                        Sober Days
                     </div>
                     <div class="text-xl font-bold text-green-800 dark:text-green-200">
                         @Correlation.AverageWeightWithoutAlcohol?.ToString("F1") lbs
@@ -63,11 +67,11 @@
                         </span>
                         @if (diff > 0)
                         {
-                            <span class="text-xs text-gray-500 dark:text-gray-400">heavier with 🍺</span>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">heavier with alcohol</span>
                         }
                         else if (diff < 0)
                         {
-                            <span class="text-xs text-gray-500 dark:text-gray-400">lighter with 🍺</span>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">lighter with alcohol</span>
                         }
                     }
                 </div>
@@ -79,7 +83,7 @@
                 <div class="text-xs text-gray-500 dark:text-gray-400 text-center italic">
                     @if (Correlation.WeightDifference.Value > 2)
                     {
-                        <text>📈 Consider: alcohol days correlate with higher weight</text>
+                        <text>Consider: alcohol days correlate with higher weight</text>
                     }
                     else if (Correlation.WeightDifference.Value > 0)
                     {

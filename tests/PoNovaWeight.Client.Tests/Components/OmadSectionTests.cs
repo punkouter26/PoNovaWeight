@@ -75,41 +75,41 @@ public class OmadSectionTests : BunitContext
     }
 
     [Fact]
-    public void OmadSection_OmadTrue_TogglesTo_Null()
+    public void OmadSection_OmadTrue_ClickingAgain_KeepsValue()
     {
         // Arrange
-        bool? receivedValue = true; // Start non-null to verify it becomes null
+        bool? receivedValue = true; // Start non-null
         var cut = Render<OmadSection>(parameters => parameters
             .Add(p => p.Weight, null)
             .Add(p => p.OmadCompliant, true) // Start with true
             .Add(p => p.AlcoholConsumed, null)
             .Add(p => p.OmadCompliantChanged, EventCallback.Factory.Create<bool?>(this, v => receivedValue = v)));
 
-        // Act - clicking Yes again should toggle it off (to null)
+        // Act - clicking Yes again should keep the value (Clear button is used to clear)
         var radios = cut.FindAll("input[type='radio'][name='omad']");
         radios[0].Change(true); // Click Yes radio again when already true
 
-        // Assert - true -> null (toggle off)
-        receivedValue.Should().BeNull();
+        // Assert - value stays true (no toggle, use Clear button to clear)
+        receivedValue.Should().BeTrue();
     }
 
     [Fact]
-    public void OmadSection_OmadFalse_TogglesTo_Null()
+    public void OmadSection_OmadFalse_ClickingAgain_KeepsValue()
     {
         // Arrange
-        bool? receivedValue = false; // Set non-null initial to verify it becomes null
+        bool? receivedValue = false; // Set non-null initial
         var cut = Render<OmadSection>(parameters => parameters
             .Add(p => p.Weight, null)
             .Add(p => p.OmadCompliant, false) // Start with false
             .Add(p => p.AlcoholConsumed, null)
             .Add(p => p.OmadCompliantChanged, EventCallback.Factory.Create<bool?>(this, v => receivedValue = v)));
 
-        // Act - clicking No again should toggle it off (to null)
+        // Act - clicking No again should keep the value (Clear button is used to clear)
         var radios = cut.FindAll("input[type='radio'][name='omad']");
         radios[1].Change(true); // Click No radio again when already false
 
-        // Assert - false -> null
-        receivedValue.Should().BeNull();
+        // Assert - value stays false (no toggle, use Clear button to clear)
+        receivedValue.Should().BeFalse();
     }
 
     [Fact]
@@ -167,5 +167,58 @@ public class OmadSectionTests : BunitContext
         // Assert - clear button should not exist
         var clearButton = cut.FindAll("button").FirstOrDefault(b => b.GetAttribute("title") == "Clear weight");
         clearButton.Should().BeNull();
+    }
+
+    [Fact]
+    public void OmadSection_ClearOmadButton_ShowsWhenOmadHasValue()
+    {
+        // Arrange
+        var cut = Render<OmadSection>(parameters => parameters
+            .Add(p => p.Weight, null)
+            .Add(p => p.OmadCompliant, true)
+            .Add(p => p.AlcoholConsumed, null));
+
+        // Assert - clear button for OMAD should be visible
+        cut.Markup.Should().Contain("Clear"); // The ✕ Clear button
+    }
+
+    [Fact]
+    public void OmadSection_ClearOmadButton_ClearsValue()
+    {
+        // Arrange
+        bool? receivedValue = true;
+        var cut = Render<OmadSection>(parameters => parameters
+            .Add(p => p.Weight, null)
+            .Add(p => p.OmadCompliant, true)
+            .Add(p => p.AlcoholConsumed, null)
+            .Add(p => p.OmadCompliantChanged, EventCallback.Factory.Create<bool?>(this, v => receivedValue = v)));
+
+        // Act - click the Clear button (find button containing "Clear" text in the OMAD section)
+        var clearButtons = cut.FindAll("button").Where(b => b.TextContent.Contains("Clear")).ToList();
+        // First Clear button should be for OMAD
+        clearButtons[0].Click();
+
+        // Assert - value is cleared to null
+        receivedValue.Should().BeNull();
+    }
+
+    [Fact]
+    public void OmadSection_ClearAlcoholButton_ClearsValue()
+    {
+        // Arrange
+        bool? receivedValue = true;
+        var cut = Render<OmadSection>(parameters => parameters
+            .Add(p => p.Weight, null)
+            .Add(p => p.OmadCompliant, null)
+            .Add(p => p.AlcoholConsumed, true)
+            .Add(p => p.AlcoholConsumedChanged, EventCallback.Factory.Create<bool?>(this, v => receivedValue = v)));
+
+        // Act - click the Clear button for Alcohol
+        var clearButtons = cut.FindAll("button").Where(b => b.TextContent.Contains("Clear")).ToList();
+        // With only alcohol set, this should be the only Clear button
+        clearButtons[0].Click();
+
+        // Assert - value is cleared to null
+        receivedValue.Should().BeNull();
     }
 }

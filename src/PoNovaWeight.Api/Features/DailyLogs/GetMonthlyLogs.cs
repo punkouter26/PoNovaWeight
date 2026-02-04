@@ -12,7 +12,7 @@ public record GetMonthlyLogsQuery(int Year, int Month, string UserId = "dev-user
 /// <summary>
 /// Handler for GetMonthlyLogsQuery.
 /// </summary>
-public class GetMonthlyLogsHandler(IDailyLogRepository repository) : IRequestHandler<GetMonthlyLogsQuery, MonthlyLogsDto>
+public sealed class GetMonthlyLogsHandler(IDailyLogRepository repository) : IRequestHandler<GetMonthlyLogsQuery, MonthlyLogsDto>
 {
     public async Task<MonthlyLogsDto> Handle(GetMonthlyLogsQuery request, CancellationToken cancellationToken)
     {

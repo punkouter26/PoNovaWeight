@@ -55,8 +55,8 @@ public class LoginTests : BunitContext
         var cut = Render<Login>();
 
         // Assert
-        cut.Markup.Should().Contain("NovaWeight");
-        cut.Markup.Should().Contain("Your personal food journal");
+        cut.Markup.Should().Contain("PoNovaWeight");
+        cut.Markup.Should().Contain("Your personal OMAD food journal");
     }
 
     [Fact]

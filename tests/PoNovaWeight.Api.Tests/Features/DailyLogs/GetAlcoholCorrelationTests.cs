@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 using PoNovaWeight.Api.Features.DailyLogs;
 using PoNovaWeight.Api.Infrastructure.TableStorage;
@@ -10,11 +11,13 @@ public class GetAlcoholCorrelationTests
 {
     private readonly Mock<IDailyLogRepository> _repositoryMock;
     private readonly GetAlcoholCorrelationHandler _handler;
+    private readonly DateOnly _fixedToday = new(2026, 2, 4);
 
     public GetAlcoholCorrelationTests()
     {
         _repositoryMock = new Mock<IDailyLogRepository>();
-        _handler = new GetAlcoholCorrelationHandler(_repositoryMock.Object);
+        var timeProvider = new FakeTimeProvider(new DateTimeOffset(_fixedToday.ToDateTime(TimeOnly.MinValue)));
+        _handler = new GetAlcoholCorrelationHandler(_repositoryMock.Object, timeProvider);
     }
 
     [Fact]

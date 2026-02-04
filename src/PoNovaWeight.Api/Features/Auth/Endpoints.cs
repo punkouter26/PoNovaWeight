@@ -99,10 +99,10 @@ public static class Endpoints
         }));
     }
 
-    private static IResult Login(HttpContext context, IAuthenticationSchemeProvider schemeProvider, string? returnUrl = "/")
+    private static async Task<IResult> Login(HttpContext context, IAuthenticationSchemeProvider schemeProvider, string? returnUrl = "/")
     {
         // Check if Google OAuth is configured
-        var googleScheme = schemeProvider.GetSchemeAsync(GoogleDefaults.AuthenticationScheme).GetAwaiter().GetResult();
+        var googleScheme = await schemeProvider.GetSchemeAsync(GoogleDefaults.AuthenticationScheme);
         if (googleScheme is null)
         {
             // Google OAuth not configured - in development, redirect to dev-login info

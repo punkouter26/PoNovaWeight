@@ -35,6 +35,9 @@ export default defineConfig({
     
     /* Capture screenshot on failure */
     screenshot: 'only-on-failure',
+
+    /* Ignore HTTPS errors for self-signed certs in dev */
+    ignoreHTTPSErrors: true,
   },
 
   /* Configure projects for major browsers */

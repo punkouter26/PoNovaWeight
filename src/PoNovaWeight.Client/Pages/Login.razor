@@ -4,28 +4,32 @@
 @inject HttpClient Http
 @inject AuthService AuthService
 
-<PageTitle>Sign In - NovaWeight</PageTitle>
+<PageTitle>Sign In - PoNovaWeight</PageTitle>
 
-<div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-healthy-primary/10 via-healthy-bg to-healthy-secondary/10 dark:from-dark-bg dark:via-dark-card dark:to-dark-bg py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-md w-full space-y-8">
-        <div>
-            <h1 class="text-center text-3xl font-bold text-gray-900">
-                NovaWeight
+        <!-- Brand Header -->
+        <div class="text-center">
+            <div class="w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-healthy-primary to-healthy-dark flex items-center justify-center shadow-elevation-3">
+                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.383a14.406 14.406 0 01-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 10-7.517 0c.85.493 1.509 1.333 1.509 2.316V18"/></svg>
+            </div>
+            <h1 class="text-3xl font-bold text-healthy-text dark:text-dark-text">
+                PoNovaWeight
             </h1>
-            <p class="mt-2 text-center text-sm text-gray-600">
-                Your personal food journal
+            <p class="mt-2 text-sm text-healthy-muted dark:text-dark-muted">
+                Your personal OMAD food journal
             </p>
         </div>
 
         <div class="mt-8 space-y-6">
-            <div class="rounded-md bg-white shadow-sm p-8">
+            <div class="bg-white dark:bg-dark-card rounded-2xl shadow-elevation-3 p-8 border border-healthy-light dark:border-dark-border">
                 <div class="text-center mb-6">
-                    <h2 class="text-xl font-semibold text-gray-900">Sign in to continue</h2>
-                    <p class="mt-1 text-sm text-gray-500">Use your Google account to get started</p>
+                    <h2 class="text-xl font-semibold text-healthy-text dark:text-dark-text">Welcome back</h2>
+                    <p class="mt-1 text-sm text-healthy-muted dark:text-dark-muted">Sign in to track your progress</p>
                 </div>
 
                 <a href="@GetLoginUrl()" 
-                   class="w-full flex justify-center items-center gap-3 py-3 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-healthy-primary">
+                   class="w-full flex justify-center items-center gap-3 py-3 px-4 border border-gray-200 dark:border-dark-border rounded-xl shadow-sm bg-white dark:bg-dark-border text-sm font-medium text-gray-700 dark:text-dark-text hover:bg-gray-50 dark:hover:bg-dark-bg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-healthy-primary transition-all duration-200 hover:shadow-elevation-2">
                     <svg class="h-5 w-5" viewBox="0 0 24 24">
                         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                         <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -37,18 +41,21 @@
 
                 @if (ShowDevLogin)
                 {
-                    <div class="mt-6 pt-6 border-t border-gray-200">
-                        <p class="text-center text-xs text-orange-600 font-medium mb-3">
-                            🛠️ Development Mode
-                        </p>
+                    <div class="mt-6 pt-6 border-t border-gray-200 dark:border-dark-border">
+                        <div class="flex items-center justify-center gap-2 mb-4">
+                            <div class="w-6 h-6 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+                                <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z"/></svg>
+                            </div>
+                            <p class="text-xs text-amber-700 dark:text-amber-400 font-semibold">Development Mode</p>
+                        </div>
                         <div class="space-y-3">
                             <input type="email" 
                                    @bind="DevEmail" 
                                    placeholder="dev-user@local"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500" />
+                                   class="w-full px-4 py-3 border border-gray-200 dark:border-dark-border rounded-xl text-sm bg-white dark:bg-dark-bg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 dark:text-dark-text" />
                             <button @onclick="DevLoginAsync"
                                     disabled="@IsLoading"
-                                    class="w-full flex justify-center items-center gap-2 py-2 px-4 border border-orange-300 rounded-lg shadow-sm bg-orange-50 text-sm font-medium text-orange-700 hover:bg-orange-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                                    class="w-full flex justify-center items-center gap-2 py-3 px-4 border border-amber-300 dark:border-amber-700 rounded-xl shadow-sm bg-amber-50 dark:bg-amber-900/30 text-sm font-medium text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
                                 @if (IsLoading)
                                 {
                                     <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -69,13 +76,13 @@
                         </div>
                         @if (!string.IsNullOrEmpty(ErrorMessage))
                         {
-                            <p class="mt-2 text-center text-xs text-red-600">@ErrorMessage</p>
+                            <p class="mt-2 text-center text-xs text-red-600 dark:text-red-400">@ErrorMessage</p>
                         }
                     </div>
                 }
             </div>
 
-            <p class="text-center text-xs text-gray-500">
+            <p class="text-center text-xs text-healthy-muted dark:text-dark-muted">
                 By signing in, you agree to our terms of service and privacy policy.
             </p>
         </div>

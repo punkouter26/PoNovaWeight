@@ -33,6 +33,12 @@ public record DailyLogDto
     public bool? AlcoholConsumed { get; init; }
 
     /// <summary>
+    /// Client's local "today" date for timezone-safe validation.
+    /// When provided, server uses this instead of server's DateTime.Today.
+    /// </summary>
+    public DateOnly? ClientDate { get; init; }
+
+    /// <summary>
     /// Checks if the given category is over its daily target.
     /// </summary>
     public bool IsOverTarget(UnitCategory category) => category switch
@@ -75,6 +81,7 @@ public record DailyLogDto
         WaterSegments = 0,
         Weight = null,
         OmadCompliant = null,
-        AlcoholConsumed = null
+        AlcoholConsumed = null,
+        ClientDate = DateOnly.FromDateTime(DateTime.Today)
     };
 }

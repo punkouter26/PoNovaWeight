@@ -6,21 +6,15 @@ namespace PoNovaWeight.Client.Services;
 /// <summary>
 /// HTTP client wrapper for API calls.
 /// </summary>
-public class ApiClient
+public class ApiClient(HttpClient httpClient)
 {
-    private readonly HttpClient _httpClient;
-
-    public ApiClient(HttpClient httpClient)
-    {
-        _httpClient = httpClient;
-    }
 
     /// <summary>
     /// Gets the daily log for a specific date.
     /// </summary>
     public async Task<DailyLogDto?> GetDailyLogAsync(DateOnly date, CancellationToken cancellationToken = default)
     {
-        var response = await _httpClient.GetAsync($"api/daily-logs/{date:yyyy-MM-dd}", cancellationToken);
+        var response = await httpClient.GetAsync($"api/daily-logs/{date:yyyy-MM-dd}", cancellationToken);
 
         if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
         {
@@ -36,7 +30,7 @@ public class ApiClient
     /// </summary>
     public async Task UpsertDailyLogAsync(DailyLogDto dailyLog, CancellationToken cancellationToken = default)
     {
-        var response = await _httpClient.PutAsJsonAsync("api/daily-logs", dailyLog, cancellationToken);
+        var response = await httpClient.PutAsJsonAsync("api/daily-logs", dailyLog, cancellationToken);
         response.EnsureSuccessStatusCode();
     }
 
@@ -45,7 +39,7 @@ public class ApiClient
     /// </summary>
     public async Task<DailyLogDto?> IncrementUnitAsync(IncrementUnitRequest request, CancellationToken cancellationToken = default)
     {
-        var response = await _httpClient.PostAsJsonAsync("api/daily-logs/increment", request, cancellationToken);
+        var response = await httpClient.PostAsJsonAsync("api/daily-logs/increment", request, cancellationToken);
         response.EnsureSuccessStatusCode();
         return await response.Content.ReadFromJsonAsync<DailyLogDto>(cancellationToken);
     }
@@ -55,7 +49,7 @@ public class ApiClient
     /// </summary>
     public async Task<DailyLogDto?> UpdateWaterAsync(UpdateWaterRequest request, CancellationToken cancellationToken = default)
     {
-        var response = await _httpClient.PostAsJsonAsync("api/daily-logs/water", request, cancellationToken);
+        var response = await httpClient.PostAsJsonAsync("api/daily-logs/water", request, cancellationToken);
         response.EnsureSuccessStatusCode();
         return await response.Content.ReadFromJsonAsync<DailyLogDto>(cancellationToken);
     }
@@ -65,7 +59,7 @@ public class ApiClient
     /// </summary>
     public async Task<WeeklySummaryDto?> GetWeeklySummaryAsync(DateOnly date, CancellationToken cancellationToken = default)
     {
-        var response = await _httpClient.GetAsync($"api/weekly-summary/{date:yyyy-MM-dd}", cancellationToken);
+        var response = await httpClient.GetAsync($"api/weekly-summary/{date:yyyy-MM-dd}", cancellationToken);
         response.EnsureSuccessStatusCode();
         return await response.Content.ReadFromJsonAsync<WeeklySummaryDto>(cancellationToken);
     }
@@ -75,7 +69,7 @@ public class ApiClient
     /// </summary>
     public async Task<MealScanResultDto?> ScanMealAsync(MealScanRequestDto request, CancellationToken cancellationToken = default)
     {
-        var response = await _httpClient.PostAsJsonAsync("api/meal-scan", request, cancellationToken);
+        var response = await httpClient.PostAsJsonAsync("api/meal-scan", request, cancellationToken);
         response.EnsureSuccessStatusCode();
         return await response.Content.ReadFromJsonAsync<MealScanResultDto>(cancellationToken);
     }
@@ -85,7 +79,7 @@ public class ApiClient
     /// </summary>
     public async Task<AuthStatus?> GetCurrentUserAsync(CancellationToken cancellationToken = default)
     {
-        var response = await _httpClient.GetAsync("api/auth/me", cancellationToken);
+        var response = await httpClient.GetAsync("api/auth/me", cancellationToken);
         response.EnsureSuccessStatusCode();
         return await response.Content.ReadFromJsonAsync<AuthStatus>(cancellationToken);
     }
@@ -97,7 +91,7 @@ public class ApiClient
     /// </summary>
     public async Task<bool> DeleteDailyLogAsync(DateOnly date, CancellationToken cancellationToken = default)
     {
-        var response = await _httpClient.DeleteAsync($"api/daily-logs/{date:yyyy-MM-dd}", cancellationToken);
+        var response = await httpClient.DeleteAsync($"api/daily-logs/{date:yyyy-MM-dd}", cancellationToken);
         return response.IsSuccessStatusCode;
     }
 
@@ -106,7 +100,7 @@ public class ApiClient
     /// </summary>
     public async Task<MonthlyLogsDto?> GetMonthlyLogsAsync(int year, int month, CancellationToken cancellationToken = default)
     {
-        var response = await _httpClient.GetAsync($"api/daily-logs/monthly/{year}/{month}", cancellationToken);
+        var response = await httpClient.GetAsync($"api/daily-logs/monthly/{year}/{month}", cancellationToken);
         response.EnsureSuccessStatusCode();
         return await response.Content.ReadFromJsonAsync<MonthlyLogsDto>(cancellationToken);
     }
@@ -116,7 +110,7 @@ public class ApiClient
     /// </summary>
     public async Task<StreakDto?> GetStreakAsync(CancellationToken cancellationToken = default)
     {
-        var response = await _httpClient.GetAsync("api/daily-logs/streak", cancellationToken);
+        var response = await httpClient.GetAsync("api/daily-logs/streak", cancellationToken);
         response.EnsureSuccessStatusCode();
         return await response.Content.ReadFromJsonAsync<StreakDto>(cancellationToken);
     }
@@ -126,7 +120,7 @@ public class ApiClient
     /// </summary>
     public async Task<WeightTrendsDto?> GetWeightTrendsAsync(int days = 30, CancellationToken cancellationToken = default)
     {
-        var response = await _httpClient.GetAsync($"api/daily-logs/trends?days={days}", cancellationToken);
+        var response = await httpClient.GetAsync($"api/daily-logs/trends?days={days}", cancellationToken);
         response.EnsureSuccessStatusCode();
         return await response.Content.ReadFromJsonAsync<WeightTrendsDto>(cancellationToken);
     }
@@ -136,7 +130,7 @@ public class ApiClient
     /// </summary>
     public async Task<AlcoholCorrelationDto?> GetAlcoholCorrelationAsync(int days = 90, CancellationToken cancellationToken = default)
     {
-        var response = await _httpClient.GetAsync($"api/daily-logs/alcohol-correlation?days={days}", cancellationToken);
+        var response = await httpClient.GetAsync($"api/daily-logs/alcohol-correlation?days={days}", cancellationToken);
         response.EnsureSuccessStatusCode();
         return await response.Content.ReadFromJsonAsync<AlcoholCorrelationDto>(cancellationToken);
     }

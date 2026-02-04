@@ -3,20 +3,12 @@
 @using PoNovaWeight.Client.Components
 @using PoNovaWeight.Shared.DTOs
 @inject ApiClient Api
-@inject IJSRuntime JS
 
-<PageTitle>Dashboard - PoNovaWeight</PageTitle>
+<PageTitle>Dashboard | PoNovaWeight</PageTitle>
 
 @if (IsLoading)
 {
-    <div class="flex justify-center py-8 lg:py-16">
-        <div class="w-6 h-6 lg:w-8 lg:h-8 border-3 border-healthy-primary border-t-transparent rounded-full animate-spin"></div>
-    </div>
-}
-else if (ShowOnboarding)
-{
-    <!-- Onboarding Flow for New Users -->
-    <Onboarding OnComplete="CompleteOnboarding" />
+    <DashboardSkeleton />
 }
 else if (Summary is not null)
 {
@@ -52,37 +44,41 @@ else if (Summary is not null)
         <!-- Right Column: Daily Activity (spans 5 cols on desktop) -->
         <div class="lg:col-span-5 mt-4 lg:mt-0">
             <!-- Quick Actions Card (Desktop only) -->
-            <div class="hidden lg:block bg-healthy-card rounded-xl shadow-healthy border border-healthy-light p-4 mb-4">
-                <h3 class="text-sm font-semibold text-healthy-text mb-3 flex items-center gap-2">
-                    <span>⚡</span> Quick Actions
+            <div class="hidden lg:block bg-white dark:bg-dark-card rounded-2xl shadow-elevation-2 border border-healthy-light dark:border-dark-border p-5 mb-4">
+                <h3 class="text-sm font-semibold text-healthy-text dark:text-dark-text mb-4 flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-amber-500" fill="currentColor" viewBox="0 0 24 24"><path d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>
+                    </div>
+                    Quick Actions
                 </h3>
                 <div class="grid grid-cols-2 gap-3">
                     <a href="/day/@DateOnly.FromDateTime(DateTime.Today).ToString("yyyy-MM-dd")"
-                       class="flex flex-col items-center gap-2 p-4 bg-healthy-bg rounded-lg hover:bg-healthy-light transition-colors group">
-                        <div class="w-10 h-10 rounded-full bg-healthy-primary/10 flex items-center justify-center group-hover:bg-healthy-primary/20 transition-colors">
-                            <svg class="w-5 h-5 text-healthy-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                       class="flex flex-col items-center gap-3 p-4 bg-gray-50 dark:bg-dark-border rounded-xl hover:bg-healthy-light dark:hover:bg-dark-bg transition-all duration-200 group shadow-sm hover:shadow-elevation-2">
+                        <div class="w-12 h-12 rounded-xl bg-healthy-primary/10 dark:bg-healthy-primary/20 flex items-center justify-center group-hover:bg-healthy-primary/20 dark:group-hover:bg-healthy-primary/30 transition-colors">
+                            <svg class="w-6 h-6 text-healthy-primary" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                             </svg>
                         </div>
-                        <span class="text-xs font-medium text-healthy-text">Log Today</span>
+                        <span class="text-sm font-medium text-healthy-text dark:text-dark-text">Log Today</span>
                     </a>
                     <a href="/scan/@DateOnly.FromDateTime(DateTime.Today).ToString("yyyy-MM-dd")"
-                       class="flex flex-col items-center gap-2 p-4 bg-healthy-bg rounded-lg hover:bg-healthy-light transition-colors group">
-                        <div class="w-10 h-10 rounded-full bg-healthy-secondary/10 flex items-center justify-center group-hover:bg-healthy-secondary/20 transition-colors">
-                            <svg class="w-5 h-5 text-healthy-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                       class="flex flex-col items-center gap-3 p-4 bg-gray-50 dark:bg-dark-border rounded-xl hover:bg-healthy-light dark:hover:bg-dark-bg transition-all duration-200 group shadow-sm hover:shadow-elevation-2">
+                        <div class="w-12 h-12 rounded-xl bg-healthy-secondary/10 dark:bg-healthy-secondary/20 flex items-center justify-center group-hover:bg-healthy-secondary/20 dark:group-hover:bg-healthy-secondary/30 transition-colors">
+                            <svg class="w-6 h-6 text-healthy-secondary" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
                             </svg>
                         </div>
-                        <span class="text-xs font-medium text-healthy-text">Scan Meal</span>
+                        <span class="text-sm font-medium text-healthy-text dark:text-dark-text">Scan Meal</span>
                     </a>
                 </div>
             </div>
 
             <!-- Day cards in a compact vertical list -->
-            <div class="space-y-2">
-                <h3 class="text-[11px] font-medium text-healthy-muted uppercase tracking-wide flex items-center gap-1">
-                    <span>📅</span> This Week
+            <div class="space-y-3">
+                <h3 class="text-xs font-semibold text-healthy-muted dark:text-dark-muted uppercase tracking-wide flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg>
+                    This Week
                 </h3>
                 
                 @foreach (var day in Summary.Days.OrderByDescending(d => d.Date))
@@ -95,8 +91,8 @@ else if (Summary is not null)
 }
 else
 {
-    <!-- Empty State with Rich Content -->
-    <EmptyDashboard OnGetStarted="StartOnboarding" OnRetry="LoadWeeklySummary" />
+    <!-- Empty State -->
+    <EmptyDashboard OnRetry="LoadWeeklySummary" />
 }
 
 @code {
@@ -105,27 +101,10 @@ else
     private WeightTrendsDto? WeightTrends { get; set; }
     private AlcoholCorrelationDto? AlcoholCorrelation { get; set; }
     private bool IsLoading { get; set; } = true;
-    private bool ShowOnboarding { get; set; }
-    private bool HasCompletedOnboarding { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        // Check if user has completed onboarding
-        HasCompletedOnboarding = await CheckOnboardingStatus();
         await LoadWeeklySummary();
-    }
-
-    private async Task<bool> CheckOnboardingStatus()
-    {
-        try
-        {
-            var status = await JS.InvokeAsync<string?>("localStorage.getItem", "novaweight_onboarding_complete");
-            return status == "true";
-        }
-        catch
-        {
-            return false;
-        }
     }
 
     private async Task LoadWeeklySummary()
@@ -149,13 +128,6 @@ else
             Streak = await streakTask;
             WeightTrends = await trendsTask;
             AlcoholCorrelation = await alcoholTask;
-
-            // Show onboarding if new user (no data and hasn't completed onboarding)
-            var hasNoData = (WeightTrends?.TotalDaysLogged ?? 0) == 0 && (Streak?.CurrentStreak ?? 0) == 0;
-            if (hasNoData && !HasCompletedOnboarding)
-            {
-                ShowOnboarding = true;
-            }
         }
         catch (Exception ex)
         {
@@ -169,25 +141,6 @@ else
         {
             IsLoading = false;
         }
-    }
-
-    private void StartOnboarding()
-    {
-        ShowOnboarding = true;
-        StateHasChanged();
-    }
-
-    private async Task CompleteOnboarding()
-    {
-        try
-        {
-            await JS.InvokeVoidAsync("localStorage.setItem", "novaweight_onboarding_complete", "true");
-        }
-        catch { }
-        
-        HasCompletedOnboarding = true;
-        ShowOnboarding = false;
-        StateHasChanged();
     }
 
     private List<WeightTrendChart.TrendDataPoint> MapTrendDataPoints(WeightTrendsDto trends)

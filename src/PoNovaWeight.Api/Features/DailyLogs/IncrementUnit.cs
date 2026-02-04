@@ -13,7 +13,7 @@ public record IncrementUnitCommand(IncrementUnitRequest Request, string UserId =
 /// <summary>
 /// Handler for IncrementUnitCommand.
 /// </summary>
-public class IncrementUnitHandler(IDailyLogRepository repository) : IRequestHandler<IncrementUnitCommand, DailyLogDto>
+public sealed class IncrementUnitHandler(IDailyLogRepository repository) : IRequestHandler<IncrementUnitCommand, DailyLogDto>
 {
     public async Task<DailyLogDto> Handle(IncrementUnitCommand request, CancellationToken cancellationToken)
     {
@@ -36,31 +36,36 @@ public class IncrementUnitHandler(IDailyLogRepository repository) : IRequestHand
             Starches = entity.Starches,
             Fats = entity.Fats,
             Dairy = entity.Dairy,
-            WaterSegments = entity.WaterSegments
+            WaterSegments = entity.WaterSegments,
+            Weight = entity.Weight.HasValue ? (decimal)entity.Weight.Value : null,
+            OmadCompliant = entity.OmadCompliant,
+            AlcoholConsumed = entity.AlcoholConsumed
         };
     }
+
+    private const int MaxUnitsPerCategory = 100;
 
     private static void ApplyDelta(DailyLogEntity entity, UnitCategory category, int delta)
     {
         switch (category)
         {
             case UnitCategory.Proteins:
-                entity.Proteins = Math.Max(0, entity.Proteins + delta);
+                entity.Proteins = Math.Clamp(entity.Proteins + delta, 0, MaxUnitsPerCategory);
                 break;
             case UnitCategory.Vegetables:
-                entity.Vegetables = Math.Max(0, entity.Vegetables + delta);
+                entity.Vegetables = Math.Clamp(entity.Vegetables + delta, 0, MaxUnitsPerCategory);
                 break;
             case UnitCategory.Fruits:
-                entity.Fruits = Math.Max(0, entity.Fruits + delta);
+                entity.Fruits = Math.Clamp(entity.Fruits + delta, 0, MaxUnitsPerCategory);
                 break;
             case UnitCategory.Starches:
-                entity.Starches = Math.Max(0, entity.Starches + delta);
+                entity.Starches = Math.Clamp(entity.Starches + delta, 0, MaxUnitsPerCategory);
                 break;
             case UnitCategory.Fats:
-                entity.Fats = Math.Max(0, entity.Fats + delta);
+                entity.Fats = Math.Clamp(entity.Fats + delta, 0, MaxUnitsPerCategory);
                 break;
             case UnitCategory.Dairy:
-                entity.Dairy = Math.Max(0, entity.Dairy + delta);
+                entity.Dairy = Math.Clamp(entity.Dairy + delta, 0, MaxUnitsPerCategory);
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(category), $"Unknown category: {category}");

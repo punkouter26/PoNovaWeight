@@ -7,12 +7,12 @@ namespace PoNovaWeight.Shared.Validation;
 /// <summary>
 /// Validates DailyLogDto ensuring values are within acceptable ranges.
 /// </summary>
-public class DailyLogDtoValidator : AbstractValidator<DailyLogDto>
+public sealed class DailyLogDtoValidator : AbstractValidator<DailyLogDto>
 {
     public DailyLogDtoValidator()
     {
         RuleFor(x => x.Date)
-            .Must(NotBeInFuture)
+            .Must((dto, date) => NotBeInFuture(date, dto.ClientDate))
             .WithMessage("Cannot log entries for future dates");
 
         RuleFor(x => x.Proteins).GreaterThanOrEqualTo(0);
@@ -35,9 +35,10 @@ public class DailyLogDtoValidator : AbstractValidator<DailyLogDto>
             .WithMessage("Weight can have at most 1 decimal place");
     }
 
-    private static bool NotBeInFuture(DateOnly date)
+    private static bool NotBeInFuture(DateOnly date, DateOnly? clientDate)
     {
-        var today = DateOnly.FromDateTime(DateTime.Today);
+        // Use client's date if provided (timezone-safe), otherwise fall back to server's date
+        var today = clientDate ?? DateOnly.FromDateTime(DateTime.Today);
         return date <= today;
     }
 

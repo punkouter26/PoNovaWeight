@@ -2,8 +2,7 @@ using Azure.AI.OpenAI;
 using Azure.Data.Tables;
 using Azure.Identity;
 using FluentValidation;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Google;
+using MediatR;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.ResponseCompression;
 using PoNovaWeight.Api.Features.Auth;
@@ -16,7 +15,6 @@ using PoNovaWeight.Api.Infrastructure.TableStorage;
 using PoNovaWeight.Shared.Validation;
 using Scalar.AspNetCore;
 using Serilog;
-using System.Security.Claims;
 
 // Configure Serilog before building the host
 Log.Logger = new LoggerConfiguration()
@@ -43,9 +41,17 @@ try
     {
         try
         {
+            // Configure credential options for better local dev experience
+            // Exclude credentials that are problematic or require additional packages
+            var credentialOptions = new DefaultAzureCredentialOptions
+            {
+                ExcludeVisualStudioCodeCredential = true, // Requires Azure.Identity.Broker package
+                ExcludeInteractiveBrowserCredential = true
+            };
+            
             builder.Configuration.AddAzureKeyVault(
                 new Uri(keyVaultUri),
-                new DefaultAzureCredential());
+                new DefaultAzureCredential(credentialOptions));
             Log.Information("Azure Key Vault configured: {VaultUri}", keyVaultUri);
         }
         catch (Exception ex)
@@ -85,16 +91,22 @@ try
     builder.Services.Configure<BrotliCompressionProviderOptions>(options => options.Level = System.IO.Compression.CompressionLevel.Fastest);
     builder.Services.Configure<GzipCompressionProviderOptions>(options => options.Level = System.IO.Compression.CompressionLevel.Fastest);
 
-    // MediatR
+    // MediatR with validation pipeline
     builder.Services.AddMediatR(cfg =>
     {
         cfg.RegisterServicesFromAssemblyContaining<Program>();
+        cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
     });
 
-    // FluentValidation
+    // FluentValidation - register validators from Shared assembly
     builder.Services.AddValidatorsFromAssemblyContaining<DailyLogDtoValidator>();
 
-    // Azure Table Storage - Use Aspire integration when available
+    // TimeProvider for testable time abstractions
+    builder.Services.AddSingleton(TimeProvider.System);
+
+    // HybridCache for in-memory + distributed caching
+    builder.Services.AddHybridCache();
+
     // Check if running under Aspire orchestration
     var isAspireOrchestrated = !string.IsNullOrEmpty(builder.Configuration["ConnectionStrings:tables"]) ||
                                 !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER"));
@@ -126,90 +138,7 @@ try
     builder.Services.AddSingleton<IUserRepository, UserRepository>();
 
     // Google OAuth + Cookie Authentication
-    // Reads from PoNovaWeight:Google:* (Key Vault) or Google:* (local/fallback)
-    var googleClientId = builder.Configuration["PoNovaWeight:Google:ClientId"]
-        ?? builder.Configuration["Google:ClientId"];
-    var googleClientSecret = builder.Configuration["PoNovaWeight:Google:ClientSecret"]
-        ?? builder.Configuration["Google:ClientSecret"];
-
-    var hasGoogleCredentials = !string.IsNullOrEmpty(googleClientId) && !string.IsNullOrEmpty(googleClientSecret);
-
-    if (!hasGoogleCredentials && !builder.Environment.IsDevelopment())
-    {
-        throw new InvalidOperationException("Google OAuth credentials are required in production. Set Google:ClientId and Google:ClientSecret in configuration.");
-    }
-
-    var authBuilder = builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = hasGoogleCredentials ? GoogleDefaults.AuthenticationScheme : CookieAuthenticationDefaults.AuthenticationScheme;
-    })
-    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
-    {
-        options.Cookie.Name = "nova-session";
-        options.Cookie.HttpOnly = true;
-        // Use SameAsRequest in development (HTTP), Always in production (HTTPS)
-        options.Cookie.SecurePolicy = builder.Environment.IsDevelopment() 
-            ? CookieSecurePolicy.SameAsRequest 
-            : CookieSecurePolicy.Always;
-        options.Cookie.SameSite = SameSiteMode.Lax; // Lax required for OAuth redirects
-        options.ExpireTimeSpan = TimeSpan.FromDays(30);
-        options.SlidingExpiration = true;
-        options.Events.OnRedirectToLogin = context =>
-        {
-            // Return 401 for API calls instead of redirecting
-            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-            return Task.CompletedTask;
-        };
-    });
-
-    // Add Google OAuth only when credentials are available
-    if (hasGoogleCredentials)
-    {
-        authBuilder.AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
-            {
-                options.ClientId = googleClientId!;
-                options.ClientSecret = googleClientSecret!;
-                options.CallbackPath = "/signin-google";
-                options.SaveTokens = false;
-                options.Events.OnCreatingTicket = async context =>
-                {
-                    var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
-                    var email = context.Principal?.FindFirstValue(ClaimTypes.Email);
-                    var name = context.Principal?.FindFirstValue(ClaimTypes.Name);
-                    var picture = context.Principal?.Claims.FirstOrDefault(c => c.Type == "picture")?.Value;
-
-                    if (!string.IsNullOrEmpty(email))
-                    {
-                        var userRepo = context.HttpContext.RequestServices.GetRequiredService<IUserRepository>();
-                        var existingUser = await userRepo.GetAsync(email);
-
-                        if (existingUser is not null)
-                        {
-                            // Update last login time
-                            existingUser.LastLoginUtc = DateTimeOffset.UtcNow;
-                            existingUser.DisplayName = name ?? existingUser.DisplayName;
-                            existingUser.PictureUrl = picture ?? existingUser.PictureUrl;
-                            await userRepo.UpsertAsync(existingUser);
-                            logger.LogInformation("User signed in: {Email} (returning user)", email);
-                        }
-                        else
-                        {
-                            // Create new user
-                            var newUser = UserEntity.Create(email, name ?? email, picture);
-                            await userRepo.UpsertAsync(newUser);
-                            logger.LogInformation("User signed in: {Email} (new user)", email);
-                        }
-                    }
-                };
-            });
-    }
-    else
-    {
-        Log.Warning("Google OAuth not configured - authentication will use dev login only");
-    }
-
-    builder.Services.AddAuthorization();
+    builder.Services.AddNovaAuthentication(builder.Configuration, builder.Environment);
 
     // Azure OpenAI - optional for local development (meal scan will be disabled)
     var openAiEndpoint = builder.Configuration["PoNovaWeight:AzureOpenAI:Endpoint"]
@@ -234,6 +163,14 @@ try
     // Exception handling
     builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
     builder.Services.AddProblemDetails();
+
+    // Output caching for read-only endpoints
+    builder.Services.AddOutputCache(options =>
+    {
+        options.AddBasePolicy(builder => builder.Expire(TimeSpan.FromSeconds(60)));
+        options.AddPolicy("ShortCache", builder => builder.Expire(TimeSpan.FromSeconds(30)));
+        options.AddPolicy("TrendsCache", builder => builder.Expire(TimeSpan.FromMinutes(5)));
+    });
 
     // Configure forwarded headers for running behind reverse proxy (Azure Container Apps)
     builder.Services.Configure<ForwardedHeadersOptions>(options =>
@@ -280,6 +217,9 @@ try
     // Authentication & Authorization
     app.UseAuthentication();
     app.UseAuthorization();
+
+    // Output caching (after auth so cache varies by user)
+    app.UseOutputCache();
 
     // Map Aspire default endpoints (health checks at /health and /alive)
     app.MapDefaultEndpoints();

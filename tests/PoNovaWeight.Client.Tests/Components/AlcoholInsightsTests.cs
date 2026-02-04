@@ -161,7 +161,7 @@ public class AlcoholInsightsTests : BunitContext
     }
 
     [Fact]
-    public void Render_ShowsTitle_WithBeerEmoji()
+    public void Render_ShowsTitle_WithIcon()
     {
         // Arrange
         var correlation = new AlcoholCorrelationDto
@@ -177,6 +177,8 @@ public class AlcoholInsightsTests : BunitContext
 
         // Assert
         cut.Markup.Should().Contain("Alcohol Impact");
-        cut.Markup.Should().Contain("🍺");
+        // Check for SVG icon container with amber styling
+        cut.Markup.Should().Contain("bg-amber-100");
+        cut.Markup.Should().Contain("text-amber-500");
     }
 }
