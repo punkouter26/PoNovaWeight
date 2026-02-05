@@ -26,6 +26,17 @@ public static class AuthenticationExtensions
         var googleClientSecret = configuration["PoNovaWeight:Google:ClientSecret"]
             ?? configuration["Google:ClientSecret"];
 
+        // Treat placeholders as missing credentials (common in IaC defaults)
+        if (IsPlaceholder(googleClientId))
+        {
+            googleClientId = null;
+        }
+
+        if (IsPlaceholder(googleClientSecret))
+        {
+            googleClientSecret = null;
+        }
+
         var hasGoogleCredentials = !string.IsNullOrEmpty(googleClientId) && !string.IsNullOrEmpty(googleClientSecret);
 
         if (!hasGoogleCredentials && !environment.IsDevelopment())
@@ -67,6 +78,22 @@ public static class AuthenticationExtensions
                 options.ClientSecret = googleClientSecret!;
                 options.CallbackPath = "/signin-google";
                 options.SaveTokens = false;
+                options.CorrelationCookie.SameSite = SameSiteMode.None;
+                options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.NonceCookie.SameSite = SameSiteMode.None;
+                options.NonceCookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Events.OnRedirectToAuthorizationEndpoint = context =>
+                {
+                    // Ensure https redirects when behind Azure reverse proxies
+                    var redirectUri = context.RedirectUri;
+                    if (redirectUri.StartsWith("http://", StringComparison.OrdinalIgnoreCase))
+                    {
+                        redirectUri = string.Concat("https://", redirectUri.AsSpan("http://".Length));
+                    }
+
+                    context.Response.Redirect(redirectUri);
+                    return Task.CompletedTask;
+                };
                 options.Events.OnCreatingTicket = async context =>
                 {
                     var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
@@ -108,4 +135,9 @@ public static class AuthenticationExtensions
 
         return services;
     }
+
+    private static bool IsPlaceholder(string? value)
+        => string.IsNullOrWhiteSpace(value)
+            || value.StartsWith("YOUR-", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(value, "placeholder", StringComparison.OrdinalIgnoreCase);
 }
