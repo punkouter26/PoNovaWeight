@@ -200,6 +200,18 @@ try
     // Use forwarded headers (must be first in pipeline)
     app.UseForwardedHeaders();
 
+    // Azure App Service may use X-ARR-SSL; normalize scheme to https so Secure cookies are issued
+    app.Use((context, next) =>
+    {
+        if (context.Request.Headers.ContainsKey("X-ARR-SSL") &&
+            !string.Equals(context.Request.Scheme, "https", StringComparison.OrdinalIgnoreCase))
+        {
+            context.Request.Scheme = "https";
+        }
+
+        return next();
+    });
+
     // Initialize Table Storage (create tables if not exist)
     using (var scope = app.Services.CreateScope())
     {
