@@ -80,8 +80,6 @@ public static class AuthenticationExtensions
                 options.SaveTokens = false;
                 options.CorrelationCookie.SameSite = SameSiteMode.None;
                 options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
-                options.NonceCookie.SameSite = SameSiteMode.None;
-                options.NonceCookie.SecurePolicy = CookieSecurePolicy.Always;
                 options.Events.OnRedirectToAuthorizationEndpoint = context =>
                 {
                     // Ensure https redirects when behind Azure reverse proxies
