@@ -3,17 +3,21 @@
   "version": "1.0.0",
   "description": "E2E tests for PoNovaWeight using Playwright",
   "scripts": {
-    "test": "npx playwright test",
-    "test:headed": "npx playwright test --headed",
+    "test": "npx playwright test --ignore-pattern='**/google-auth-real*'",
+    "test:headed": "npx playwright test --headed --ignore-pattern='**/google-auth-real*'",
     "test:ui": "npx playwright test --ui",
     "test:debug": "npx playwright test --debug",
-    "test:report": "npx playwright show-report"
+    "test:report": "npx playwright show-report",
+    "auth:setup": "npx tsx setup/save-google-auth.ts",
+    "test:google": "npx playwright test tests/google-auth-real.spec.ts",
+    "test:google:headed": "npx playwright test tests/google-auth-real.spec.ts --headed"
   },
   "devDependencies": {
     "@azure/identity": "^4.13.0",
     "@azure/keyvault-secrets": "^4.10.0",
     "@playwright/test": "^1.49.0",
     "@types/node": "^22.10.0",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }
 }

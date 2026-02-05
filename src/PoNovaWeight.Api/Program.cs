@@ -263,7 +263,7 @@ try
     app.MapDefaultEndpoints();
 
     // Map feature endpoints
-    app.MapAuthEndpoints();
+    app.MapAuthEndpoints(app.Environment);
     app.MapDailyLogEndpoints();
     app.MapWeeklySummaryEndpoints();
     app.MapMealScanEndpoints();

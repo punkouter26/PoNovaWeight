@@ -1,7 +1,7 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Google;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
 using PoNovaWeight.Api.Infrastructure.TableStorage;
 using PoNovaWeight.Shared.DTOs;
 
@@ -13,136 +13,46 @@ namespace PoNovaWeight.Api.Features.Auth;
 public static class Endpoints
 {
     /// <summary>
-    /// Maps authentication endpoints including dev-login for Development environment.
+    /// Maps authentication endpoints for JWT-based auth.
+    /// With client-side OIDC, the client handles login/logout flows directly with Google.
+    /// The API only needs to validate tokens and provide user info.
     /// </summary>
-    public static IEndpointRouteBuilder MapAuthEndpoints(this IEndpointRouteBuilder app)
+    public static IEndpointRouteBuilder MapAuthEndpoints(this IEndpointRouteBuilder app, IWebHostEnvironment env)
     {
         var group = app.MapGroup("/api/auth")
             .WithTags("Authentication");
 
-        group.MapGet("/login", Login)
-            .WithName("Login")
-            .WithDescription("Initiates Google OAuth sign-in flow.")
-            .ExcludeFromDescription(); // Challenge redirect, not a typical API response
-
-        group.MapGet("/logout", (Delegate)Logout)
-            .WithName("Logout")
-            .WithDescription("Signs out the current user and clears the session.")
-            .ExcludeFromDescription(); // Redirect response
-
         group.MapGet("/me", GetCurrentUser)
             .WithName("GetCurrentUser")
-            .WithDescription("Returns the current user's authentication status and profile.")
+            .WithDescription("Returns the current user's authentication status and profile from the JWT token.")
             .Produces<AuthStatus>(StatusCodes.Status200OK)
             .CacheOutput(x => x.NoCache());
 
-        // Development-only endpoint for bypassing OAuth
-        // This enables testing without real Google credentials
-        var env = app.ServiceProvider.GetRequiredService<IWebHostEnvironment>();
+        // Sync endpoint - ensures user exists in database after client-side login
+        group.MapPost("/sync", SyncUser)
+            .WithName("SyncUser")
+            .WithDescription("Syncs the authenticated user to the database. Called after client-side login.")
+            .RequireAuthorization()
+            .Produces<AuthStatus>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status401Unauthorized);
+
+        // Dev login endpoint - only available in Development environment for E2E testing
         if (env.IsDevelopment())
         {
             group.MapPost("/dev-login", DevLogin)
                 .WithName("DevLogin")
-                .WithDescription("[DEV ONLY] Bypasses OAuth to sign in with a test user.")
-                .Produces<AuthStatus>(StatusCodes.Status200OK);
+                .WithDescription("Development-only endpoint for E2E testing. Creates a fake JWT token.")
+                .Produces<DevLoginResponse>(StatusCodes.Status200OK)
+                .ExcludeFromDescription(); // Hide from OpenAPI in prod
         }
 
         return app;
     }
 
     /// <summary>
-    /// Development-only login endpoint that bypasses OAuth.
-    /// Creates a cookie-based session for the specified email without Google OAuth.
+    /// Gets the current user's authentication status from the JWT token.
+    /// Does not require authentication - returns unauthenticated status if no valid token.
     /// </summary>
-    private static async Task<IResult> DevLogin(
-        HttpContext context,
-        IUserRepository userRepository,
-        ILoggerFactory loggerFactory,
-        string? email = "dev-user@local")
-    {
-        var logger = loggerFactory.CreateLogger("Auth");
-        
-        // Ensure user exists in repository
-        var userEmail = email ?? "dev-user@local";
-        var existingUser = await userRepository.GetAsync(userEmail);
-        
-        if (existingUser is null)
-        {
-            var newUser = UserEntity.Create(userEmail, "Dev User", null);
-            await userRepository.UpsertAsync(newUser);
-            logger.LogInformation("[DEV] Created test user: {Email}", userEmail);
-        }
-        else
-        {
-            existingUser.LastLoginUtc = DateTimeOffset.UtcNow;
-            await userRepository.UpsertAsync(existingUser);
-        }
-
-        // Create claims and sign in
-        var claims = new List<Claim>
-        {
-            new(ClaimTypes.Email, userEmail),
-            new(ClaimTypes.Name, "Dev User")
-        };
-
-        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-        var principal = new ClaimsPrincipal(identity);
-
-        await context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-        
-        logger.LogInformation("[DEV] User signed in via dev-login: {Email}", userEmail);
-
-        return Results.Ok(AuthStatus.Authenticated(new UserInfo
-        {
-            Email = userEmail,
-            DisplayName = "Dev User",
-            PictureUrl = null
-        }));
-    }
-
-    private static async Task<IResult> Login(HttpContext context, IAuthenticationSchemeProvider schemeProvider, string? returnUrl = "/")
-    {
-        // Check if Google OAuth is configured
-        var googleScheme = await schemeProvider.GetSchemeAsync(GoogleDefaults.AuthenticationScheme);
-        if (googleScheme is null)
-        {
-            // Google OAuth not configured - in development, redirect to dev-login info
-            var env = context.RequestServices.GetRequiredService<IWebHostEnvironment>();
-            if (env.IsDevelopment())
-            {
-                return Results.Problem(
-                    title: "Google OAuth Not Configured",
-                    detail: "Use POST /api/auth/dev-login?email=your@email.com to sign in during development.",
-                    statusCode: StatusCodes.Status503ServiceUnavailable);
-            }
-            return Results.Problem(
-                title: "Authentication Unavailable",
-                detail: "Google OAuth is not configured.",
-                statusCode: StatusCodes.Status503ServiceUnavailable);
-        }
-
-        var properties = new AuthenticationProperties
-        {
-            RedirectUri = returnUrl ?? "/"
-        };
-
-        return Results.Challenge(properties, [GoogleDefaults.AuthenticationScheme]);
-    }
-
-    private static async Task<IResult> Logout(HttpContext context, ILoggerFactory loggerFactory)
-    {
-        var logger = loggerFactory.CreateLogger("Auth");
-        var email = context.User.FindFirstValue(ClaimTypes.Email);
-        await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-
-        if (!string.IsNullOrEmpty(email))
-        {
-            logger.LogInformation("User signed out: {Email}", email);
-        }
-
-        return Results.Redirect("/login");
-    }
-
     private static IResult GetCurrentUser(HttpContext context)
     {
         if (context.User.Identity?.IsAuthenticated != true)
@@ -150,9 +60,11 @@ public static class Endpoints
             return Results.Ok(AuthStatus.Unauthenticated());
         }
 
-        var email = context.User.FindFirstValue(ClaimTypes.Email);
-        var name = context.User.FindFirstValue(ClaimTypes.Name);
-        var picture = context.User.Claims.FirstOrDefault(c => c.Type == "picture")?.Value;
+        var email = context.User.FindFirstValue(ClaimTypes.Email) 
+            ?? context.User.FindFirstValue("email");
+        var name = context.User.FindFirstValue(ClaimTypes.Name) 
+            ?? context.User.FindFirstValue("name");
+        var picture = context.User.FindFirstValue("picture");
 
         if (string.IsNullOrEmpty(email))
         {
@@ -168,4 +80,108 @@ public static class Endpoints
 
         return Results.Ok(AuthStatus.Authenticated(userInfo));
     }
+
+    /// <summary>
+    /// Syncs the authenticated user to the database.
+    /// This is called by the client after a successful login to ensure the user exists.
+    /// </summary>
+    private static async Task<IResult> SyncUser(
+        HttpContext context,
+        IUserRepository userRepository,
+        ILoggerFactory loggerFactory)
+    {
+        var logger = loggerFactory.CreateLogger("Auth");
+        
+        var email = context.User.FindFirstValue(ClaimTypes.Email) 
+            ?? context.User.FindFirstValue("email");
+        var name = context.User.FindFirstValue(ClaimTypes.Name) 
+            ?? context.User.FindFirstValue("name");
+        var picture = context.User.FindFirstValue("picture");
+
+        if (string.IsNullOrEmpty(email))
+        {
+            return Results.Unauthorized();
+        }
+
+        var existingUser = await userRepository.GetAsync(email);
+        
+        if (existingUser is null)
+        {
+            var newUser = UserEntity.Create(email, name ?? email, picture);
+            await userRepository.UpsertAsync(newUser);
+            logger.LogInformation("User synced (new): {Email}", email);
+        }
+        else
+        {
+            existingUser.LastLoginUtc = DateTimeOffset.UtcNow;
+            existingUser.DisplayName = name ?? existingUser.DisplayName;
+            existingUser.PictureUrl = picture ?? existingUser.PictureUrl;
+            await userRepository.UpsertAsync(existingUser);
+            logger.LogDebug("User synced (existing): {Email}", email);
+        }
+
+        return Results.Ok(AuthStatus.Authenticated(new UserInfo
+        {
+            Email = email,
+            DisplayName = name ?? email,
+            PictureUrl = picture
+        }));
+    }
+
+    /// <summary>
+    /// Development-only endpoint that creates a fake JWT token for E2E testing.
+    /// This bypasses Google OAuth entirely and should NEVER be used in production.
+    /// </summary>
+    private static IResult DevLogin(
+        HttpContext context,
+        IConfiguration configuration)
+    {
+        var email = context.Request.Query["email"].FirstOrDefault() ?? "dev-user@local";
+        var displayName = email.Split('@')[0];
+
+        // Create a fake JWT token for testing
+        var claims = new[]
+        {
+            new Claim(ClaimTypes.Email, email),
+            new Claim("email", email),
+            new Claim(ClaimTypes.Name, displayName),
+            new Claim("name", displayName),
+            new Claim(ClaimTypes.NameIdentifier, email),
+            new Claim("sub", email)
+        };
+
+        // Use a simple key for dev testing - this is NOT secure and only for local dev
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("dev-test-key-that-is-long-enough-for-hmac-sha256"));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var token = new JwtSecurityToken(
+            issuer: "dev-issuer",
+            audience: configuration["Google:ClientId"] ?? "dev-audience",
+            claims: claims,
+            expires: DateTime.UtcNow.AddHours(1),
+            signingCredentials: creds);
+
+        var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+
+        return Results.Ok(new DevLoginResponse
+        {
+            Token = tokenString,
+            IsAuthenticated = true,
+            User = new UserInfo
+            {
+                Email = email,
+                DisplayName = displayName
+            }
+        });
+    }
+}
+
+/// <summary>
+/// Response from the dev-login endpoint.
+/// </summary>
+public record DevLoginResponse
+{
+    public required string Token { get; init; }
+    public bool IsAuthenticated { get; init; }
+    public UserInfo? User { get; init; }
 }

@@ -1,80 +1,51 @@
 import { test, expect } from '@playwright/test';
+import { devLogin, getAuthStatus } from '../helpers/auth';
 
 /**
- * End-to-end tests for the Dev Login UI button on the login page.
- * Tests the actual UI interaction (clicking the button) rather than calling the API directly.
+ * End-to-end tests for the Dev Login API endpoint.
+ * With client-side OIDC, there's no dev-login UI - only an API endpoint for E2E testing.
  * REQUIRES: The API must be running at localhost:5000 in Development mode.
  */
-test.describe('Dev Login UI Tests', () => {
+test.describe('Dev Login API Tests', () => {
 
-  test('Dev login button click navigates to home page', async ({ page }) => {
-    // Navigate to login page
-    await page.goto('/login', {
-      timeout: 30000,
-      waitUntil: 'domcontentloaded',
-    });
-
-    // Wait for Blazor WASM to initialize and render the page
-    await page.waitForSelector('text=Sign in with Google', { timeout: 30000 });
-
-    // Verify dev login section is visible (only in Development mode)
-    const devLoginSection = page.locator('text=Development Mode');
-    await expect(devLoginSection).toBeVisible({ timeout: 5000 });
-
-    // Find and click the dev login button
-    const devLoginButton = page.locator('button:has-text("Dev Login")');
-    await expect(devLoginButton).toBeVisible();
-    await devLoginButton.click();
-
-    // Wait for login to complete and redirect to home page
-    // The button shows "Signing in..." during the request
-    await page.waitForURL('**/', { timeout: 15000 });
-
-    // Verify we're NOT on the login page anymore
-    expect(page.url()).not.toContain('/login');
-  });
-
-  test('Dev login with custom email works', async ({ page }) => {
-    // Navigate to login page
-    await page.goto('/login', {
-      timeout: 30000,
-      waitUntil: 'domcontentloaded',
-    });
-
-    // Wait for Blazor to initialize
-    await page.waitForSelector('text=Development Mode', { timeout: 30000 });
-
-    // Clear the default email and enter a custom one
-    const emailInput = page.locator('input[type="email"]');
-    await emailInput.clear();
-    await emailInput.fill('custom-test@example.com');
-
-    // Click dev login button
-    const devLoginButton = page.locator('button:has-text("Dev Login")');
-    await devLoginButton.click();
-
-    // Wait for redirect to home
-    await page.waitForURL('**/', { timeout: 15000 });
-
-    // Verify we're NOT on the login page (indicates successful login)
-    expect(page.url()).not.toContain('/login');
-  });
-
-  test('Dev login section visible on localhost', async ({ page }) => {
-    // Navigate to login page
-    await page.goto('/login', {
-      timeout: 30000,
-      waitUntil: 'domcontentloaded',
-    });
-
-    // Wait for page to fully render
-    await page.waitForSelector('text=Sign in with Google', { timeout: 30000 });
-
-    // In Development mode on localhost, the dev login section should be visible
-    const devLoginSection = page.locator('text=Development Mode');
-    const isVisible = await devLoginSection.isVisible();
+  test('Dev login API returns valid JWT token', async ({ request }) => {
+    // Call the dev-login API endpoint
+    const result = await devLogin(request, 'api-test@local');
     
-    // We're running on localhost, so it should be visible
-    expect(isVisible).toBe(true);
+    // Verify we got a valid response
+    expect(result.email).toBe('api-test@local');
+    expect(result.displayName).toBe('api-test');
+    expect(result.token).toBeDefined();
+    expect(result.token.length).toBeGreaterThan(50); // JWTs are long
+  });
+
+  test('Dev login API works with custom email', async ({ request }) => {
+    // Call with a custom email
+    const result = await devLogin(request, 'custom-user@example.com');
+    
+    expect(result.email).toBe('custom-user@example.com');
+    expect(result.displayName).toBe('custom-user');
+    expect(result.token).toBeDefined();
+  });
+
+  test('Token from dev-login works with auth/me endpoint', async ({ page }) => {
+    // Get a token from dev-login
+    const response = await page.request.post('/api/auth/dev-login?email=token-test@local');
+    expect(response.ok()).toBeTruthy();
+    
+    const result = await response.json();
+    expect(result.isAuthenticated).toBe(true);
+    
+    // Use the token to call /api/auth/me
+    const meResponse = await page.request.get('/api/auth/me', {
+      headers: {
+        'Authorization': `Bearer ${result.token}`
+      }
+    });
+    
+    expect(meResponse.ok()).toBeTruthy();
+    const authStatus = await meResponse.json();
+    expect(authStatus.isAuthenticated).toBe(true);
+    expect(authStatus.user.email).toBe('token-test@local');
   });
 });

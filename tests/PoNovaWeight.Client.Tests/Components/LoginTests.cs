@@ -2,10 +2,14 @@ using Bunit;
 using FluentAssertions;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.JSInterop;
 using Moq;
 using PoNovaWeight.Client.Pages;
 using PoNovaWeight.Client.Services;
+using System.Security.Claims;
 
 namespace PoNovaWeight.Client.Tests.Components;
 
@@ -16,36 +20,46 @@ public class LoginTests : BunitContext
         // Register NavigationManager for the Login page
         Services.AddSingleton<NavigationManager>(new FakeNavigationManager());
         
-        // Register HttpClient for the Login page
-        Services.AddSingleton(new HttpClient { BaseAddress = new Uri("http://localhost/") });
-        
-        // Register mock AuthService dependencies
-        var mockApiClient = new Mock<ApiClient>(MockBehavior.Loose, new HttpClient { BaseAddress = new Uri("http://localhost/") });
-        var mockAuthStateProvider = new Mock<NovaAuthStateProvider>(MockBehavior.Loose, mockApiClient.Object);
-        Services.AddSingleton(mockApiClient.Object);
+        // Register mock auth state provider for OIDC
+        var mockAuthStateProvider = new Mock<AuthenticationStateProvider>();
+        mockAuthStateProvider
+            .Setup(x => x.GetAuthenticationStateAsync())
+            .ReturnsAsync(new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity())));
         Services.AddSingleton<AuthenticationStateProvider>(mockAuthStateProvider.Object);
-        Services.AddSingleton(new AuthService(mockApiClient.Object, mockAuthStateProvider.Object));
+        
+        // Register mock configuration (dev mode - no Google ClientId)
+        var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.Setup(c => c["Google:ClientId"]).Returns((string?)null);
+        Services.AddSingleton<IConfiguration>(mockConfiguration.Object);
+        
+        // Register AuthService
+        Services.AddSingleton(sp => new AuthService(
+            sp.GetRequiredService<AuthenticationStateProvider>(),
+            sp.GetRequiredService<NavigationManager>(),
+            sp.GetRequiredService<IConfiguration>(),
+            sp.GetRequiredService<IJSRuntime>()));
     }
 
     [Fact]
-    public void Login_RendersSignInButton()
+    public void Login_RendersDevLoginButton()
     {
         // Act
         var cut = Render<Login>();
 
-        // Assert
-        cut.Markup.Should().Contain("Sign in with Google");
+        // Assert - In dev mode (no ClientId), shows Dev Login
+        cut.Markup.Should().Contain("Dev Login");
+        cut.Markup.Should().Contain("Development mode");
     }
 
     [Fact]
-    public void Login_ContainsGoogleLoginLink()
+    public void Login_ContainsLoginButton()
     {
         // Act
         var cut = Render<Login>();
 
-        // Assert
-        var link = cut.Find("a[href*='/api/auth/login']");
-        link.Should().NotBeNull();
+        // Assert - Now it's a button, not a link
+        var button = cut.Find("button");
+        button.Should().NotBeNull();
     }
 
     [Fact]
@@ -60,45 +74,14 @@ public class LoginTests : BunitContext
     }
 
     [Fact]
-    public void Login_HasGoogleLogo()
+    public void Login_HasEmailInput_InDevMode()
     {
         // Act
         var cut = Render<Login>();
 
-        // Assert
-        var svg = cut.Find("svg");
-        svg.Should().NotBeNull();
-        // Google logo colors
-        cut.Markup.Should().Contain("#4285F4"); // Google Blue
-        cut.Markup.Should().Contain("#34A853"); // Google Green
-    }
-
-    [Fact]
-    public void Login_WithReturnUrl_IncludesInLoginLink()
-    {
-        // For SupplyParameterFromQuery parameters, we need to test via the rendered output
-        // Since the parameter comes from query string, we test the default behavior 
-        // and verify the component's URL generation logic
-
-        // Act
-        var cut = Render<Login>();
-
-        // Assert - Component should have link to auth endpoint
-        var link = cut.Find("a[href*='/api/auth/login']");
-        link.Should().NotBeNull();
-        // Verify the href contains the returnUrl parameter
-        var href = link.GetAttribute("href");
-        href.Should().Contain("returnUrl=");
-    }
-
-    [Fact]
-    public void Login_WithoutReturnUrl_DefaultsToRoot()
-    {
-        // Act
-        var cut = Render<Login>();
-
-        // Assert - Default return URL should be root
-        cut.Markup.Should().Contain("/api/auth/login?returnUrl=%2F");
+        // Assert - Dev mode shows email input
+        var input = cut.Find("input[type='email']");
+        input.Should().NotBeNull();
     }
 
     private class FakeNavigationManager : NavigationManager
@@ -114,6 +97,11 @@ public class LoginTests : BunitContext
         }
 
         protected override void NavigateToCore(string uri, bool forceLoad)
+        {
+            Uri = uri;
+        }
+
+        protected override void NavigateToCore(string uri, NavigationOptions options)
         {
             Uri = uri;
         }

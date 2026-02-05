@@ -1,7 +1,7 @@
 import { DefaultAzureCredential } from '@azure/identity';
 import { SecretClient } from '@azure/keyvault-secrets';
 
-const KEYVAULT_NAME = 'ponovaweight-kv';
+const KEYVAULT_NAME = 'kv-poshared';
 const KEYVAULT_URL = `https://${KEYVAULT_NAME}.vault.azure.net`;
 
 let secretClient: SecretClient | null = null;

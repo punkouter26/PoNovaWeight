@@ -1,18 +1,23 @@
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @inject NavigationManager Navigation
-@inject AuthService AuthService
+@inject IConfiguration Configuration
 
 @code {
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        // First check if user is actually authenticated (cookie might be set from OAuth callback)
-        await AuthService.RefreshAuthStateAsync();
+        var googleClientId = Configuration["Google:ClientId"];
+        var isDevMode = string.IsNullOrEmpty(googleClientId) || googleClientId == "YOUR_GOOGLE_CLIENT_ID";
         
-        // If still not authenticated after refresh, redirect to login
-        var status = await AuthService.GetCurrentUserAsync();
-        if (status?.IsAuthenticated != true)
+        if (isDevMode)
         {
+            // Dev mode - go to simple login page
             var returnUrl = Uri.EscapeDataString(Navigation.Uri);
-            Navigation.NavigateTo($"/login?returnUrl={returnUrl}", forceLoad: true);
+            Navigation.NavigateTo($"/login?returnUrl={returnUrl}", replace: true);
+        }
+        else
+        {
+            // Production - use OIDC login flow
+            Navigation.NavigateToLogin("authentication/login");
         }
     }
 }

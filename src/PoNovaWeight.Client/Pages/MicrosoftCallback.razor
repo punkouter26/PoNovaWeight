@@ -1,0 +1,68 @@
+@page "/auth/microsoft-callback"
+@layout EmptyLayout
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-healthy-primary/10 via-healthy-bg to-healthy-secondary/10 dark:from-dark-bg dark:via-dark-card dark:to-dark-bg">
+    <div class="text-center">
+        <div class="w-16 h-16 mx-auto mb-4 rounded-xl bg-gradient-to-br from-healthy-primary to-healthy-dark flex items-center justify-center">
+            <svg class="w-8 h-8 text-white animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+        </div>
+        @if (!string.IsNullOrEmpty(_error))
+        {
+            <p class="text-lg font-medium text-red-600 dark:text-red-400">Sign in failed</p>
+            <p class="text-sm text-healthy-muted dark:text-dark-muted mt-1">@_error</p>
+            <a href="/login" class="mt-4 inline-block text-healthy-primary hover:underline">Back to Login</a>
+        }
+        else
+        {
+            <p class="text-lg font-medium text-healthy-text dark:text-dark-text">Completing Microsoft sign in...</p>
+        }
+    </div>
+</div>
+
+@code {
+    private string? _error;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        try
+        {
+            // Extract id_token from the URL fragment (#id_token=...)
+            // Microsoft implicit flow returns tokens in the URL fragment
+            var idToken = await JS.InvokeAsync<string?>("eval", @"
+                (function() {
+                    const hash = window.location.hash.substring(1);
+                    const params = new URLSearchParams(hash);
+                    return params.get('id_token');
+                })()
+            ");
+
+            if (string.IsNullOrEmpty(idToken))
+            {
+                _error = "No token received from Microsoft.";
+                StateHasChanged();
+                return;
+            }
+
+            // Clear any stale dev token so Microsoft token takes priority
+            await JS.InvokeVoidAsync("localStorage.removeItem", "dev_auth_token");
+
+            // Store the Microsoft ID token in sessionStorage
+            await JS.InvokeVoidAsync("sessionStorage.setItem", "microsoft_id_token", idToken);
+
+            // Navigate to the app
+            Navigation.NavigateTo("/", replace: true, forceLoad: true);
+        }
+        catch (Exception ex)
+        {
+            _error = $"Error: {ex.Message}";
+            StateHasChanged();
+        }
+    }
+}

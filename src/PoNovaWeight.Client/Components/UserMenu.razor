@@ -1,44 +1,35 @@
-@inject NovaAuthStateProvider AuthStateProvider
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthStateProvider
+@inject AuthService AuthService
 
-<div class="relative" @onclick="ToggleMenu" @onclick:stopPropagation="true">
-    @if (AuthStateProvider.CachedUser is not null)
-    {
-        <button type="button" 
-                class="flex items-center justify-center w-7 h-7 rounded-full bg-white/20 hover:bg-white/30 transition-colors overflow-hidden"
-                title="@AuthStateProvider.CachedUser.DisplayName">
-            @if (!string.IsNullOrEmpty(AuthStateProvider.CachedUser.PictureUrl))
-            {
-                <img src="@AuthStateProvider.CachedUser.PictureUrl" 
-                     alt="@AuthStateProvider.CachedUser.DisplayName"
-                     class="w-full h-full object-cover" />
-            }
-            else
-            {
+<AuthorizeView>
+    <Authorized>
+        <div class="relative" @onclick="ToggleMenu" @onclick:stopPropagation="true">
+            <button type="button" 
+                    class="flex items-center justify-center w-7 h-7 rounded-full bg-white/20 hover:bg-white/30 transition-colors overflow-hidden"
+                    title="@context.User.Identity?.Name">
                 <span class="text-xs font-medium">
-                    @GetInitials(AuthStateProvider.CachedUser.DisplayName)
+                    @GetInitials(context.User.Identity?.Name ?? "?")
                 </span>
-            }
-        </button>
+            </button>
 
-        @if (_isOpen)
-        {
-            <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 z-50">
-                <div class="px-4 py-2 border-b border-gray-100">
-                    <p class="text-sm font-medium text-gray-900 truncate">
-                        @AuthStateProvider.CachedUser.DisplayName
-                    </p>
-                    <p class="text-xs text-gray-500 truncate">
-                        @AuthStateProvider.CachedUser.Email
-                    </p>
+            @if (_isOpen)
+            {
+                <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 z-50">
+                    <div class="px-4 py-2 border-b border-gray-100">
+                        <p class="text-sm font-medium text-gray-900 truncate">
+                            @context.User.Identity?.Name
+                        </p>
+                    </div>
+                    <button @onclick="SignOut"
+                            class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        Sign out
+                    </button>
                 </div>
-                <a href="@AuthService.GetLogoutUrl()" 
-                   class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                    Sign out
-                </a>
-            </div>
-        }
-    }
-</div>
+            }
+        </div>
+    </Authorized>
+</AuthorizeView>
 
 @code {
     private bool _isOpen;
@@ -46,6 +37,11 @@
     private void ToggleMenu()
     {
         _isOpen = !_isOpen;
+    }
+
+    private async Task SignOut()
+    {
+        await AuthService.LogoutAsync();
     }
 
     private static string GetInitials(string name)

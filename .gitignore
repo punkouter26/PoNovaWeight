@@ -103,3 +103,15 @@ coverage.cobertura.xml
 # PoTune workflow state
 .potune-state.json
 Metrics.txt
+
+# E2E test auth state (contains real Google tokens)
+tests/e2e/.auth/
+
+# Publish output (build artifacts)
+publish/
+
+# Diagnostic logs
+*.zip
+api-stdout.log
+api-stderr.log
+settings.json

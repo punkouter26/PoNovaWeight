@@ -1,0 +1,123 @@
+@page "/authentication/{action}"
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@layout EmptyLayout
+@inject NavigationManager Navigation
+@inject IConfiguration Configuration
+
+@if (_isDevMode)
+{
+    <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-healthy-primary/10 via-healthy-bg to-healthy-secondary/10 dark:from-dark-bg dark:via-dark-card dark:to-dark-bg">
+        <div class="text-center">
+            <p class="text-lg font-medium text-healthy-text dark:text-dark-text">Redirecting to login...</p>
+        </div>
+    </div>
+}
+else
+{
+<RemoteAuthenticatorView Action="@Action">
+    <LoggingIn>
+        <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-healthy-primary/10 via-healthy-bg to-healthy-secondary/10 dark:from-dark-bg dark:via-dark-card dark:to-dark-bg">
+            <div class="text-center">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-xl bg-gradient-to-br from-healthy-primary to-healthy-dark flex items-center justify-center animate-pulse">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                    </svg>
+                </div>
+                <p class="text-lg font-medium text-healthy-text dark:text-dark-text">Signing in with Google...</p>
+                <p class="text-sm text-healthy-muted dark:text-dark-muted mt-1">Please wait while we redirect you</p>
+            </div>
+        </div>
+    </LoggingIn>
+    <CompletingLoggingIn>
+        <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-healthy-primary/10 via-healthy-bg to-healthy-secondary/10 dark:from-dark-bg dark:via-dark-card dark:to-dark-bg">
+            <div class="text-center">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-xl bg-gradient-to-br from-healthy-primary to-healthy-dark flex items-center justify-center">
+                    <svg class="w-8 h-8 text-white animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </div>
+                <p class="text-lg font-medium text-healthy-text dark:text-dark-text">Almost there...</p>
+                <p class="text-sm text-healthy-muted dark:text-dark-muted mt-1">Completing sign in</p>
+            </div>
+        </div>
+    </CompletingLoggingIn>
+    <LogOut>
+        <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-healthy-primary/10 via-healthy-bg to-healthy-secondary/10 dark:from-dark-bg dark:via-dark-card dark:to-dark-bg">
+            <div class="text-center">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-xl bg-gray-100 dark:bg-dark-border flex items-center justify-center">
+                    <svg class="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+                    </svg>
+                </div>
+                <p class="text-lg font-medium text-healthy-text dark:text-dark-text">Signing out...</p>
+            </div>
+        </div>
+    </LogOut>
+    <CompletingLogOut>
+        <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-healthy-primary/10 via-healthy-bg to-healthy-secondary/10 dark:from-dark-bg dark:via-dark-card dark:to-dark-bg">
+            <div class="text-center">
+                <p class="text-lg font-medium text-healthy-text dark:text-dark-text">You've been signed out</p>
+                <a href="/login" class="mt-4 inline-block text-healthy-primary hover:underline">Return to login</a>
+            </div>
+        </div>
+    </CompletingLogOut>
+    <LogInFailed>
+        <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-healthy-primary/10 via-healthy-bg to-healthy-secondary/10 dark:from-dark-bg dark:via-dark-card dark:to-dark-bg">
+            <div class="max-w-md text-center p-8 bg-white dark:bg-dark-card rounded-2xl shadow-elevation-3">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                    <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                    </svg>
+                </div>
+                <h2 class="text-xl font-bold text-healthy-text dark:text-dark-text mb-2">Sign In Failed</h2>
+                <p class="text-sm text-healthy-muted dark:text-dark-muted mb-4">There was a problem signing in with Google. Please try again.</p>
+                <a href="/login" class="inline-flex items-center gap-2 px-4 py-2 bg-healthy-primary text-white rounded-lg hover:bg-healthy-dark transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                    </svg>
+                    Back to Login
+                </a>
+            </div>
+        </div>
+    </LogInFailed>
+    <LogOutFailed>
+        @Message
+    </LogOutFailed>
+</RemoteAuthenticatorView>
+}
+
+@code {
+    [Parameter]
+    public string? Action { get; set; }
+    
+    private string Message { get; set; } = "Sign out failed. Please try again.";
+    private bool _isDevMode;
+
+    // Valid OIDC actions that RemoteAuthenticatorView can handle
+    private static readonly HashSet<string> ValidOidcActions = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "login", "login-callback", "login-failed",
+        "logout", "logout-callback", "logout-failed",
+        "logged-out", "profile", "register"
+    };
+
+    protected override void OnInitialized()
+    {
+        var googleClientId = Configuration["Google:ClientId"];
+        _isDevMode = string.IsNullOrEmpty(googleClientId) || googleClientId == "YOUR_GOOGLE_CLIENT_ID";
+        
+        if (_isDevMode)
+        {
+            // In dev mode, redirect to the simple login page
+            Navigation.NavigateTo("/login", replace: true);
+            return;
+        }
+
+        // Handle logged-out and other terminal actions by redirecting to login
+        if (string.Equals(Action, "logged-out", StringComparison.OrdinalIgnoreCase))
+        {
+            Navigation.NavigateTo("/login", replace: true);
+        }
+    }
+}
