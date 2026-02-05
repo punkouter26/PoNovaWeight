@@ -42,10 +42,9 @@ public static class AuthenticationExtensions
         {
             options.Cookie.Name = "nova-session";
             options.Cookie.HttpOnly = true;
-            // Use SameAsRequest in development (HTTP), Always in production (HTTPS)
-            options.Cookie.SecurePolicy = environment.IsDevelopment() 
-                ? CookieSecurePolicy.SameAsRequest 
-                : CookieSecurePolicy.Always;
+            // SameAsRequest respects X-Forwarded-Proto from reverse proxy (Azure Container Apps)
+            // This ensures cookies work correctly when HTTPS is terminated at the load balancer
+            options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
             options.Cookie.SameSite = SameSiteMode.Lax; // Lax required for OAuth redirects
             options.ExpireTimeSpan = TimeSpan.FromDays(30);
             options.SlidingExpiration = true;
