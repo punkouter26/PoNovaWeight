@@ -203,6 +203,17 @@ try
     // Azure App Service may use X-ARR-SSL; normalize scheme to https so Secure cookies are issued
     app.Use((context, next) =>
     {
+        // Explicitly handle X-Forwarded-Proto for Container Apps / Linux App Service
+        // This ensures the app knows it's running over HTTPS, which is critical for:
+        // 1. Setting Secure cookies
+        // 2. Generating correct OAuth redirect URIs (https://...)
+        // 3. Validating OAuth tokens during callback
+        if (context.Request.Headers.TryGetValue("X-Forwarded-Proto", out var proto) && 
+            string.Equals(proto, "https", StringComparison.OrdinalIgnoreCase))
+        {
+            context.Request.Scheme = "https";
+        }
+
         if (context.Request.Headers.ContainsKey("X-ARR-SSL") &&
             !string.Equals(context.Request.Scheme, "https", StringComparison.OrdinalIgnoreCase))
         {

@@ -33,7 +33,8 @@ public static class Endpoints
         group.MapGet("/me", GetCurrentUser)
             .WithName("GetCurrentUser")
             .WithDescription("Returns the current user's authentication status and profile.")
-            .Produces<AuthStatus>(StatusCodes.Status200OK);
+            .Produces<AuthStatus>(StatusCodes.Status200OK)
+            .CacheOutput(x => x.NoCache());
 
         // Development-only endpoint for bypassing OAuth
         // This enables testing without real Google credentials

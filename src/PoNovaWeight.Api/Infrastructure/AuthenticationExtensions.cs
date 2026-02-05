@@ -84,6 +84,15 @@ public static class AuthenticationExtensions
                 {
                     // Ensure https redirects when behind Azure reverse proxies
                     var redirectUri = context.RedirectUri;
+
+                    // Fix: The redirect_uri parameter inside the Google URL is what needs to be HTTPS
+                    // If the app thinks it's HTTP, it generates an http redirect_uri
+                    if (redirectUri.Contains("redirect_uri=http%3A", StringComparison.OrdinalIgnoreCase))
+                    {
+                        redirectUri = redirectUri.Replace("redirect_uri=http%3A", "redirect_uri=https%3A", StringComparison.OrdinalIgnoreCase);
+                    }
+
+                    // Also check the base URL (unlikely to be http for Google, but good practice)
                     if (redirectUri.StartsWith("http://", StringComparison.OrdinalIgnoreCase))
                     {
                         redirectUri = string.Concat("https://", redirectUri.AsSpan("http://".Length));
