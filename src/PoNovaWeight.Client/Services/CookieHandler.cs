@@ -8,6 +8,10 @@ namespace PoNovaWeight.Client.Services;
 /// </summary>
 public class CookieHandler : DelegatingHandler
 {
+    public CookieHandler() : base(new HttpClientHandler())
+    {
+    }
+
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         // Include cookies with all requests (same-origin)

@@ -9,14 +9,13 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-// Register the cookie handler for including credentials
-builder.Services.AddScoped<CookieHandler>();
-
 // Configure HttpClient for API calls with cookie credentials
+// Note: In Blazor WASM, the browser handles HTTP natively via JS interop
+// CookieHandler sets BrowserRequestCredentials.Include on each request
+builder.Services.AddScoped<CookieHandler>();
 builder.Services.AddScoped(sp =>
 {
     var handler = sp.GetRequiredService<CookieHandler>();
-    handler.InnerHandler = new HttpClientHandler();
     return new HttpClient(handler)
     {
         BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
