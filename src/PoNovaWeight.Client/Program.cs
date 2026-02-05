@@ -9,10 +9,18 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-// Configure HttpClient for API calls (same origin - no CORS needed)
-builder.Services.AddScoped(sp => new HttpClient
+// Register the cookie handler for including credentials
+builder.Services.AddScoped<CookieHandler>();
+
+// Configure HttpClient for API calls with cookie credentials
+builder.Services.AddScoped(sp =>
 {
-    BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
+    var handler = sp.GetRequiredService<CookieHandler>();
+    handler.InnerHandler = new HttpClientHandler();
+    return new HttpClient(handler)
+    {
+        BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
+    };
 });
 
 // Register API client service
