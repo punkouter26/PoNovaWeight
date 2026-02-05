@@ -1,8 +1,10 @@
 using Azure.AI.OpenAI;
 using Azure.Data.Tables;
 using Azure.Identity;
+using Azure.Storage.Blobs;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.ResponseCompression;
 using PoNovaWeight.Api.Features.Auth;
@@ -66,6 +68,17 @@ try
 
     // Add Aspire service defaults for OpenTelemetry, health checks, and resilience
     builder.AddServiceDefaults();
+
+    // Configure Data Protection to persist keys in Azure Blob Storage (production only)
+    // This ensures cookies remain valid across container restarts and scaling
+    var dataProtectionBlobUri = builder.Configuration["DataProtection:BlobUri"];
+    if (!string.IsNullOrEmpty(dataProtectionBlobUri) && !builder.Environment.IsDevelopment())
+    {
+        builder.Services.AddDataProtection()
+            .SetApplicationName("PoNovaWeight")
+            .PersistKeysToAzureBlobStorage(new Uri(dataProtectionBlobUri), new DefaultAzureCredential());
+        Log.Information("Data Protection configured with Azure Blob Storage: {BlobUri}", dataProtectionBlobUri);
+    }
 
     // Serilog configuration
     builder.Host.UseSerilog((context, services, configuration) => configuration

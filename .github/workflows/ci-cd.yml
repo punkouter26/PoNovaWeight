@@ -49,7 +49,10 @@ jobs:
             --name ${{ env.CONTAINER_APP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
             --image ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }} \
-            --set-env-vars "KeyVault__Url=https://kv-poshared.vault.azure.net/"
+            --set-env-vars \
+              "KeyVault__Url=https://kv-poshared.vault.azure.net/" \
+              "DataProtection__BlobUri=https://stponovaweight.blob.core.windows.net/dataprotection-keys/keys.xml" \
+              "ConnectionStrings__tables=https://stponovaweight.table.core.windows.net/"
 
       - name: Verify deployment
         continue-on-error: true
