@@ -1,0 +1,37 @@
+2026-02-05T03:24:48.6269344Z    _____                               
+2026-02-05T03:24:48.6271183Z   /  _  \ __________ _________   ____  
+2026-02-05T03:24:48.6271260Z  /  /_\  \\___   /  |  \_  __ \_/ __ \ 
+2026-02-05T03:24:48.6271302Z /    |    \/    /|  |  /|  | \/\  ___/ 
+2026-02-05T03:24:48.6271337Z \____|__  /_____ \____/ |__|    \___  >
+2026-02-05T03:24:48.6271382Z         \/      \/                  \/ 
+2026-02-05T03:24:48.6271436Z A P P   S E R V I C E   O N   L I N U X
+2026-02-05T03:24:48.6271467Z 
+2026-02-05T03:24:48.6271504Z Documentation       : http://aka.ms/webapp-linux
+2026-02-05T03:24:48.6271541Z Dotnet quickstart   : https://aka.ms/dotnet-qs
+2026-02-05T03:24:48.6271574Z ASP .NETCore Version: 10.0.2
+2026-02-05T03:24:48.6271607Z Instance Name       : 10-30-2-124
+2026-02-05T03:24:48.6271656Z Instance Id         : 5d43112dac899e79c5f159102c851f071cec9160838765e615962ec31a27c96f
+2026-02-05T03:24:48.6271688Z 
+2026-02-05T03:24:48.6271721Z Note: Any data outside '/home' is not persisted
+2026-02-05T03:24:50.8328399Z  * Starting OpenBSD Secure Shell server sshd
+2026-02-05T03:24:50.8494115Z    ...done.
+2026-02-05T03:24:50.8661205Z WEBSITES_INCLUDE_CLOUD_CERTS is not set to true.
+2026-02-05T03:24:50.9237593Z Updating certificates in /etc/ssl/certs...
+2026-02-05T03:24:59.2544880Z rehash: warning: skipping duplicate certificate in SSLcom-TLS-Root-2022-ECC.pem
+2026-02-05T03:24:59.2545359Z rehash: warning: skipping duplicate certificate in SSLcom-TLS-Root-2022-RSA.pem
+2026-02-05T03:24:59.3809864Z rehash: warning: skipping ca-certificates.crt,it does not contain exactly one certificate or CRL
+2026-02-05T03:24:59.3937095Z 4 added, 0 removed; done.
+2026-02-05T03:24:59.3937582Z Running hooks in /etc/ca-certificates/update.d...
+2026-02-05T03:24:59.4544475Z done.
+2026-02-05T03:24:59.4612515Z CA certificates copied and updated successfully.
+2026-02-05T03:24:59.5288480Z  * Starting periodic command scheduler cron
+2026-02-05T03:24:59.5407139Z    ...done.
+2026-02-05T03:24:59.5755083Z Running oryx create-script -appPath /home/site/wwwroot -output /opt/startup/startup.sh -defaultAppFilePath /defaulthome/hostingstart/hostingstart.dll     -bindPort 8080 -bindPort2 '' -userStartupCommand 'dotnet PoNovaWeight.Api.dll' 
+2026-02-05T03:24:59.7911833Z Could not find build manifest file at '/home/site/wwwroot/oryx-manifest.toml'
+2026-02-05T03:24:59.7912319Z Could not find operation ID in manifest. Generating an operation id...
+2026-02-05T03:24:59.7916826Z Build Operation ID: 52c8533a-0a31-40ff-8097-01be7a105919
+2026-02-05T03:24:59.8922018Z 
+2026-02-05T03:24:59.8925742Z Agent extension 
+2026-02-05T03:24:59.8925857Z Before if loop >> DotNet Runtime 
+2026-02-05T03:24:59.8965015Z DotNet Runtime 10.0Writing output script to '/opt/startup/startup.sh'
+2026-02-05T03:24:59.9093426Z Running user provided startup command...

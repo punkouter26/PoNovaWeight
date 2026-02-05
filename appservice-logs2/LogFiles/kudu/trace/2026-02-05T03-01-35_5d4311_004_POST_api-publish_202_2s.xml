@@ -1,0 +1,16 @@
+<step title="Incoming Request" date="2026-02-05T03:01:35.712" instance="5d4311" url="/api/publish?async=true&amp;deployer=GITHUB_ONE_DEPLOY&amp;type=zip&amp;message=%7B%22type%22%3A%22deployment%22%2C%22sha%22%3A%220d6df31f2a520932f2c0037a77d2119795e7aa34%22%2C%22repoName%22%3A%22punkouter26%2FPoNovaWeight%22%2C%22actor%22%3A%22punkouter26%22%2C%22slotName%22%3A%22production%22%2C%22commitMessage%22%3A%22feat%3A%20add%20App%20Service%20CI%2FCD%20workflow%20for%20parallel%20deployment%22%7D" method="POST" type="request" pid="851,1,14" Host="ponovaweight-app.scm.azurewebsites.net" User-Agent="GITHUBACTIONS_DeployWebAppToAzure_cdce2c904e52a65ce3302c4654b23c5f11fa288e1787a9c50576576d299b0c21" Authorization="Bea..." Content-Type="application/octet-stream" Cookie="ARRAffinity=5d43112dac899e79c5f159102c851f071cec9160838765e615962ec31a27c96f;Path=/;HttpOnly;Secure;Domain=ponovaweight-app.scm.azurewebsites.net; ARRAffinitySameSite=5d43112dac899e79c5f159102c851f071cec9160838765e615962ec31a27c96f;Path=/;HttpOnly;SameSite=None;Secure;Domain=ponovaweight-app.scm.azurewebsites.net" Transfer-Encoding="chunked" X-ARR-LOG-ID="332c9800-1551-44c5-9110-464f295c63ba" CLIENT-IP="104.209.5.147:49152" X-SITE-DEPLOYMENT-ID="ponovaweight-app" WAS-DEFAULT-HOSTNAME="ponovaweight-app.scm.azurewebsites.net" X-Forwarded-Proto="https" X-AppService-Proto="https" X-Forwarded-TlsVersion="1.3" X-WAWS-Unencoded-URL="/api/publish?async=true&amp;deployer=GITHUB_ONE_DEPLOY&amp;type=zip&amp;message=%7B%22type%22%3A%22deployment%22%2C%22sha%22%3A%220d6df31f2a520932f2c0037a77d2119795e7aa34%22%2C%22repoName%22%3A%22punkouter26%2FPoNovaWeight%22%2C%22actor%22%3A%22punkouter26%22%2C%22slotName%22%3A%22production%22%2C%22commitMessage%22%3A%22feat%3A%20add%20App%20Service%20CI%2FCD%20workflow%20for%20parallel%20deployment%22%7D" X-Client-IP="104.209.5.147" X-Client-Port="49152" >
+  <step title="OneDeploy" date="2026-02-05T03:01:36.246" >
+    <step title="None repository commit" date="2026-02-05T03:01:36.325" >
+      <step title="Commit id: bdccf7e0-7c72-49f4-a938-66367acbf1c4" date="2026-02-05T03:01:36.332" Message="N/A" AuthorName="N/A" AuthorEmail="N/A" /><!-- duration: 5ms -->
+    </step><!-- duration: 23ms -->
+    <step title="Starting PushDeployAsync" date="2026-02-05T03:01:36.354" /><!-- duration: 8ms -->
+    <step title="Writing artifact to /tmp/zipdeploy/6c78f865-ed76-44bb-aaea-c48885697d71.zip" date="2026-02-05T03:01:36.394" >
+      <step title="Writing multipart request body to /tmp/zipdeploy/6c78f865-ed76-44bb-aaea-c48885697d71.zip" date="2026-02-05T03:01:36.399" /><!-- duration: 5ms -->
+    </step><!-- duration: 715ms -->
+    <step title="Start deployment in the background" date="2026-02-05T03:01:37.700" >
+      <step title="Acquiring Deployment Lock" date="2026-02-05T03:01:37.785" /><!-- duration: 14ms -->
+      <step title="Acquired Deployment Lock" date="2026-02-05T03:01:37.857" /><!-- duration: 6ms -->
+    </step><!-- duration: 369ms -->
+  </step><!-- duration: 1838ms -->
+  <step title="Outgoing response" date="2026-02-05T03:01:38.092" type="response" statusCode="202" statusText="Accepted" /><!-- duration: 4ms -->
+</step><!-- duration: 2386ms -->
