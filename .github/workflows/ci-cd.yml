@@ -27,6 +27,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Run tests
+        run: dotnet test --configuration Release --no-build --verbosity normal
+
       - name: Login to Azure using OIDC
         uses: azure/login@v2
         with:
@@ -50,7 +64,7 @@ jobs:
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
             --image ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }} \
             --set-env-vars \
-              "KeyVault__Url=https://kv-poshared.vault.azure.net/" \
+              "KeyVault__VaultUri=https://kv-poshared.vault.azure.net/" \
               "DataProtection__BlobUri=https://stponovaweight.blob.core.windows.net/dataprotection-keys/keys.xml" \
               "ConnectionStrings__tables=https://stponovaweight.table.core.windows.net/"
 

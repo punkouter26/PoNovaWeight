@@ -44,7 +44,7 @@ public class CalculateStreakTests
     public async Task Handle_CountsConsecutiveOmadDays()
     {
         // Arrange - 3 consecutive OMAD-compliant days
-        var today = DateOnly.FromDateTime(DateTime.Today);
+        var today = _fixedToday;
         var entities = new List<DailyLogEntity>
         {
             CreateEntity(today, omadCompliant: true),
@@ -69,7 +69,7 @@ public class CalculateStreakTests
     public async Task Handle_BreaksStreak_OnNonCompliantDay()
     {
         // Arrange - streak broken by non-compliant day
-        var today = DateOnly.FromDateTime(DateTime.Today);
+        var today = _fixedToday;
         var entities = new List<DailyLogEntity>
         {
             CreateEntity(today, omadCompliant: true),
@@ -94,7 +94,7 @@ public class CalculateStreakTests
     public async Task Handle_UnloggedDaysBreakStreak()
     {
         // Arrange - unlogged day (null OmadCompliant) BREAKS streak (consecutive days required)
-        var today = DateOnly.FromDateTime(DateTime.Today);
+        var today = _fixedToday;
         var entities = new List<DailyLogEntity>
         {
             CreateEntity(today, omadCompliant: true),
@@ -119,7 +119,7 @@ public class CalculateStreakTests
     public async Task Handle_ReturnsZero_WhenMostRecentDayIsNonCompliant()
     {
         // Arrange
-        var today = DateOnly.FromDateTime(DateTime.Today);
+        var today = _fixedToday;
         var entities = new List<DailyLogEntity>
         {
             CreateEntity(today, omadCompliant: false),
@@ -144,7 +144,7 @@ public class CalculateStreakTests
     public async Task Handle_ReturnsZero_WhenTodayIsUnlogged()
     {
         // Arrange - most recent days are unlogged, streak must start from today
-        var today = DateOnly.FromDateTime(DateTime.Today);
+        var today = _fixedToday;
         var entities = new List<DailyLogEntity>
         {
             CreateEntity(today, omadCompliant: null), // Unlogged today - no streak can start
@@ -170,7 +170,7 @@ public class CalculateStreakTests
     public async Task Handle_GapsInDates_BreakStreak()
     {
         // Arrange - there's a gap in dates (no entry for day -1)
-        var today = DateOnly.FromDateTime(DateTime.Today);
+        var today = _fixedToday;
         var entities = new List<DailyLogEntity>
         {
             CreateEntity(today, omadCompliant: true),

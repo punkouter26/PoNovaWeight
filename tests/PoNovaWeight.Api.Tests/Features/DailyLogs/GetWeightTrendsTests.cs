@@ -44,7 +44,7 @@ public class GetWeightTrendsTests
     public async Task Handle_ReturnsTrendData_ForDaysWithWeight()
     {
         // Arrange
-        var today = DateOnly.FromDateTime(DateTime.Today);
+        var today = _fixedToday;
         var entities = new List<DailyLogEntity>
         {
             CreateEntity(today, 175.0),
@@ -69,7 +69,7 @@ public class GetWeightTrendsTests
     public async Task Handle_CalculatesWeightChange()
     {
         // Arrange
-        var today = DateOnly.FromDateTime(DateTime.Today);
+        var today = _fixedToday;
         // Days=7 means range from today.AddDays(-6) to today (7 days total)
         var entities = new List<DailyLogEntity>
         {
@@ -93,7 +93,7 @@ public class GetWeightTrendsTests
     public async Task Handle_CarriesForwardWeight_ForGaps()
     {
         // Arrange - weight on day 0 and day 2, but not day 1
-        var today = DateOnly.FromDateTime(DateTime.Today);
+        var today = _fixedToday;
         var entities = new List<DailyLogEntity>
         {
             CreateEntity(today, 175.0),
@@ -123,7 +123,7 @@ public class GetWeightTrendsTests
     public async Task Handle_MarksCarryForwardCorrectly()
     {
         // Arrange
-        var today = DateOnly.FromDateTime(DateTime.Today);
+        var today = _fixedToday;
         var entities = new List<DailyLogEntity>
         {
             CreateEntity(today, 175.0)
@@ -153,7 +153,7 @@ public class GetWeightTrendsTests
     public async Task Handle_IncludesAlcoholConsumption()
     {
         // Arrange
-        var today = DateOnly.FromDateTime(DateTime.Today);
+        var today = _fixedToday;
         var entities = new List<DailyLogEntity>
         {
             CreateEntity(today, 175.0, alcoholConsumed: true),
@@ -180,7 +180,7 @@ public class GetWeightTrendsTests
     public async Task Handle_RequiresMinimumThreeDays_ForWeightChange()
     {
         // Arrange - only 2 days of data
-        var today = DateOnly.FromDateTime(DateTime.Today);
+        var today = _fixedToday;
         var entities = new List<DailyLogEntity>
         {
             CreateEntity(today, 175.0),

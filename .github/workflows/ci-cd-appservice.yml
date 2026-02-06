@@ -38,6 +38,9 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release --no-restore
 
+      - name: Run tests
+        run: dotnet test --configuration Release --no-build --verbosity normal
+
       - name: Publish
         run: |
           dotnet publish src/PoNovaWeight.Api/PoNovaWeight.Api.csproj \
