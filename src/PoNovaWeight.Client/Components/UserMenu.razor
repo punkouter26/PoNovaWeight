@@ -4,8 +4,15 @@
 
 <AuthorizeView>
     <Authorized>
-        <div class="relative" @onclick="ToggleMenu" @onclick:stopPropagation="true">
+        @if (_isOpen)
+        {
+            <!-- Overlay to detect clicks outside menu -->
+            <div class="fixed inset-0 z-40" @onclick="CloseMenu"></div>
+        }
+        
+        <div class="relative">
             <button type="button" 
+                    @onclick="ToggleMenu"
                     class="flex items-center justify-center w-7 h-7 rounded-full bg-white/20 hover:bg-white/30 transition-colors overflow-hidden"
                     title="@context.User.Identity?.Name">
                 <span class="text-xs font-medium">
@@ -15,7 +22,7 @@
 
             @if (_isOpen)
             {
-                <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 z-50">
+                <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 z-50" @onclick:stopPropagation="true">
                     <div class="px-4 py-2 border-b border-gray-100">
                         <p class="text-sm font-medium text-gray-900 truncate">
                             @context.User.Identity?.Name
@@ -37,6 +44,11 @@
     private void ToggleMenu()
     {
         _isOpen = !_isOpen;
+    }
+
+    private void CloseMenu()
+    {
+        _isOpen = false;
     }
 
     private async Task SignOut()
