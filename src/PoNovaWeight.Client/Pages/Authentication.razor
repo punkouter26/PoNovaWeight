@@ -4,7 +4,7 @@
 @inject NavigationManager Navigation
 @inject IConfiguration Configuration
 
-@if (_isDevMode)
+@if (_isDevMode || _isLoggedOut)
 {
     <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-healthy-primary/10 via-healthy-bg to-healthy-secondary/10 dark:from-dark-bg dark:via-dark-card dark:to-dark-bg">
         <div class="text-center">
@@ -82,7 +82,14 @@ else
         </div>
     </LogInFailed>
     <LogOutFailed>
-        @Message
+        <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-healthy-primary/10 via-healthy-bg to-healthy-secondary/10 dark:from-dark-bg dark:via-dark-card dark:to-dark-bg">
+            <div class="max-w-md text-center p-8 bg-white dark:bg-dark-card rounded-2xl shadow-elevation-3">
+                <p class="text-lg font-medium text-healthy-text dark:text-dark-text mb-4">Sign out encountered an issue</p>
+                <a href="/login" class="inline-flex items-center gap-2 px-4 py-2 bg-healthy-primary text-white rounded-lg hover:bg-healthy-dark transition-colors">
+                    Return to Login
+                </a>
+            </div>
+        </div>
     </LogOutFailed>
 </RemoteAuthenticatorView>
 }
@@ -90,33 +97,28 @@ else
 @code {
     [Parameter]
     public string? Action { get; set; }
-    
-    private string Message { get; set; } = "Sign out failed. Please try again.";
-    private bool _isDevMode;
 
-    // Valid OIDC actions that RemoteAuthenticatorView can handle
-    private static readonly HashSet<string> ValidOidcActions = new(StringComparer.OrdinalIgnoreCase)
-    {
-        "login", "login-callback", "login-failed",
-        "logout", "logout-callback", "logout-failed",
-        "logged-out", "profile", "register"
-    };
+    private bool _isDevMode;
+    private bool _isLoggedOut;
 
     protected override void OnInitialized()
     {
         var googleClientId = Configuration["Google:ClientId"];
         _isDevMode = string.IsNullOrEmpty(googleClientId) || googleClientId == "YOUR_GOOGLE_CLIENT_ID";
-        
-        if (_isDevMode)
-        {
-            // In dev mode, redirect to the simple login page
-            Navigation.NavigateTo("/login", replace: true);
-            return;
-        }
 
-        // Handle logged-out and other terminal actions by redirecting to login
-        if (string.Equals(Action, "logged-out", StringComparison.OrdinalIgnoreCase))
+        // For "logged-out" action, skip RemoteAuthenticatorView entirely to avoid
+        // the OIDC library throwing when it tries to process a terminal state.
+        // We redirect to /login in OnAfterRenderAsync to avoid race conditions.
+        _isLoggedOut = string.Equals(Action, "logged-out", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(Action, "logout-failed", StringComparison.OrdinalIgnoreCase);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && (_isDevMode || _isLoggedOut))
         {
+            // Small delay to let the OIDC state settle before navigating
+            await Task.Delay(100);
             Navigation.NavigateTo("/login", replace: true);
         }
     }
