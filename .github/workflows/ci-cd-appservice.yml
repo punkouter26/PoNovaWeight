@@ -11,6 +11,7 @@ permissions:
 
 env:
   DOTNET_VERSION: 10.0.x
+  AZURE_WEBAPP_NAME: ponovaweight-app
   API_PROJECT: src/PoNovaWeight.Api/PoNovaWeight.Api.csproj
   API_TEST_PROJECT: tests/PoNovaWeight.Api.Tests/PoNovaWeight.Api.Tests.csproj
   CLIENT_TEST_PROJECT: tests/PoNovaWeight.Client.Tests/PoNovaWeight.Client.Tests.csproj
@@ -68,11 +69,11 @@ jobs:
       - name: Deploy web app package
         uses: azure/webapps-deploy@v3
         with:
-          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
           package: ./publish
 
       - name: Health check
         run: |
-          APP_URL="https://${{ secrets.AZURE_WEBAPP_NAME }}.azurewebsites.net"
+          APP_URL="https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net"
           echo "Checking ${APP_URL}/health"
           curl -fS "${APP_URL}/health"
