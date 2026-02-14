@@ -1,5 +1,5 @@
 using MediatR;
-using Microsoft.Extensions.Caching.Hybrid;
+using Microsoft.Extensions.Caching.Memory;
 using PoNovaWeight.Api.Infrastructure.TableStorage;
 using PoNovaWeight.Shared.DTOs;
 using PoNovaWeight.Shared.Validation;
@@ -13,14 +13,14 @@ public record GetWeeklySummaryQuery(DateOnly Date, string UserId = "dev-user") :
 
 /// <summary>
 /// Handler for GetWeeklySummaryQuery.
-/// Uses HybridCache to reduce Table Storage calls for repeated requests.
+/// Uses IMemoryCache to reduce Table Storage calls for repeated requests.
 /// </summary>
-public sealed class GetWeeklySummaryHandler(IDailyLogRepository repository, HybridCache cache) : IRequestHandler<GetWeeklySummaryQuery, WeeklySummaryDto>
+public sealed class GetWeeklySummaryHandler(IDailyLogRepository repository, IMemoryCache cache) : IRequestHandler<GetWeeklySummaryQuery, WeeklySummaryDto>
 {
-    private static readonly HybridCacheEntryOptions CacheOptions = new()
+    private static readonly MemoryCacheEntryOptions CacheOptions = new()
     {
-        Expiration = TimeSpan.FromMinutes(5),
-        LocalCacheExpiration = TimeSpan.FromMinutes(2)
+        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5),
+        SlidingExpiration = TimeSpan.FromMinutes(2)
     };
 
     public async Task<WeeklySummaryDto> Handle(GetWeeklySummaryQuery request, CancellationToken cancellationToken)
@@ -33,9 +33,8 @@ public sealed class GetWeeklySummaryHandler(IDailyLogRepository repository, Hybr
 
         return await cache.GetOrCreateAsync(
             cacheKey,
-            async ct => await FetchWeeklySummaryAsync(request.UserId, weekStart, weekEnd, ct),
-            CacheOptions,
-            cancellationToken: cancellationToken);
+            async _ => await FetchWeeklySummaryAsync(request.UserId, weekStart, weekEnd, cancellationToken)) 
+            ?? throw new InvalidOperationException("Cache returned null");
     }
 
     private async Task<WeeklySummaryDto> FetchWeeklySummaryAsync(

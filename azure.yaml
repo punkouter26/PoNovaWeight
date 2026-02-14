@@ -4,5 +4,5 @@ name: po-nova-weight
 services:  
   app:
     language: dotnet
-    project: ./src/PoNovaWeight.AppHost/PoNovaWeight.AppHost.csproj
-    host: containerapp
+    project: ./src/PoNovaWeight.Api/PoNovaWeight.Api.csproj
+    host: appservice

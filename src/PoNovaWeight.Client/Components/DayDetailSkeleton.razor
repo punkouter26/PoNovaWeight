@@ -1,0 +1,108 @@
+@namespace PoNovaWeight.Client.Components
+
+@* Skeleton loader for DayDetail page showing animated loading state *@
+<div class="space-y-3 lg:max-w-2xl lg:mx-auto animate-pulse">
+    <!-- Date header skeleton -->
+    <div class="bg-white dark:bg-dark-card rounded-2xl shadow-elevation-2 border border-healthy-light dark:border-dark-border p-4">
+        <div class="flex items-center justify-between">
+            <div class="w-11 h-11 bg-gray-200 dark:bg-dark-border rounded-xl"></div>
+            <div class="text-center">
+                <div class="h-5 w-24 bg-gray-200 dark:bg-dark-border rounded mb-1"></div>
+                <div class="h-3 w-12 bg-gray-100 dark:bg-dark-bg rounded mx-auto"></div>
+            </div>
+            <div class="w-11 h-11 bg-gray-200 dark:bg-dark-border rounded-xl"></div>
+        </div>
+    </div>
+
+    <!-- Food categories accordion skeleton -->
+    <div class="bg-white dark:bg-dark-card rounded-2xl shadow-elevation-2 border border-healthy-light dark:border-dark-border p-4">
+        <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-gray-200 dark:bg-dark-border rounded-lg"></div>
+                <div class="h-4 w-32 bg-gray-200 dark:bg-dark-border rounded"></div>
+            </div>
+            <div class="w-5 h-5 bg-gray-100 dark:bg-dark-bg rounded"></div>
+        </div>
+        
+        <!-- Unit steppers grid -->
+        <div class="lg:grid lg:grid-cols-2 lg:gap-3 space-y-3 lg:space-y-0">
+            <div class="space-y-2">
+                @for (var i = 0; i < 3; i++)
+                {
+                    <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-dark-border rounded-xl">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-gray-200 dark:bg-dark-bg rounded-lg"></div>
+                            <div class="h-4 w-16 bg-gray-200 dark:bg-dark-bg rounded"></div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-9 h-9 bg-gray-200 dark:bg-dark-bg rounded-full"></div>
+                            <div class="h-6 w-8 bg-gray-200 dark:bg-dark-bg rounded-lg"></div>
+                            <div class="w-9 h-9 bg-gray-200 dark:bg-dark-bg rounded-full"></div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="space-y-2 mt-2 lg:mt-0">
+                @for (var i = 0; i < 3; i++)
+                {
+                    <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-dark-border rounded-xl">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-gray-200 dark:bg-dark-bg rounded-lg"></div>
+                            <div class="h-4 w-16 bg-gray-200 dark:bg-dark-bg rounded"></div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-9 h-9 bg-gray-200 dark:bg-dark-bg rounded-full"></div>
+                            <div class="h-6 w-8 bg-gray-200 dark:bg-dark-bg rounded-lg"></div>
+                            <div class="w-9 h-9 bg-gray-200 dark:bg-dark-bg rounded-full"></div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Water tracker skeleton -->
+    <div class="bg-white dark:bg-dark-card rounded-2xl shadow-elevation-2 border border-healthy-light dark:border-dark-border p-4">
+        <div class="flex items-center gap-2 mb-4">
+            <div class="w-8 h-8 bg-gray-200 dark:bg-dark-border rounded-lg"></div>
+            <div class="h-4 w-24 bg-gray-200 dark:bg-dark-border rounded"></div>
+        </div>
+        <div class="flex justify-between gap-2">
+            @for (var i = 0; i < 8; i++)
+            {
+                <div class="w-6 h-6 bg-gray-200 dark:bg-dark-border rounded-full"></div>
+            }
+        </div>
+    </div>
+
+    <!-- OMAD section skeleton -->
+    <div class="bg-white dark:bg-dark-card rounded-2xl shadow-elevation-2 border border-healthy-light dark:border-dark-border p-4">
+        <div class="flex items-center gap-2 mb-4">
+            <div class="w-8 h-8 bg-gray-200 dark:bg-dark-border rounded-lg"></div>
+            <div class="h-4 w-20 bg-gray-200 dark:bg-dark-border rounded"></div>
+        </div>
+        
+        <div class="space-y-3">
+            <!-- Weight input -->
+            <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-dark-border rounded-xl">
+                <div class="h-4 w-12 bg-gray-200 dark:bg-dark-bg rounded"></div>
+                <div class="h-10 w-24 bg-gray-200 dark:bg-dark-bg rounded-lg"></div>
+            </div>
+            
+            <!-- OMAD toggle -->
+            <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-dark-border rounded-xl">
+                <div class="h-4 w-20 bg-gray-200 dark:bg-dark-bg rounded"></div>
+                <div class="w-12 h-6 bg-gray-200 dark:bg-dark-bg rounded-full"></div>
+            </div>
+            
+            <!-- Alcohol toggle -->
+            <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-dark-border rounded-xl">
+                <div class="h-4 w-24 bg-gray-200 dark:bg-dark-bg rounded"></div>
+                <div class="w-12 h-6 bg-gray-200 dark:bg-dark-bg rounded-full"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scan meal button skeleton -->
+    <div class="h-11 bg-gray-200 dark:bg-dark-border rounded-xl"></div>
+</div>

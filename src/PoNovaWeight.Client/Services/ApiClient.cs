@@ -10,6 +10,16 @@ public class ApiClient(HttpClient httpClient)
 {
 
     /// <summary>
+    /// Gets diagnostic information from the server.
+    /// </summary>
+    public async Task<Dictionary<string, string>?> GetDiagnosticsAsync(CancellationToken cancellationToken = default)
+    {
+        var response = await httpClient.GetAsync("api/diag", cancellationToken);
+        if (!response.IsSuccessStatusCode) return null;
+        return await response.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken);
+    }
+
+    /// <summary>
     /// Gets the daily log for a specific date.
     /// </summary>
     public async Task<DailyLogDto?> GetDailyLogAsync(DateOnly date, CancellationToken cancellationToken = default)

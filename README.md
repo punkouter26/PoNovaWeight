@@ -14,13 +14,12 @@ git clone <repository-url>
 cd PoNovaWeight
 dotnet restore
 
-# Run with Aspire (starts Azurite + API + Dashboard)
-dotnet run --project src/PoNovaWeight.AppHost
+# Run the API directly (requires Azurite for local Table Storage)
+dotnet run --project src/PoNovaWeight.Api
 ```
-
-**Access Points:**
+E
+**Access Points:**E
 - 🌐 **App**: http://localhost:5000
-- 📊 **Aspire Dashboard**: https://localhost:15888
 
 ## Features
 
@@ -39,14 +38,12 @@ dotnet run --project src/PoNovaWeight.AppHost
 | Backend | ASP.NET Core Minimal API, MediatR |
 | Database | Azure Table Storage |
 | AI | Azure OpenAI GPT-4o |
-| Orchestration | .NET Aspire |
 | Hosting | Azure Container Apps |
 
 ## Project Structure
 
 ```
 src/
-├── PoNovaWeight.AppHost/      # Aspire orchestrator
 ├── PoNovaWeight.Api/          # ASP.NET Core API
 ├── PoNovaWeight.Client/       # Blazor WASM frontend
 ├── PoNovaWeight.Shared/       # DTOs & validation
@@ -55,10 +52,24 @@ src/
 
 ## Documentation
 
-- [Architecture Overview](docs/architecture.md)
-- [Getting Started](docs/README.md)
-- [ADR: Table Storage Decision](docs/adr/001-table-storage-over-sql.md)
-- [C4 Diagrams](docs/mermaid/)
+### Architecture & Visualization (Mermaid Diagrams)
+- [Architecture Overview](docs/Architecture.mmd) - System context & container architecture
+- [Application Flow](docs/ApplicationFlow.mmd) - Auth flow & user journey
+- [Data Model](docs/DataModel.mmd) - Database schema & entity lifecycles
+- [Component Map](docs/ComponentMap.mmd) - Component tree & service dependencies
+- [Data Pipeline](docs/DataPipeline.mmd) - Data workflow & CRUD operations
+
+### Technical Documentation
+- [Product Specification](docs/ProductSpec.md) - PRD & success metrics
+- [API Contract](docs/ApiContract.md) - API specs & error handling
+- [DevOps Guide](docs/DevOps.md) - Deployment pipeline & environment secrets
+- [Local Setup](docs/LocalSetup.md) - Day 1 guide & Docker Compose
+
+### Architecture Decision Records (ADRs)
+- [001: Table Storage over SQL](docs/adr/001-table-storage-over-sql.md)
+- [002: Blazor WASM Framework](docs/adr/002-blazor-wasm-framework.md)
+- [003: MediatR CQRS](docs/adr/003-mediatr-cqrs.md)
+- [004: Dev Auth Local](docs/adr/004-dev-auth-local.md)
 
 ## Testing
 

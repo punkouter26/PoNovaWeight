@@ -1,0 +1,326 @@
+# DataPipeline.mmd - Data Workflow & User Workflow
+
+## PoNovaWeight Data & User Workflows
+
+This document describes the data workflows and user interaction patterns in the PoNovaWeight application.
+
+---
+
+## REGULAR VERSION
+
+### CRUD Operations Flow
+
+```mermaid
+flowchart TB
+    subgraph User_Actions["User Actions"]
+        AddFood["Add Food Unit"]
+        AddWater["Add Water"]
+        LogWeight["Log Weight"]
+        LogOMAD["Log OMAD"]
+        LogAlcohol["Log Alcohol"]
+        ScanMeal["Scan Meal Photo"]
+    end
+    
+    subgraph Client_Processing["Client Processing"]
+        Validate["Validate Input"]
+        Serialize["Serialize to DTO"]
+        SendRequest["HTTP POST/PUT"]
+    end
+    
+    subgraph API_Processing["API Processing"]
+        Receive["Receive Request"]
+        Authenticate["Authenticate User"]
+        ValidateDTO["Validate DTO"]
+        RouteToHandler["Route to Handler"]
+        Execute["Execute Business Logic"]
+    end
+    
+    subgraph Data_Access["Data Access"]
+        GetRepo["Get Repository"]
+        Query["Query Table Storage"]
+        Transform["Transform to Entity"]
+        Upsert["Upsert Entity"]
+        Return["Return Result"]
+    end
+    
+    User_Actions --> Client_Processing
+    Client_Processing --> API_Processing
+    API_Processing --> Data_Access
+    Data_Access -->|Response| API_Processing
+    API_Processing -->|Response| Client_Processing
+    Client_Processing -->|Update UI| User_Actions
+```
+
+### Daily Log Update Pipeline
+
+```mermaid
+flowchart LR
+    subgraph Input["User Input"]
+        A[Tap + Button<br/>on category]
+    end
+    
+    subgraph Client["Blazor Client"]
+        B[UnitStepper<br/>OnClick]
+        C[Call ApiClient<br/>IncrementUnitAsync]
+        D[Serialize JSON]
+        E[POST /api/dailylogs/increment]
+    end
+    
+    subgraph API["API Layer"]
+        F[MediatR Dispatch]
+        G[ValidationBehavior]
+        H[IncrementUnitHandler]
+        I[DailyLogRepository<br/>UpsertAsync]
+    end
+    
+    subgraph Storage["Azure Table Storage"]
+        J[TableClient<br/>UpsertEntity]
+    end
+    
+    subgraph Response["Response Flow"]
+        K[Return Updated<br/>DailyLogDto]
+        L[Update UI<br/>State]
+        M[Re-render<br/>Component]
+    end
+    
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G
+    G --> H
+    H --> I
+    I --> J
+    J --> K
+    K --> L
+    L --> M
+```
+
+### Meal Scanning Pipeline (AI)
+
+```mermaid
+flowchart TB
+    subgraph Capture["Photo Capture"]
+        A[User takes photo]
+    end
+    
+    subgraph ClientProcessing["Client Processing"]
+        B[Compress Image]
+        C[Convert to Base64]
+        D[Create MealScanRequestDto]
+        E[POST /api/mealscan]
+    end
+    
+    subgraph APIIProcessing["API Processing"]
+        F[Receive Request]
+        G[Authenticate]
+        H[Route to ScanMealHandler]
+    end
+    
+    subgraph AIAnalysis["AI Analysis"]
+        I[Get AzureOpenAIClient]
+        J[Build GPT-4o Prompt]
+        K[Send to GPT-4o]
+        L[Parse JSON Response]
+    end
+    
+    subgraph Storage_2["Storage"]
+        M[Save as DailyLogDto]
+        N[Upsert to Table Storage]
+    end
+    
+    subgraph Response_2["Response"]
+        O[Return MealScanResultDto]
+        P[Show Confirmation UI]
+        Q[User Confirms/Edits]
+        R[Save to Daily Log]
+    end
+    
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G
+    G --> H
+    H --> I
+    I --> J
+    J --> K
+    K --> L
+    L --> M
+    M --> N
+    N --> O
+    O --> P
+    P --> Q
+    Q --> R
+```
+
+### Weekly Summary Aggregation
+
+```mermaid
+flowchart TB
+    subgraph Trigger["Trigger"]
+        A[User views Dashboard<br/>or navigates to<br/>weekly summary]
+    end
+    
+    subgraph Request["API Request"]
+        B[GET /api/weeklysummary/{date}]
+    end
+    
+    subgraph Processing["Handler Processing"]
+        C[GetWeeklySummaryHandler]
+        D[Calculate Start Date<br/>(Monday of week)]
+        E[Query 7 days from<br/>Table Storage]
+    end
+    
+    subgraph Aggregation["Aggregation"]
+        F[Sum Proteins]
+        G[Sum Vegetables]
+        H[Sum Fruits]
+        I[Sum Starches]
+        J[Sum Fats]
+        K[Sum Dairy]
+        L[Count OMAD Days]
+        M[Calculate Average Weight]
+    end
+    
+    subgraph Response_3["Response"]
+        N[Return WeeklySummaryDto]
+        O[Cache Result]
+        P[Display in UI]
+    end
+    
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    E --> G
+    E --> H
+    E --> I
+    E --> J
+    E --> K
+    E --> L
+    E --> M
+    F --> N
+    G --> N
+    H --> N
+    I --> N
+    J --> N
+    K --> N
+    L --> N
+    M --> N
+    N --> O
+    O --> P
+```
+
+### Weight Trends & Analytics
+
+```mermaid
+flowchart TB
+    subgraph Request_2["Request"]
+        A[GET /api/dailylogs/trends<br/>(last 30 days)]
+    end
+    
+    subgraph Query["Data Query"]
+        B[Query Table Storage<br/>for 30 days]
+        C[Filter non-null weights]
+    end
+    
+    subgraph Analysis["Analysis"]
+        D[Calculate Daily Changes]
+        E[Calculate Moving Average]
+        F[Calculate Min/Max]
+    end
+    
+    subgraph Correlation["Correlation Analysis"]
+        G[GET /api/dailylogs/alcohol-correlation]
+        H[Group by AlcoholConsumed]
+        I[Calculate Avg Weight<br/>with/without alcohol]
+        J[Calculate Significance]
+    end
+    
+    subgraph Response_4["Response"]
+        K[Return WeightTrendsDto]
+        L[Return AlcoholCorrelationDto]
+    end
+    
+    Request_2 --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> K
+    
+    G --> H
+    H --> I
+    I --> J
+    J --> L
+```
+
+---
+
+## SIMPLIFIED VERSION
+
+### Simple CRUD Flow
+
+```mermaid
+flowchart LR
+    UI[User UI] -->|Click| Client
+    Client -->|HTTP| API
+    API -->|Query/Save| Storage
+    Storage -->|Data| API
+    API -->|Response| Client
+    Client -->|Update| UI
+```
+
+### Simple Meal Scan Flow
+
+```mermaid
+flowchart LR
+    Photo[Take Photo] --> Base64[Convert to Base64]
+    Base64 --> API[Call /api/mealscan]
+    API --> AI[GPT-4o Analysis]
+    AI --> Result[Return Units]
+    Result --> Confirm[User Confirms]
+    Confirm --> Save[Save Daily Log]
+```
+
+### Simple Analytics Flow
+
+```mermaid
+flowchart LR
+    Request[API Request<br/>Trends/Summary] --> Query[Query 30 days<br/>of data]
+    Query --> Calculate[Calculate aggregations]
+    Calculate --> Return[Return DTO]
+    Return --> Display[Show Charts]
+```
+
+---
+
+## Data Flow Summary
+
+| Operation | Trigger | Endpoint | Storage |
+|-----------|---------|----------|---------|
+| Add Food Unit | Tap + button | POST /api/dailylogs/increment | Table Storage Upsert |
+| Update Water | Tap water icon | PATCH /api/dailylogs/water | Table Storage Upsert |
+| Log Weight | Enter weight | PUT /api/dailylogs | Table Storage Upsert |
+| Log OMAD | Toggle switch | PUT /api/dailylogs | Table Storage Upsert |
+| Scan Meal | Submit photo | POST /api/mealscan | GPT-4o + Table Storage |
+| Get Day | View day | GET /api/dailylogs/{date} | Table Storage Query |
+| Get Week | View week | GET /api/weeklysummary/{date} | Table Storage Query |
+| Get Month | View month | GET /api/dailylogs/{year}/{month} | Table Storage Query |
+| Get Trends | View charts | GET /api/dailylogs/trends | Table Storage Query |
+
+---
+
+## Caching Strategy
+
+| Endpoint | Cache Policy | Duration |
+|----------|--------------|----------|
+| GET /api/dailylogs/{date} | Base Policy | 60 seconds |
+| GET /api/weeklysummary/* | Short Cache | 30 seconds |
+| GET /api/dailylogs/trends | Trends Cache | 5 minutes |
+| GET /api/dailylogs/*/month | No Cache | - |
+| POST/PUT/DELETE /* | No Cache | - |

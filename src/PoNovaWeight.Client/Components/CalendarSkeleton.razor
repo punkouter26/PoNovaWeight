@@ -1,0 +1,47 @@
+@namespace PoNovaWeight.Client.Components
+
+@* Skeleton loader for Calendar page showing animated loading state *@
+<div class="space-y-4 animate-pulse">
+    <!-- Header skeleton -->
+    <div class="flex items-center justify-center gap-4">
+        <div class="w-11 h-11 bg-gray-200 dark:bg-dark-border rounded-xl"></div>
+        <div class="h-6 w-32 bg-gray-200 dark:bg-dark-border rounded"></div>
+        <div class="w-11 h-11 bg-gray-200 dark:bg-dark-border rounded-xl"></div>
+    </div>
+
+    <!-- Calendar grid skeleton -->
+    <div class="bg-white dark:bg-dark-card rounded-2xl shadow-elevation-2 border border-healthy-light dark:border-dark-border p-4">
+        <!-- Day headers -->
+        <div class="grid grid-cols-7 gap-1 mb-2">
+            @foreach (var day in new[] { "S", "M", "T", "W", "T", "F", "S" })
+            {
+                <div class="h-6 bg-gray-100 dark:bg-dark-border rounded text-xs"></div>
+            }
+        </div>
+        
+        <!-- Calendar days -->
+        <div class="grid grid-cols-7 gap-1">
+            @for (var i = 0; i < 35; i++)
+            {
+                <div class="aspect-square bg-gray-100 dark:bg-dark-border rounded-lg"></div>
+            }
+        </div>
+    </div>
+
+    <!-- Monthly summary skeleton -->
+    <div class="bg-white dark:bg-dark-card rounded-2xl shadow-elevation-2 border border-healthy-light dark:border-dark-border p-5">
+        <div class="flex items-center gap-2 mb-4">
+            <div class="w-8 h-8 bg-gray-200 dark:bg-dark-border rounded-lg"></div>
+            <div class="h-4 w-28 bg-gray-200 dark:bg-dark-border rounded"></div>
+        </div>
+        <div class="grid grid-cols-3 gap-4">
+            @for (var i = 0; i < 3; i++)
+            {
+                <div class="p-3 bg-gray-50 dark:bg-dark-border rounded-xl">
+                    <div class="h-8 w-12 bg-gray-200 dark:bg-dark-bg rounded mx-auto mb-2"></div>
+                    <div class="h-3 w-16 bg-gray-100 dark:bg-dark-bg rounded mx-auto"></div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

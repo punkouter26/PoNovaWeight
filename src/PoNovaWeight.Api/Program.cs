@@ -1,7 +1,6 @@
 using Azure.AI.OpenAI;
 using Azure.Data.Tables;
 using Azure.Identity;
-using Azure.Storage.Blobs;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.DataProtection;
@@ -11,6 +10,7 @@ using PoNovaWeight.Api.Features.Auth;
 using PoNovaWeight.Api.Features.DailyLogs;
 using PoNovaWeight.Api.Features.MealScan;
 using PoNovaWeight.Api.Features.WeeklySummary;
+using PoNovaWeight.Api.Features.Diagnostics;
 using PoNovaWeight.Api.Infrastructure;
 using PoNovaWeight.Api.Infrastructure.OpenAI;
 using PoNovaWeight.Api.Infrastructure.TableStorage;
@@ -20,7 +20,9 @@ using Serilog;
 
 // Configure Serilog before building the host
 Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
     .WriteTo.Console()
+    .WriteTo.File("logs/bootstrap-.txt", rollingInterval: RollingInterval.Day)
     .CreateBootstrapLogger();
 
 try
@@ -66,9 +68,6 @@ try
         Log.Information("Key Vault not configured - using user secrets and environment variables only");
     }
 
-    // Add Aspire service defaults for OpenTelemetry, health checks, and resilience
-    builder.AddServiceDefaults();
-
     // Configure Data Protection to persist keys in Azure Blob Storage (production only)
     // This ensures cookies remain valid across container restarts and scaling
     var dataProtectionBlobUri = builder.Configuration["DataProtection:BlobUri"];
@@ -91,18 +90,24 @@ try
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddOpenApi();
+    builder.Services.AddApplicationInsightsTelemetry();
+    builder.Services.AddDistributedMemoryCache();
+    builder.Services.AddSession(options =>
+    {
+        options.IdleTimeout = TimeSpan.FromMinutes(30);
+        options.Cookie.HttpOnly = true;
+        options.Cookie.IsEssential = true;
+    });
 
-    // Response compression for Blazor WASM assets
+    // Response compression for Blazor WASM assets - Simplified to Brotli only
     builder.Services.AddResponseCompression(options =>
     {
         options.EnableForHttps = true;
         options.Providers.Add<BrotliCompressionProvider>();
-        options.Providers.Add<GzipCompressionProvider>();
         options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
             ["application/octet-stream", "application/wasm"]);
     });
     builder.Services.Configure<BrotliCompressionProviderOptions>(options => options.Level = System.IO.Compression.CompressionLevel.Fastest);
-    builder.Services.Configure<GzipCompressionProviderOptions>(options => options.Level = System.IO.Compression.CompressionLevel.Fastest);
 
     // MediatR with validation pipeline
     builder.Services.AddMediatR(cfg =>
@@ -117,34 +122,19 @@ try
     // TimeProvider for testable time abstractions
     builder.Services.AddSingleton(TimeProvider.System);
 
-    // HybridCache for in-memory + distributed caching
-    builder.Services.AddHybridCache();
+    // Simple in-memory caching - simpler than HybridCache for this use case
+    builder.Services.AddMemoryCache();
+    
+    // Add Health Checks
+    builder.Services.AddHealthChecks();
 
-    // Check if running under Aspire orchestration
-    var isAspireOrchestrated = !string.IsNullOrEmpty(builder.Configuration["ConnectionStrings:tables"]) ||
-                                !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER"));
-
-    if (isAspireOrchestrated)
-    {
-        // Aspire integration - automatic connection via service discovery
-        builder.AddAzureTableServiceClient("tables", settings =>
-        {
-            // Disable health checks due to bug in AspNetCore.HealthChecks.Azure.Data.Tables
-            // that sends invalid OData filter ($filter=false) causing 400 errors
-            settings.DisableHealthChecks = true;
-            settings.DisableTracing = false;
-        });
-    }
-    else
-    {
-        // Non-Aspire scenarios (tests, standalone) - require explicit connection string
-        // Reads from PoNovaWeight:AzureStorage:ConnectionString (Key Vault) or ConnectionStrings:AzureStorage (local/fallback)
-        var connectionString = builder.Configuration["PoNovaWeight:AzureStorage:ConnectionString"]
-            ?? builder.Configuration.GetConnectionString("AzureStorage")
-            ?? throw new InvalidOperationException(
-                "Azure Storage connection string is required. Set 'ConnectionStrings:AzureStorage' in configuration or run with Aspire.");
-        builder.Services.AddSingleton(new TableServiceClient(connectionString));
-    }
+    // Table Storage configuration
+    // Reads from PoNovaWeight:AzureStorage:ConnectionString (Key Vault) or ConnectionStrings:AzureStorage (local/fallback)
+    var connectionString = builder.Configuration["PoNovaWeight:AzureStorage:ConnectionString"]
+        ?? builder.Configuration.GetConnectionString("AzureStorage")
+        ?? throw new InvalidOperationException(
+            "Azure Storage connection string is required. Set 'ConnectionStrings:AzureStorage' in configuration.");
+    builder.Services.AddSingleton(new TableServiceClient(connectionString));
 
     // Register repositories using TableServiceClient
     builder.Services.AddSingleton<IDailyLogRepository, DailyLogRepository>();
@@ -199,6 +189,23 @@ try
 
     // Use forwarded headers (must be first in pipeline)
     app.UseForwardedHeaders();
+
+    // Session middleware must be registered before any middleware tries to access context.Session
+    app.UseSession();
+
+    // Log Enrichment Middleware (Standard 3)
+    app.Use(async (context, next) =>
+    {
+        var userId = context.User.Identity?.Name ?? "Anonymous";
+        var sessionId = context.Session?.Id ?? context.Request.Cookies["ASP.NET_SessionId"] ?? "NoSession";
+        
+        using (Serilog.Context.LogContext.PushProperty("UserId", userId))
+        using (Serilog.Context.LogContext.PushProperty("SessionId", sessionId))
+        using (Serilog.Context.LogContext.PushProperty("Environment", builder.Environment.EnvironmentName))
+        {
+            await next();
+        }
+    });
 
     // Azure App Service may use X-ARR-SSL; normalize scheme to https so Secure cookies are issued
     app.Use((context, next) =>
@@ -259,14 +266,16 @@ try
     // Output caching (after auth so cache varies by user)
     app.UseOutputCache();
 
-    // Map Aspire default endpoints (health checks at /health and /alive)
-    app.MapDefaultEndpoints();
+    // Health Checks
+    app.MapHealthChecks("/health");
+    app.MapHealthChecks("/alive");
 
     // Map feature endpoints
     app.MapAuthEndpoints(app.Environment);
     app.MapDailyLogEndpoints();
     app.MapWeeklySummaryEndpoints();
     app.MapMealScanEndpoints();
+    app.MapDiagnosticsEndpoints();
     app.MapControllers();
     app.MapFallbackToFile("index.html");
 

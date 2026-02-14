@@ -2,21 +2,28 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch Aspire",
-      "type": "dotnet",
+      "name": "Launch Server (API)",
+      "type": "coreclr",
       "request": "launch",
-      "projectPath": "${workspaceFolder}/src/PoNovaWeight.AppHost/PoNovaWeight.AppHost.csproj",
+      "preLaunchTask": "kill-dotnet-and-build-api",
+      "program": "${workspaceFolder}/src/PoNovaWeight.Api/bin/Debug/net10.0/PoNovaWeight.Api.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/src/PoNovaWeight.Api",
+      "stopAtEntry": false,
       "serverReadyAction": {
         "action": "openExternally",
-        "pattern": "\\bLogin to the dashboard at\\s+(https?://\\S+)",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)",
         "uriFormat": "%s"
+      },
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
     {
       "name": "Launch API (Debug)",
       "type": "coreclr",
       "request": "launch",
-      "preLaunchTask": "build",
+      "preLaunchTask": "kill-dotnet-and-build-api",
       "program": "${workspaceFolder}/src/PoNovaWeight.Api/bin/Debug/net10.0/PoNovaWeight.Api.dll",
       "args": [],
       "cwd": "${workspaceFolder}/src/PoNovaWeight.Api",

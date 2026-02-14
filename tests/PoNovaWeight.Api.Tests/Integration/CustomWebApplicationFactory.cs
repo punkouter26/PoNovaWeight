@@ -27,6 +27,15 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
             // Add test TableServiceClient with development storage
             services.AddSingleton(new TableServiceClient("UseDevelopmentStorage=true"));
 
+            // Add session services required by Program.cs middleware
+            services.AddDistributedMemoryCache();
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromHours(1);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+
             // Remove existing repository registrations
             services.RemoveAll<IDailyLogRepository>();
             services.RemoveAll<IUserRepository>();

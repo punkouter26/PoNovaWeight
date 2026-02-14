@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat code coverage" uri="datacollector://Microsoft/CodeCoverage/2.0" assemblyQualifiedName="Coverlet.Core.DataCollection.CoverletInstrumentationProvider, coverlet.core">
+        <Configuration>
+          <Format>opencover</Format>
+          <Exclude>[*Tests]*,[*]*Tests.*</Exclude>
+          <ExcludeByAttribute>ExcludeFromCodeCoverage</ExcludeByAttribute>
+          <SingleHit>false</SingleHit>
+          <UseSourceLink>true</UseSourceLink>
+          <IncludeTestAssembly>false</IncludeTestAssembly>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>

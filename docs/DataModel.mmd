@@ -1,0 +1,235 @@
+# DataModel.mmd - Database Schema & State Transitions
+
+## PoNovaWeight Data Model
+
+This document describes the database schema, entity relationships, and state transitions in the PoNovaWeight application.
+
+---
+
+## REGULAR VERSION
+
+### Entity Relationship Diagram
+
+```mermaid
+erDiagram
+    User ||--o{ DailyLog : "has"
+    DailyLog {
+        string PartitionKey "UserId"
+        string RowKey "Date (yyyy-MM-dd)"
+        int Proteins 0
+        int Vegetables 0
+        int Fruits 0
+        int Starches 0
+        int Fats 0
+        int Dairy 0
+        int WaterSegments 0
+        decimal Weight "nullable"
+        bool OmadCompliant "nullable"
+        bool AlcoholConsumed "nullable"
+        datetime Timestamp
+    }
+    
+    User {
+        string PartitionKey "UserId (email)"
+        string RowKey "Profile"
+        string Email
+        string DisplayName
+        string PictureUrl
+        datetime CreatedAt
+        datetime LastLoginAt
+    }
+```
+
+### Azure Table Storage Schema
+
+```mermaid
+flowchart TB
+    subgraph DailyLogs_Table["DailyLogs Table"]
+        direction TB
+        PK1["PartitionKey: UserId<br/>(user's email)"]
+        RK1["RowKey: Date<br/>(yyyy-MM-dd)"]
+        Attr1["Proteins: Int32<br/>Vegetables: Int32<br/>Fruits: Int32<br/>Starches: Int32<br/>Fats: Int32<br/>Dairy: Int32<br/>WaterSegments: Int32<br/>Weight: Decimal?<br/>OmadCompliant: Bool?<br/>AlcoholConsumed: Bool?<br/>Timestamp: DateTime"]
+    end
+    
+    subgraph Users_Table["Users Table"]
+        direction TB
+        PK2["PartitionKey: UserId<br/>(user's email)"]
+        RK2["RowKey: 'Profile'"]
+        Attr2["Email: String<br/>DisplayName: String<br/>PictureUrl: String<br/>CreatedAt: DateTime<br/>LastLoginAt: DateTime<br/>Timestamp: DateTime"]
+    end
+    
+    DailyLogs_Table -->|One-to-Many| Users_Table
+```
+
+### Unit Categories Reference
+
+```mermaid
+classDiagram
+    class UnitCategory {
+        <<enumeration>>
+        Proteins = 0
+        Vegetables = 1
+        Fruits = 2
+        Starches = 3
+        Fats = 4
+        Dairy = 5
+    }
+    
+    class UnitCategoryInfo {
+        <<static class>>
+        +GetDailyTarget(category) int
+        +GetDisplayName(category) string
+        +GetColor(category) string
+        +GetIcon(category) string
+    }
+    
+    UnitCategory --* UnitCategoryInfo
+    
+    note for UnitCategoryInfo "Daily Targets:\n- Proteins: 5\n- Vegetables: 5\n- Fruits: 3\n- Starches: 2\n- Fats: 2\n- Dairy: 1"
+```
+
+### Entity State Transitions
+
+```mermaid
+stateDiagram-v2
+    [*] --> Empty: New Day
+    
+    Empty --> HasUnits: User adds food unit
+    HasUnits --> HasUnits: User adds more units
+    HasUnits --> HasWater: User adds water
+    HasWater --> HasWater: User adds more water
+    HasWater --> HasWeight: User enters weight
+    HasWeight --> HasOMAD: User logs OMAD status
+    HasOMAD --> HasAlcohol: User logs alcohol
+    
+    HasUnits --> Empty: User clears units
+    HasWater --> Empty: User clears water
+    HasWeight --> Empty: User removes weight
+    HasOMAD --> Empty: User clears OMAD
+    
+    HasAlcohol --> [*]: End of day
+    
+    note right of Empty
+        All fields = 0 or null
+        Date is in the past
+    end note
+    
+    note right of HasAlcohol
+        Full day logged
+        Ready for analysis
+    end note
+```
+
+### Daily Log Lifecycle
+
+```mermaid
+flowchart LR
+    subgraph Create["Create"]
+        A1[User visits<br/>Day Detail] --> A2[Empty Log<br/>Created]
+        A2 --> A3[User taps +<br/>on category]
+        A3 --> A4[Unit Count<br/>Incremented]
+    end
+    
+    subgraph Update["Update"]
+        B1[Existing Log<br/>Retrieved] --> B2[User modifies<br/>values]
+        B2 --> B3[Validation<br/>Passes]
+        B3 --> B4[Table Storage<br/>Upsert]
+    end
+    
+    subgraph Read["Read"]
+        C1[API Request<br/>for Date] --> C2[Query Table<br/>Storage]
+        C2 --> C3{Log Exists?}
+        C3 -->|Yes| C4[Return<br/>DailyLogDto]
+        C3 -->|No| C5[Return Empty<br/>DailyLogDto]
+    end
+    
+    subgraph Delete["Delete"]
+        D1[User clears<br/>all data] --> D2[Confirm<br/>Dialog]
+        D2 --> D3[Delete from<br/>Table Storage]
+    end
+```
+
+---
+
+## SIMPLIFIED VERSION
+
+### Simple ER Diagram
+
+```mermaid
+erDiagram
+    User ||--o{ DailyLog : logs
+    User {
+        string id "email"
+        string name
+        string avatar
+    }
+    DailyLog {
+        string date "yyyy-MM-dd"
+        int protein
+        int veggies
+        int fruit
+        int starch
+        int fat
+        int dairy
+        int water
+        float weight
+        bool omad
+        bool alcohol
+    }
+```
+
+### Simple Data Flow
+
+```mermaid
+flowchart LR
+    subgraph Frontend
+        Input[User Input] --> Form[Form/Component]
+    end
+    
+    subgraph API
+        Handler[MediatR Handler] --> Validate[Validator]
+        Validate --> Repo[Repository]
+    end
+    
+    subgraph Storage
+        Repo --> Table[Azure Table<br/>Storage]
+    end
+    
+    Form -->|HTTP| Handler
+    Table -->|Data| Repo
+```
+
+### Simple State Transitions
+
+```mermaid
+stateDiagram-v2
+    [*] --> Empty
+    Empty --> Partial: Add food
+    Partial --> Partial: Add more
+    Partial --> Full: Add weight/OMAD
+    Full --> [*]
+    
+    Empty --> Full: Quick add all
+    Full --> Empty: Clear all
+```
+
+---
+
+## Data DTOs
+
+| DTO | Purpose | Properties |
+|-----|---------|------------|
+| DailyLogDto | Single day's food log | Date, Proteins, Vegetables, Fruits, Starches, Fats, Dairy, WaterSegments, Weight, OmadCompliant, AlcoholConsumed |
+| WeeklySummaryDto | 7-day aggregation | WeekStartDate, TotalProteins, TotalVegetables, etc., AverageWeight, OmadDays |
+| MonthlyLogsDto | Month overview | Year, Month, DailyLogs[] |
+| WeightTrendsDto | Historical weights | Weights[], AlcoholCorrelation |
+| StreakDto | OMAD streaks | CurrentStreak, LongestStreak, LastOmadDate |
+
+---
+
+## Table Storage Partition Strategy
+
+| Table | PartitionKey | RowKey | Use Case |
+|-------|--------------|--------|----------|
+| DailyLogs | UserId (email) | Date (yyyy-MM-dd) | Single user queries by date range |
+| Users | UserId (email) | "Profile" | User profile lookup |

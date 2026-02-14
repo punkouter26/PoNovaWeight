@@ -1,130 +1,62 @@
-# ADR 001: Azure Table Storage Over SQL Database
+# ADR 001: Use Azure Table Storage over SQL Database
 
 ## Status
-
-Accepted
-
-## Date
-
-2024-12-01
+**Accepted** | Date: February 2026
 
 ## Context
-
-The Nova Food Journal MVP requires persistent storage for daily food log entries. Each entry contains:
-- User identifier (single user for MVP)
-- Date (one entry per day)
-- Six food category unit counts (0-10 each)
-- Water segments count (0-8)
-
-We need to choose a storage solution that is:
-1. Cost-effective for MVP development and low-volume production
-2. Simple to develop against with minimal setup
-3. Appropriate for the data access patterns
-4. Deployable to Azure with infrastructure-as-code
-
-### Options Considered
-
-#### Option 1: Azure SQL Database
-- **Pros**: Full relational capabilities, familiar SQL syntax, Entity Framework support
-- **Cons**: Higher base cost (~$5/month minimum), more complex setup, overkill for key-value access
-
-#### Option 2: Azure Cosmos DB
-- **Pros**: Global distribution, multi-model, rich query capabilities
-- **Cons**: Significant cost at scale, complex pricing model, excessive for MVP scope
-
-#### Option 3: Azure Table Storage
-- **Pros**: Very low cost (~$0.01/month for low volume), simple API, key-value optimized
-- **Cons**: Limited query capabilities, no joins, no transactions across partitions
-
-#### Option 4: SQLite (local file)
-- **Pros**: Zero cost, no network dependency, simple deployment
-- **Cons**: No cloud persistence, difficult to scale, data loss risk on App Service restart
+We needed to choose a database solution for storing daily food logs and user data. The options considered were:
+- Azure SQL Database (relational)
+- Azure Table Storage (NoSQL key-value)
+- Cosmos DB (NoSQL document)
 
 ## Decision
+We chose **Azure Table Storage** for the following reasons:
 
-We will use **Azure Table Storage** for the MVP.
+### 1. Cost Efficiency
+- Table Storage is significantly cheaper than SQL Database for our use case
+- No need for expensive reserved capacity for a small user base
+- Pay-per-query model fits our startup phase
 
-## Rationale
+### 2. Simplicity
+- Schema-less design allows flexibility for adding new fields
+- No migration scripts needed for schema changes
+- Simple key-value access pattern matches our data model perfectly
 
-### 1. Access Pattern Alignment
+### 3. Partition Strategy
+- UserId as PartitionKey enables efficient per-user queries
+- Date as RowKey enables time-series lookups
+- Perfect fit for our "one partition per user" access pattern
 
-Our data access is purely key-value based:
-- **Get daily log**: PartitionKey (userId) + RowKey (date) → O(1) lookup
-- **Get week of logs**: PartitionKey (userId) + RowKey range → efficient range query
-- **Save daily log**: Upsert by PartitionKey + RowKey
-
-We never need:
-- Joins across tables
-- Complex aggregations
-- Full-text search
-- Transactions spanning multiple entities
-
-### 2. Cost Efficiency
-
-For a single-user MVP with low data volume:
-- Storage: ~$0.01/month for < 1GB
-- Operations: ~$0.01/month for < 10,000 transactions
-- **Total: < $1/month** vs. $5+ for SQL Database
-
-### 3. Development Simplicity
-
-- Azure.Data.Tables SDK provides clean async API
-- Azurite emulator enables local development without Azure account
-- No Entity Framework migrations or schema management
-- Single table with simple entity class
-
-### 4. Scalability Path
-
-While Table Storage has limitations, they don't apply to this use case:
-- Single user → no partition hotspots
-- Date-based RowKey → natural data distribution
-- Simple entities → no complex relationship mapping
-
-If multi-tenant features are added later:
-- PartitionKey per user maintains isolation
-- Each user's data is independently accessible
-- No cross-partition queries needed
+### 4. Integration
+- Native .NET SDK with excellent async support
+- Azure Functions compatibility for future serverless triggers
+- Easy backup with AzCopy
 
 ## Consequences
 
 ### Positive
-- Minimal hosting costs during development and low-usage production
-- Local development with Azurite without Azure subscription
-- Simple entity-to-table mapping with built-in optimistic concurrency
-- Fast point lookups and range queries for weekly views
+- Lower hosting costs (~$10/month vs $50+/month for SQL)
+- Faster development (no migrations, no EF complexity)
+- Easier local development with Azurite
 
 ### Negative
-- Cannot easily add computed columns or database-level aggregations
-- Weekly summaries must be calculated in application code
-- No ACID transactions if we later need cross-entity updates
-- Team members unfamiliar with Table Storage may have learning curve
+- No complex queries (no JOINs, aggregations must be done in code)
+- Limited indexing (only PartitionKey and RowKey)
+- Must handle eventual consistency in code
 
-### Neutral
-- Repository pattern abstracts storage implementation for future migration
-- Integration tests require Azurite to be running
-- No visual query tools like SQL Server Management Studio
+## Alternatives Considered
 
-## Migration Path
+### Azure SQL Database
+- **Rejected**: Overkill for simple key-value storage
+- Would require Entity Framework setup and migrations
+- Higher cost without clear benefit
 
-If requirements change (e.g., complex reporting, multi-user with shared data), we can:
-1. Keep repository interface stable
-2. Implement SqlDailyLogRepository using Entity Framework
-3. Run data migration script from Table Storage to SQL
-4. Switch DI registration in Program.cs
+### Cosmos DB
+- **Rejected**: More expensive than Table Storage
+- Unnecessary features (multi-region, global distribution)
+- SDK complexity not needed for our use case
 
-The IDailyLogRepository interface ensures application code remains unchanged.
-
-## Verification
-
-1. ✅ Azurite runs locally with docker or npm
-2. ✅ Repository integration tests pass against Azurite
-3. ✅ Point queries return in < 50ms
-4. ✅ Weekly range queries return in < 100ms
-5. ✅ Infrastructure cost projection < $1/month for MVP
-
-## References
-
-- [Azure Table Storage Documentation](https://docs.microsoft.com/azure/storage/tables/)
-- [Azure.Data.Tables SDK](https://docs.microsoft.com/dotnet/api/azure.data.tables)
-- [Azurite Storage Emulator](https://docs.microsoft.com/azure/storage/common/storage-use-azurite)
-- [Table Storage Pricing](https://azure.microsoft.com/pricing/details/storage/tables/)
+## Implementation Notes
+- Use `TableClient` from Azure.Data.Tables SDK
+- Implement repository pattern for data access
+- Use strongly-typed models mapped to TableEntity

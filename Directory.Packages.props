@@ -36,10 +36,10 @@
     <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
     <!-- Logging / Telemetry -->
     <PackageVersion Include="Serilog.AspNetCore" Version="9.0.0" />
+    <PackageVersion Include="Serilog.Sinks.File" Version="6.0.0" />
     <PackageVersion Include="Serilog.Sinks.ApplicationInsights" Version="4.0.0" />
+    <PackageVersion Include="Serilog.Enrichers.Environment" Version="3.0.1" />
     <PackageVersion Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.23.0" />
-    <!-- Caching -->
-    <PackageVersion Include="Microsoft.Extensions.Caching.Hybrid" Version="9.3.0" />
     <!-- Testing -->
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
     <PackageVersion Include="Microsoft.Extensions.TimeProvider.Testing" Version="9.0.0" />

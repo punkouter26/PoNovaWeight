@@ -22,7 +22,7 @@ public class DailyLogAndWeeklySummaryConsolidatedTests
         _repositoryMock = new Mock<IDailyLogRepository>();
         _dailyLogHandler = new GetDailyLogHandler(_repositoryMock.Object);
         
-        var cache = new FakeHybridCache();
+        var cache = new FakeMemoryCache();
         
         _weeklySummaryHandler = new GetWeeklySummaryHandler(_repositoryMock.Object, cache);
     }

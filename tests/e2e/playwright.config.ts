@@ -61,14 +61,25 @@ export default defineConfig({
     timeout: 10000,
   },
 
-  /* Start the Aspire AppHost before running tests */
-  webServer: {
-    command: 'dotnet run --project ../../src/PoNovaWeight.AppHost/PoNovaWeight.AppHost.csproj --no-build',
-    url: 'http://localhost:5000/health',
-    reuseExistingServer: true,
-    timeout: 120000,
-    stdout: 'pipe',
-    stderr: 'pipe',
-    ignoreHTTPSErrors: true,
-  },
+  /* Start the API and Client before running tests */
+  webServer: process.env.CI 
+    ? {
+        // In CI, use the pre-built API directly
+        command: 'dotnet src/PoNovaWeight.Api/bin/Release/net10.0/PoNovaWeight.Api.dll',
+        url: 'http://localhost:5000/health',
+        reuseExistingServer: false,
+        timeout: 60000,
+        stdout: 'pipe',
+        stderr: 'pipe',
+      }
+    : {
+        // Local development - run API directly
+        command: 'dotnet run --project ../src/PoNovaWeight.Api/PoNovaWeight.Api.csproj',
+        url: 'http://localhost:5000/health',
+        reuseExistingServer: !process.env.CI,
+        timeout: 120000,
+        stdout: 'pipe',
+        stderr: 'pipe',
+        ignoreHTTPSErrors: true,
+      },
 });

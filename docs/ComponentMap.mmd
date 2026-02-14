@@ -1,0 +1,289 @@
+# ComponentMap.mmd - Component Tree & Service Dependencies
+
+## PoNovaWeight Component Architecture
+
+This document describes the Blazor components, pages, and service dependencies in the PoNovaWeight application.
+
+---
+
+## REGULAR VERSION
+
+### Blazor Component Tree
+
+```mermaid
+flowchart TB
+    subgraph App["App.razor"]
+        subgraph Router["Router"]
+            RouteView["RouteView"]
+            Focus["FocusOnNavigate"]
+        end
+        
+        subgraph AuthFlow["Authentication Flow"]
+            NotFound["NotFound"]
+            Redirect["RedirectToLogin"]
+        end
+    end
+    
+    subgraph Layouts["Layouts"]
+        subgraph MainLayout["MainLayout.razor"]
+            Header["Header<br/>(UserMenu, Icons)"]
+            Nav["Navigation<br/>(MainNav)"] 
+            Body["@Body"]
+            Footer["Footer"]
+        end
+        
+        EmptyLayout["EmptyLayout.razor"]
+    end
+    
+    subgraph Pages["Pages"]
+        Login["Login.razor"]
+        Auth["Authentication.razor"]
+        Callback["MicrosoftCallback.razor"]
+        Dashboard["Dashboard.razor"]
+        Calendar["Calendar.razor"]
+        DayDetail["DayDetail.razor"]
+        MealScan["MealScanConfirm.razor"]
+        Diagnostics["Diagnostics.razor"]
+    end
+    
+    subgraph Components["Components"]
+        subgraph Cards["Card Components"]
+            Card["Card.razor"]
+            DayCard["DayCard.razor"]
+            DayCardSkeleton["DayCardSkeleton.razor"]
+        end
+        
+        subgraph Input["Input Components"]
+            UnitStepper["UnitStepper.razor"]
+            CameraCapture["CameraCapture.razor"]
+        end
+        
+        subgraph Display["Display Components"]
+            CalendarGrid["CalendarGrid.razor"]
+            WeeklySummary["WeeklySummary.razor"]
+            StreakDisplay["StreakDisplay.razor"]
+            WeightTrendChart["WeightTrendChart.razor"]
+            AlcoholInsights["AlcoholInsights.razor"]
+            WaterTracker["WaterTracker.razor"]
+            OmadSection["OmadSection.razor"]
+        end
+        
+        subgraph Skeleton["Skeleton Components"]
+            CalendarSkeleton["CalendarSkeleton.razor"]
+            DayDetailSkeleton["DayDetailSkeleton.razor"]
+            DashboardSkeleton["DashboardSkeleton.razor"]
+        end
+        
+        subgraph Utility["Utility Components"]
+            Icons["Icons.razor"]
+            Accordion["Accordion.razor"]
+            ConfirmDialog["ConfirmDialog.razor"]
+            EmptyDashboard["EmptyDashboard.razor"]
+            UserMenu["UserMenu.razor"]
+        end
+    end
+    
+    App --> RouteView
+    RouteView --> Login
+    RouteView --> Dashboard
+    RouteView --> Calendar
+    RouteView --> DayDetail
+    RouteView --> NotFound
+    
+    MainLayout --> Header
+    MainLayout --> Nav
+    MainLayout --> Body
+    Body --> Dashboard
+    Body --> Calendar
+    
+    Dashboard --> Card
+    Dashboard --> DayCard
+    Dashboard --> WeeklySummary
+    Dashboard --> StreakDisplay
+    Dashboard --> WaterTracker
+    Dashboard --> WeightTrendChart
+    
+    Calendar --> CalendarGrid
+    Calendar --> CalendarSkeleton
+    
+    DayDetail --> DayCard
+    DayDetail --> UnitStepper
+    DayDetail --> WaterTracker
+    DayDetail --> OmadSection
+```
+
+### Client Services Dependency Graph
+
+```mermaid
+flowchart TB
+    subgraph Services["Blazor Services"]
+        ApiClient["ApiClient<br/>(HttpClient wrapper)"]
+        
+        AuthService["AuthService<br/>(Auth operations)"]
+        
+        subgraph Handlers["Auth Handlers"]
+            AuthStateProvider["AuthStateProvider"]
+            CombinedAuthHandler["CombinedAuthorizationHandler"]
+            DevAuthStateProvider["DevAuthStateProvider<br/>(Dev mode)"]
+            DevTokenHandler["DevTokenHandler<br/>(Dev mode)"]
+        end
+    end
+    
+    subgraph Configuration["Configuration"]
+        AppSettings["appsettings.json"]
+    end
+    
+    ApiClient -->|Injects| HttpClient
+    AuthService -->|Uses| ApiClient
+    
+    AuthStateProvider -->|Notifies| AuthService
+    CombinedAuthHandler -->|Uses| AuthStateProvider
+    
+    ApiClient -->|Reads| AppSettings
+    AuthService -->|Reads| AppSettings
+```
+
+### API Feature Modules
+
+```mermaid
+flowchart TB
+    subgraph Features["API Features"]
+        subgraph Auth["Auth Feature"]
+            AuthEndpoints["Auth Endpoints<br/>/auth/login<br/>/auth/callback<br/>/auth/logout<br/>/auth/status"]
+        end
+        
+        subgraph DailyLogs["DailyLogs Feature"]
+            GetDailyLog["GetDailyLog<br/>(GET /api/dailylogs/{date})"]
+            UpsertDailyLog["UpsertDailyLog<br/>(PUT /api/dailylogs)"]
+            IncrementUnit["IncrementUnit<br/>(POST /api/dailylogs/increment)"]
+            UpdateWater["UpdateWater<br/>(PATCH /api/dailylogs/water)"]
+            DeleteDailyLog["DeleteDailyLog<br/>(DELETE /api/dailylogs/{date})"]
+            GetMonthlyLogs["GetMonthlyLogs<br/>(GET /api/dailylogs/{year}/{month})"]
+            CalculateStreak["CalculateStreak<br/>(GET /api/dailylogs/streak)"]
+            GetWeightTrends["GetWeightTrends<br/>(GET /api/dailylogs/trends)"]
+            GetAlcoholCorrelation["GetAlcoholCorrelation<br/>(GET /api/dailylogs/alcohol-correlation)"]
+        end
+        
+        subgraph WeeklySummary["WeeklySummary Feature"]
+            GetWeeklySummary["GetWeeklySummary<br/>(GET /api/weeklysummary/{date})"]
+        end
+        
+        subgraph MealScan["MealScan Feature"]
+            ScanMeal["ScanMeal<br/>(POST /api/mealscan)"]
+        end
+        
+        subgraph Diagnostics["Diagnostics Feature"]
+            Diagnostics["Diagnostics<br/>(GET /health, /alive)"]
+        end
+    end
+    
+    subgraph Infrastructure["Infrastructure Layer"]
+        DailyLogRepo["DailyLogRepository"]
+        UserRepo["UserRepository"]
+        MealAnalysis["MealAnalysisService"]
+        AuthExtensions["AuthenticationExtensions"]
+        ExceptionHandler["GlobalExceptionHandler"]
+    end
+    
+    AuthEndpoints --> AuthExtensions
+    GetDailyLog --> DailyLogRepo
+    UpsertDailyLog --> DailyLogRepo
+    IncrementUnit --> DailyLogRepo
+    UpdateWater --> DailyLogRepo
+    DeleteDailyLog --> DailyLogRepo
+    GetMonthlyLogs --> DailyLogRepo
+    CalculateStreak --> DailyLogRepo
+    GetWeightTrends --> DailyLogRepo
+    GetAlcoholCorrelation --> DailyLogRepo
+    ScanMeal --> MealAnalysis
+```
+
+---
+
+## SIMPLIFIED VERSION
+
+### Simple Component Hierarchy
+
+```mermaid
+flowchart TB
+    subgraph App
+        Login[Login Page]
+        Dashboard[Dashboard Page]
+        Calendar[Calendar Page]
+        DayDetail[Day Detail Page]
+        MealScan[Meal Scan Page]
+    end
+    
+    subgraph Components
+        Card[Card]
+        DayCard[Day Card]
+        UnitStepper[Unit Stepper]
+        Water[Water Tracker]
+        CalendarGrid[Calendar Grid]
+        WeeklySum[Weekly Summary]
+        Streak[Streak Display]
+        Weight[Weight Chart]
+    end
+    
+    Dashboard --> Card
+    Dashboard --> DayCard
+    Dashboard --> WeeklySum
+    Dashboard --> Streak
+    Dashboard --> Weight
+    Calendar --> CalendarGrid
+    DayDetail --> UnitStepper
+    DayDetail --> Water
+```
+
+### Simple Service Layer
+
+```mermaid
+flowchart LR
+    subgraph Client
+        API[ApiClient]
+        Auth[AuthService]
+    end
+    
+    subgraph API_Server
+        Handlers[MediatR Handlers]
+        Repos[Repositories]
+    end
+    
+    subgraph Storage
+        Tables[Azure Table Storage]
+    end
+    
+    API --> Handlers
+    Auth --> API
+    Handlers --> Repos
+    Repos --> Tables
+```
+
+---
+
+## Component Responsibilities
+
+| Component | Responsibility | Dependencies |
+|-----------|---------------|---------------|
+| Dashboard.razor | Main landing page, daily overview | DayCard, WeeklySummary, StreakDisplay, WeightTrendChart |
+| Calendar.razor | Month calendar view | CalendarGrid |
+| DayDetail.razor | Single day editing | UnitStepper, WaterTracker, OmadSection |
+| MealScanConfirm.razor | AI meal analysis | CameraCapture |
+| UnitStepper.razor | Increment/decrement food units | None |
+| WaterTracker.razor | Water intake tracking | None |
+| CalendarGrid.razor | Calendar grid rendering | None |
+| WeeklySummary.razor | 7-day summary display | None |
+| StreakDisplay.razor | OMAD streak counter | None |
+| WeightTrendChart.razor | Weight trend visualization | None |
+
+---
+
+## API Endpoints Summary
+
+| Feature | Endpoints | Description |
+|---------|-----------|-------------|
+| Auth | /auth/login, /auth/callback, /auth/logout, /auth/status | Google OAuth flow |
+| DailyLogs | GET/PUT/DELETE /api/dailylogs, /api/dailylogs/increment | CRUD operations |
+| WeeklySummary | GET /api/weeklysummary/{date} | Weekly aggregation |
+| MealScan | POST /api/mealscan | AI meal analysis |
+| Diagnostics | /health, /alive | Health checks |

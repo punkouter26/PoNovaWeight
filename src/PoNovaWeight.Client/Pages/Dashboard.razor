@@ -116,11 +116,12 @@ else
         {
             var today = DateOnly.FromDateTime(DateTime.Today);
             
-            // Load weekly summary, streak, weight trends, and alcohol correlation in parallel
-            var summaryTask = Api.GetWeeklySummaryAsync(today);
-            var streakTask = Api.GetStreakAsync();
-            var trendsTask = Api.GetWeightTrendsAsync(30);
-            var alcoholTask = Api.GetAlcoholCorrelationAsync(90);
+            // Load data with individual error handling for resilience
+            // This ensures partial data is displayed even if some calls fail
+            var summaryTask = TryGetWeeklySummaryAsync(today);
+            var streakTask = TryGetStreakAsync();
+            var trendsTask = TryGetWeightTrendsAsync(30);
+            var alcoholTask = TryGetAlcoholCorrelationAsync(90);
             
             await Task.WhenAll(summaryTask, streakTask, trendsTask, alcoholTask);
             
@@ -129,17 +130,61 @@ else
             WeightTrends = await trendsTask;
             AlcoholCorrelation = await alcoholTask;
         }
-        catch (Exception ex)
-        {
-            Console.Error.WriteLine($"Error loading weekly summary: {ex.Message}");
-            Summary = null;
-            Streak = null;
-            WeightTrends = null;
-            AlcoholCorrelation = null;
-        }
         finally
         {
             IsLoading = false;
+        }
+    }
+
+    private async Task<WeeklySummaryDto?> TryGetWeeklySummaryAsync(DateOnly date)
+    {
+        try
+        {
+            return await Api.GetWeeklySummaryAsync(date);
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Failed to load weekly summary: {ex.Message}");
+            return null;
+        }
+    }
+
+    private async Task<StreakDto?> TryGetStreakAsync()
+    {
+        try
+        {
+            return await Api.GetStreakAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Failed to load streak: {ex.Message}");
+            return null;
+        }
+    }
+
+    private async Task<WeightTrendsDto?> TryGetWeightTrendsAsync(int days)
+    {
+        try
+        {
+            return await Api.GetWeightTrendsAsync(days);
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Failed to load weight trends: {ex.Message}");
+            return null;
+        }
+    }
+
+    private async Task<AlcoholCorrelationDto?> TryGetAlcoholCorrelationAsync(int days)
+    {
+        try
+        {
+            return await Api.GetAlcoholCorrelationAsync(days);
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Failed to load alcohol correlation: {ex.Message}");
+            return null;
         }
     }
 

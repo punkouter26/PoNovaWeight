@@ -18,6 +18,41 @@
       }
     },
     {
+      "label": "build-api",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/src/PoNovaWeight.Api/PoNovaWeight.Api.csproj",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary;ForceNoAlign"
+      ],
+      "problemMatcher": "$msCompile",
+      "group": "build"
+    },
+    {
+      "label": "kill-dotnet",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "Get-Process dotnet -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "kill-dotnet-and-build-api",
+      "dependsOn": [
+        "kill-dotnet",
+        "build-api"
+      ],
+      "dependsOrder": "sequence",
+      "problemMatcher": []
+    },
+    {
       "label": "aspire-run",
       "command": "dotnet",
       "type": "process",

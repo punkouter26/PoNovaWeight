@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "E2E tests for PoNovaWeight using Playwright",
   "scripts": {
-    "test": "npx playwright test --ignore-pattern='**/google-auth-real*'",
-    "test:headed": "npx playwright test --headed --ignore-pattern='**/google-auth-real*'",
+    "test": "npx playwright test --grep-invert google-auth-real",
+    "test:headed": "npx playwright test --grep-invert google-auth-real --headed",
     "test:ui": "npx playwright test --ui",
     "test:debug": "npx playwright test --debug",
     "test:report": "npx playwright show-report",

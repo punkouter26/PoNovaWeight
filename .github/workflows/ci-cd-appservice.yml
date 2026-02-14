@@ -1,7 +1,3 @@
-# CI/CD Pipeline for PoNovaWeight - App Service Deployment
-# Deploys to Azure App Service using OIDC Federated Credentials
-# Runs in parallel with the ACA deployment
-
 name: CI/CD App Service
 
 on:
@@ -14,17 +10,18 @@ permissions:
   contents: read
 
 env:
-  AZURE_RESOURCE_GROUP: 'PoNovaWeight'
-  APP_SERVICE_NAME: 'ponovaweight-app'
-  DOTNET_VERSION: '10.0.x'
+  DOTNET_VERSION: 10.0.x
+  API_PROJECT: src/PoNovaWeight.Api/PoNovaWeight.Api.csproj
+  API_TEST_PROJECT: tests/PoNovaWeight.Api.Tests/PoNovaWeight.Api.Tests.csproj
+  CLIENT_TEST_PROJECT: tests/PoNovaWeight.Client.Tests/PoNovaWeight.Client.Tests.csproj
 
 jobs:
-  build-and-deploy:
-    name: Build and Deploy to App Service
+  build-test:
+    name: Build and Test
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup .NET
@@ -32,38 +29,50 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Restore dependencies
-        run: dotnet restore
+      - name: Restore API dependencies
+        run: dotnet restore ${{ env.API_PROJECT }}
 
-      - name: Build
-        run: dotnet build --configuration Release --no-restore
+      - name: Build API
+        run: dotnet build ${{ env.API_PROJECT }} --configuration Release --no-restore
 
-      - name: Run tests
-        run: dotnet test --configuration Release --no-build --verbosity normal
+      - name: Run API tests
+        run: dotnet test ${{ env.API_TEST_PROJECT }} --configuration Release --verbosity normal
 
-      - name: Publish
-        run: |
-          dotnet publish src/PoNovaWeight.Api/PoNovaWeight.Api.csproj \
-            --configuration Release \
-            --no-build \
-            --output ./publish
+      - name: Run Client tests
+        run: dotnet test ${{ env.CLIENT_TEST_PROJECT }} --configuration Release --verbosity normal
 
-      - name: Login to Azure using OIDC
+  deploy:
+    name: Deploy to Azure App Service
+    runs-on: ubuntu-latest
+    needs: build-test
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Publish API
+        run: dotnet publish ${{ env.API_PROJECT }} --configuration Release --output ./publish
+
+      - name: Azure login (OIDC)
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Deploy to Azure App Service
+      - name: Deploy web app package
         uses: azure/webapps-deploy@v3
         with:
-          app-name: ${{ env.APP_SERVICE_NAME }}
+          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
           package: ./publish
 
-      - name: Verify deployment
-        continue-on-error: true
+      - name: Health check
         run: |
-          sleep 30
-          echo "Deployed to: https://${{ env.APP_SERVICE_NAME }}.azurewebsites.net"
-          curl -sf "https://${{ env.APP_SERVICE_NAME }}.azurewebsites.net/healthz" || echo "Health check pending - app may still be starting"
+          APP_URL="https://${{ secrets.AZURE_WEBAPP_NAME }}.azurewebsites.net"
+          echo "Checking ${APP_URL}/health"
+          curl -fS "${APP_URL}/health"

@@ -1,0 +1,74 @@
+@namespace PoNovaWeight.Client.Components
+
+@*
+    Standardized Card component for consistent UI across the application.
+    Uses consistent padding (p-4), rounded corners (rounded-2xl), and elevation.
+    
+    Usage:
+    <Card>Content here</Card>
+    <Card Elevation="3" NoPadding>Content without padding</Card>
+*@
+
+@if (NoPadding)
+{
+    <div class="@GetClasses()">
+        @ChildContent
+    </div>
+}
+else
+{
+    <div class="@GetClasses() @PaddingClass">
+        @ChildContent
+    </div>
+}
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Elevation level 1-4, maps to shadow-elevation-*
+    /// </summary>
+    [Parameter]
+    public int Elevation { get; set; } = 2;
+
+    /// <summary>
+    /// Remove default padding for custom layouts
+    /// </summary>
+    [Parameter]
+    public bool NoPadding { get; set; }
+
+    /// <summary>
+    /// Additional CSS classes
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// Interactive card with hover effects
+    /// </summary>
+    [Parameter]
+    public bool Interactive { get; set; }
+
+    private string GetClasses()
+    {
+        var baseClasses = "bg-white dark:bg-dark-card rounded-2xl border border-healthy-light dark:border-dark-border";
+        
+        var elevationClass = Elevation switch
+        {
+            1 => "shadow-elevation-1",
+            2 => "shadow-elevation-2",
+            3 => "shadow-elevation-3",
+            4 => "shadow-elevation-4",
+            _ => "shadow-elevation-2"
+        };
+
+        var interactiveClass = Interactive 
+            ? "transition-all duration-200 hover:shadow-elevation-3 hover:scale-[1.02] cursor-pointer" 
+            : "";
+
+        return $"{baseClasses} {elevationClass} {interactiveClass} {Class}".Trim();
+    }
+
+    private string PaddingClass => NoPadding ? "" : "p-4";
+}

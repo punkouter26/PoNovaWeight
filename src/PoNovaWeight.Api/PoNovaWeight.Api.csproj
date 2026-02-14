@@ -17,18 +17,18 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Hybrid" />
     <PackageReference Include="MediatR" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
     <PackageReference Include="Scalar.AspNetCore" />
     <PackageReference Include="Serilog.AspNetCore" />
+    <PackageReference Include="Serilog.Sinks.File" />
     <PackageReference Include="Serilog.Sinks.ApplicationInsights" />
+    <PackageReference Include="Serilog.Enrichers.Environment" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\PoNovaWeight.Client\PoNovaWeight.Client.csproj" />
-    <ProjectReference Include="..\PoNovaWeight.ServiceDefaults\PoNovaWeight.ServiceDefaults.csproj" />
     <ProjectReference Include="..\PoNovaWeight.Shared\PoNovaWeight.Shared.csproj" />
   </ItemGroup>
 

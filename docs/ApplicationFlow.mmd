@@ -1,0 +1,241 @@
+# ApplicationFlow.mmd - Auth Flow & User Journey
+
+## Authentication Flow & User Navigation
+
+This document describes how users authenticate and navigate through the PoNovaWeight application.
+
+---
+
+## REGULAR VERSION
+
+### Authentication Flow (Google OAuth 2.0)
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Browser
+    participant API
+    participant Google
+    
+    Note over User,Browser: Initial Visit
+    User->>Browser: Navigate to app
+    Browser->>API: GET / (index.html)
+    API-->>Browser: Blazor WASM app
+    
+    Note over User,Browser: Not Authenticated
+    Browser->>Browser: Check auth state
+    Browser->>API: GET /auth/status
+    API-->>Browser: 401 Unauthorized
+    
+    Note over User,Browser: Redirect to Login
+    Browser->>Browser: Show Login Page
+    User->>Browser: Click "Sign in with Google"
+    
+    Browser->>API: GET /auth/login
+    API->>Google: Redirect to OAuth consent
+    
+    Note over User,Google: OAuth Consent Screen
+    Google->>User: Show consent dialog
+    User->>Google: Authorize
+    
+    Google->>API: POST /auth/callback<br/>with authorization code
+    
+    Note over API: Validate & Create Session
+    API->>API: Exchange code for tokens
+    API->>API: Create session cookie
+    API-->>Browser: 302 redirect to /auth/microsoft-callback
+    
+    Browser->>API: GET /auth/microsoft-callback
+    API-->>Browser: Set auth cookie<br/>Redirect to Dashboard
+    
+    Note over User,Browser: Authenticated
+    Browser->>Browser: Update auth state
+    Browser->>API: GET /api/dailylogs/today
+    API-->>Browser: Today's log data
+    Browser->>Browser: Render Dashboard
+```
+
+### Complete User Journey Flow
+
+```mermaid
+flowchart TB
+    subgraph Auth["Authentication"]
+        Start["Visit App"] --> CheckAuth{Authenticated?}
+        CheckAuth -->|No| LoginPage["Show Login Page"]
+        LoginPage --> ClickLogin["Click Google Sign-In"]
+        ClickLogin --> OAuthRedirect["OAuth Redirect"]
+        OAuthRedirect --> GoogleAuth["Google Authorization"]
+        GoogleAuth --> Callback["OAuth Callback"]
+        Callback --> CreateSession["Create Session"]
+        CreateSession --> Dashboard["Dashboard"]
+        
+        CheckAuth -->|Yes| Dashboard
+    end
+    
+    subgraph Main["Main Application Flow"]
+        Dashboard --> ViewDash{"View Dashboard"}
+        
+        ViewDash --> DailyLog["Log Daily Food"]
+        DailyLog --> SelectCategory["Select Food Category"]
+        SelectCategory --> IncrementUnit["Tap + Button"]
+        IncrementUnit --> SaveLog["Save to Table Storage"]
+        SaveLog --> UpdateUI["Update UI"]
+        
+        ViewDash --> TrackWater["Track Water"]
+        TrackWater --> TapWater["Tap Water Icon"]
+        TapWater --> WaterSaved["Save Water Count"]
+        WaterSaved --> UpdateUI
+        
+        ViewDash --> LogOMAD["Log OMAD Status"]
+        LogOMAD --> ToggleOMAD["Toggle OMAD Toggle"]
+        ToggleOMAD --> OMADSaved["Save OMAD"]
+        OMADSaved --> UpdateUI
+        
+        ViewDash --> WeighIn["Weigh In"]
+        WeighIn --> EnterWeight["Enter Weight"]
+        EnterWeight --> WeightSaved["Save Weight"]
+        WeightSaved --> UpdateUI
+    end
+    
+    subgraph Navigation["Navigation Flow"]
+        Dashboard --> CalendarNav["Calendar"]
+        CalendarNav --> SelectDate["Select Date"]
+        SelectDate --> ViewDayDetail["Day Detail View"]
+        ViewDayDetail --> EditLog["Edit Log"]
+        EditLog --> SaveChanges["Save Changes"]
+        
+        CalendarNav --> MonthView["Month Overview"]
+        MonthView --> ViewTrends["View Trends"]
+        
+        Dashboard --> MealScanNav["Meal Scan"]
+        MealScanNav --> TakePhoto["Take Photo"]
+        TakePhoto --> Analyze["AI Analysis (GPT-4o)"]
+        Analyze --> ReviewUnits["Review Suggested Units"]
+        ReviewUnits --> ConfirmScan["Confirm & Save"]
+    end
+    
+    subgraph Auth2["Logout Flow"]
+        Dashboard --> UserMenu["Open User Menu"]
+        UserMenu --> ClickLogout["Click Logout"]
+        ClickLogout --> ClearSession["Clear Session Cookie"]
+        ClearSession --> RedirectLogin["Redirect to Login"]
+    end
+
+    style Auth fill:#e8f5e9,stroke:#2e7d32
+    style Main fill:#e3f2fd,stroke:#1565c0
+    style Navigation fill:#fff3e0,stroke:#e65100
+    style Auth2 fill:#fce4ec,stroke:#c2185b
+```
+
+### Security Architecture
+
+```mermaid
+flowchart TB
+    subgraph Client["Blazor Client"]
+        Token["Session Token (Cookie)"]
+    end
+    
+    subgraph API["API Security Pipeline"]
+        Request["HTTP Request"]
+        Forwarded["Use Forwarded Headers"]
+        Forwarded --> Session["Use Session Middleware"]
+        Session --> Auth["Use Authentication"]
+        Auth --> Authorize["Use Authorization"]
+        Authorize --> Cache["Use Output Cache"]
+        Cache --> Handler["Handler Execution"]
+    end
+    
+    subgraph Protection["Security Measures"]
+        Cookie --> HttpOnly["HttpOnly Cookie"]
+        Cookie --> Secure["Secure (HTTPS Only)"]
+        Cookie --> SameSite["SameSite=Lax"]
+        
+        Handler --> DataProtection["Data Protection Keys"]
+        DataProtection --> Blob["Azure Blob Storage"]
+    end
+    
+    Request --> Forwarded
+
+    style API fill:#f3e5f5,stroke:#7b1fa2
+    style Protection fill:#ffebee,stroke:#c62828
+```
+
+---
+
+## SIMPLIFIED VERSION
+
+### Simple Auth Flow
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant B as Browser
+    participant A as API
+    participant G as Google
+
+    U->>B: Open App
+    B->>A: Load App
+    A-->>B: Return Blazor App
+    
+    B->>A: Check Auth
+    A-->>B: Not Auth
+    
+    B->>U: Show Login
+    U->>B: Click Sign In
+    
+    B->>G: Redirect to Google
+    G->>U: Ask Permission
+    U->>G: Allow
+    
+    G->>A: Callback with Code
+    A->>A: Create Cookie Session
+    A->>B: Redirect to Dashboard
+    
+    B->>U: Show Dashboard
+```
+
+### Simple Navigation Flow
+
+```mermaid
+flowchart LR
+    A[App Start] --> B{Logged In?}
+    B -->|No| C[Login Page]
+    C --> D[Google OAuth]
+    D --> B
+    
+    B -->|Yes| E[Dashboard]
+    E --> F[Calendar]
+    E --> G[Meal Scan]
+    E --> H[Day Detail]
+    
+    F --> H
+    G --> H
+    H --> E
+```
+
+---
+
+## Session Management
+
+| Aspect | Implementation |
+|--------|----------------|
+| Session Storage | In-memory (ASP.NET Core Session) |
+| Session Timeout | 30 minutes idle timeout |
+| Session ID | Auto-generated, stored in cookie |
+| Cookie Settings | HttpOnly, Secure, SameSite=Lax |
+| Data Protection | Azure Blob Storage (production) |
+| Forwarded Headers | X-Forwarded-For, X-Forwarded-Proto |
+
+---
+
+## User Navigation Paths
+
+| From | To | Trigger |
+|------|-----|---------|
+| Login | Dashboard | Successful OAuth |
+| Dashboard | Calendar | Click Calendar icon |
+| Dashboard | Meal Scan | Click Camera icon |
+| Dashboard | Day Detail | Click any day card |
+| Calendar | Day Detail | Click specific date |
+| Day Detail | Dashboard | Click back button |
+| Any | Login | Click Logout |

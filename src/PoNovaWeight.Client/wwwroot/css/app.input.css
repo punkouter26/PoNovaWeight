@@ -95,17 +95,30 @@
         @apply text-xs text-healthy-muted uppercase tracking-wide;
     }
     
-    /* Bottom navigation */
+    /* Bottom navigation - Enhanced 2025 design */
     .bottom-nav {
         @apply bg-healthy-card border-t border-healthy-light shadow-healthy;
     }
     
     .bottom-nav-item {
-        @apply flex flex-col items-center gap-0.5 py-2 px-3 text-healthy-muted transition-colors;
+        @apply flex flex-col items-center gap-0.5 py-2 px-3 text-healthy-muted transition-all duration-200 hover:text-healthy-primary;
     }
     
     .bottom-nav-item-active {
         @apply text-healthy-primary;
+    }
+    
+    .bottom-nav-item-active::before {
+        content: '';
+        @apply absolute -top-px left-1/2 -translate-x-1/2 w-8 h-0.5 bg-healthy-primary rounded-full;
+    }
+    
+    .bottom-nav-item:hover {
+        @apply scale-105;
+    }
+    
+    .bottom-nav-item:active {
+        @apply scale-95;
     }
     
     /* Onboarding styles */

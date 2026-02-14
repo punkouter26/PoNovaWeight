@@ -1,0 +1,145 @@
+# Architecture.mmd - System Context & Container Architecture
+
+## PoNovaWeight Architecture Overview
+
+This document describes the high-level system architecture of the PoNovaWeight application - a personal food journaling PWA.
+
+---
+
+## REGULAR VERSION
+
+### C4 System Context Diagram
+
+```mermaid
+flowchart TB
+    subgraph External_Systems
+        Google["Google OAuth Provider"]
+        AzureOpenAI["Azure OpenAI Service"]
+    end
+
+    subgraph Azure_Cloud["Azure Cloud"]
+        subgraph Container_Apps["Azure Container Apps"]
+            subgraph PoNovaWeight_App["PoNovaWeight Application"]
+                API["ASP.NET Core API"]
+                Blazor["Blazor WebAssembly Client"]
+            end
+        end
+        
+        AzureStorage["Azure Table Storage"]
+        KeyVault["Azure Key Vault"]
+        AppInsights["Azure Application Insights"]
+        BlobStorage["Azure Blob Storage<br/>(Data Protection)"]
+    end
+
+    User["User (Mobile/Web)"] -->|HTTPS| CDN["Azure Front Door / CDN"]
+    CDN -->|HTTPS| PoNovaWeight_App
+    PoNovaWeight_App -->|OAuth 2.0| Google
+    PoNovaWeight_App -->|REST API| AzureStorage
+    PoNovaWeight_App -->|Secrets| KeyVault
+    PoNovaWeight_App -->|Telemetry| AppInsights
+    PoNovaWeight_App -->|Keys| BlobStorage
+    API -->|GPT-4o| AzureOpenAI
+
+    style PoNovaWeight_App fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    style AzureStorage fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
+    style Google fill:#fff3e0,stroke:#e65100,stroke-width:2px
+```
+
+### Container Architecture
+
+```mermaid
+flowchart TB
+    subgraph Client["Blazor WebAssembly Client"]
+        UI["UI Components<br/>- Dashboard<br/>- Calendar<br/>- Day Detail<br/>- Meal Scan"]
+        Services["Client Services<br/>- ApiClient<br/>- AuthService"]
+        State["State Management<br/>- AuthStateProvider"]
+    end
+
+    subgraph API["ASP.NET Core API"]
+        subgraph MediatR["MediatR Pipeline"]
+            Handlers["Request Handlers<br/>- DailyLogHandlers<br/>- MealScanHandler<br/>- WeeklySummaryHandler"]
+            Validation["FluentValidation"]
+        end
+        
+        subgraph Auth["Authentication"]
+            Cookie["Cookie Auth"]
+            OAuth["Google OAuth"]
+        end
+        
+        Infrastructure["Infrastructure<br/>- TableStorage Repos<br/>- OpenAI Client<br/>- Exception Handler"]
+    end
+
+    subgraph Storage["Data Layer"]
+        Tables["Azure Table Storage<br/>- DailyLogs<br/>- Users"]
+        Blobs["Azure Blob Storage<br/>- Data Protection Keys"]
+    end
+
+    Client -->|HTTP/REST| API
+    API -->|Table SDK| Tables
+    API -->|OpenAI SDK| AzureOpenAI["Azure OpenAI"]
+    API -->|Credential| KeyVault["Azure Key Vault"]
+    
+    style Client fill:#e3f2fd,stroke:#1565c0
+    style API fill:#f3e5f5,stroke:#7b1fa2
+    style Storage fill:#e8f5e9,stroke:#2e7d32
+```
+
+---
+
+## SIMPLIFIED VERSION
+
+### High-Level System Context
+
+```mermaid
+flowchart LR
+    User["User"] -->|Browser/PWA| App["PoNovaWeight<br/>App"]
+    App -->|Auth| Google["Google"]
+    App -->|Store Data| TableStorage["Azure<br/>Table Storage"]
+    App -->|AI Analysis| OpenAI["Azure<br/>OpenAI"]
+    App -->|Get Secrets| KeyVault["Azure<br/>Key Vault"]
+```
+
+### Simple Container View
+
+```mermaid
+flowchart TB
+    subgraph PoNovaWeight
+        Frontend["Blazor WASM<br/>Client"]
+        Backend["ASP.NET Core<br/>API"]
+    end
+    
+    Data["Azure Table<br/>Storage"]
+    
+    Frontend -->|HTTP| Backend
+    Backend -->|Read/Write| Data
+```
+
+---
+
+## Infrastructure Components
+
+| Component | Purpose | Configuration |
+|-----------|---------|---------------|
+| Azure Container Apps | Host the API and serve static Blazor assets | auto-scaling, HTTPS |
+| Azure Table Storage | Primary database for daily logs and user data | PartitionKey: UserId, RowKey: Date |
+| Azure Key Vault | Store secrets (connection strings, API keys) | Accessed via Managed Identity |
+| Azure Application Insights | Application monitoring and telemetry | integrated via SDK |
+| Azure Blob Storage | Persist data protection keys across restarts | for cookie security |
+| Azure OpenAI | GPT-4o for AI meal scanning | optional, fallback available |
+
+---
+
+## Technology Stack
+
+| Layer | Technology | Version |
+|-------|------------|---------|
+| Frontend | Blazor WebAssembly | .NET 10 |
+| UI Framework | Tailwind CSS | 3.4 |
+| Backend | ASP.NET Core Minimal API | .NET 10 |
+| CQRS/Mediator | MediatR | Latest |
+| Validation | FluentValidation | Latest |
+| Database | Azure Table Storage | SDK |
+| AI | Azure OpenAI GPT-4o | Latest |
+| Authentication | Google OAuth 2.0 | Latest |
+| Orchestration | .NET Aspire | Latest |
+| Observability | OpenTelemetry / App Insights | Latest |
