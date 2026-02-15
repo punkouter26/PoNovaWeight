@@ -38,7 +38,7 @@ E
 | Backend | ASP.NET Core Minimal API, MediatR |
 | Database | Azure Table Storage |
 | AI | Azure OpenAI GPT-4o |
-| Hosting | Azure Container Apps |
+| Hosting | Azure App Service |
 
 ## Project Structure
 

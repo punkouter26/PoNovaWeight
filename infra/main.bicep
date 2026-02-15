@@ -1,5 +1,5 @@
 // Nova Food Journal - Main Bicep Orchestration
-// Deploys all Azure resources for the PoNovaWeight application (Azure Container Apps)
+// Deploys all Azure resources for the PoNovaWeight application (Azure App Service)
 
 targetScope = 'resourceGroup'
 
@@ -68,13 +68,12 @@ module appInsights 'modules/app-insights.bicep' = {
   }
 }
 
-// Container Apps
-module containerApp 'modules/container-app.bicep' = {
-  name: 'container-app-deployment'
+// App Service
+module appService 'modules/app-service.bicep' = {
+  name: 'app-service-deployment'
   params: {
-    name: '${baseName}-api'
-    envName: '${baseName}-env'
-    acrName: '${baseName}acr'
+    name: baseName
+    planName: '${baseName}-plan'
     location: location
     tags: tags
     appInsightsConnectionString: appInsights.outputs.connectionString
@@ -99,11 +98,8 @@ module containerApp 'modules/container-app.bicep' = {
 // }
 
 // Outputs
-output containerAppUrl string = containerApp.outputs.url
-output containerAppFqdn string = containerApp.outputs.fqdn
-output containerAppName string = containerApp.outputs.name
-output acrLoginServer string = containerApp.outputs.acrLoginServer
-output acrName string = containerApp.outputs.acrName
+output webAppUrl string = appService.outputs.webAppUrl
+output webAppName string = appService.outputs.webAppName
 output storageAccountName string = storage.outputs.name
 output appInsightsName string = appInsights.outputs.name
 output resourceGroupName string = resourceGroup().name

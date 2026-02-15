@@ -79,11 +79,20 @@ dotnet user-secrets set "AzureOpenAI:ApiKey" "your-api-key"
 1. Go to Google Cloud Console (https://console.cloud.google.com/)
 2. Create a new project or select existing
 3. Navigate to **APIs & Services** > **Credentials**
-4. Create **OAuth 2.0 Client IDs**
-5. Set redirect URIs:
-   - `https://localhost:5001/auth/callback`
-   - `http://localhost:5000/auth/callback`
-6. Copy Client ID and Client Secret to user secrets
+4. Create **OAuth 2.0 Client IDs** (Application type: Web application)
+5. Add the following **Authorized redirect URIs** (Blazor WASM uses `/authentication/login-callback`):
+   - `http://localhost:5000/authentication/login-callback`
+   - `https://localhost:5001/authentication/login-callback`
+6. Click **Create** and copy the **Client ID** to the client's `wwwroot/appsettings.json`:
+   ```json
+   {
+     "Google": {
+       "ClientId": "YOUR_CLIENT_ID_HERE.apps.googleusercontent.com"
+     }
+   }
+   ```
+
+**Note**: If you previously configured `/auth/callback`, you must update the redirect URIs. Blazor WASM OIDC automatically uses `/authentication/login-callback` as the callback path.
 
 #### Step 4: Run Azurite (Local Azure Storage)
 
