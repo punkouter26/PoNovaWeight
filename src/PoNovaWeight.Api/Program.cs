@@ -6,11 +6,14 @@ using MediatR;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.ResponseCompression;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using PoNovaWeight.Api.Features.Auth;
 using PoNovaWeight.Api.Features.DailyLogs;
 using PoNovaWeight.Api.Features.MealScan;
 using PoNovaWeight.Api.Features.WeeklySummary;
-using PoNovaWeight.Api.Features.Diagnostics;
+using PoNovaWeight.Api.Features.Settings;
+using PoNovaWeight.Api.Features.Predictions;
 using PoNovaWeight.Api.Infrastructure;
 using PoNovaWeight.Api.Infrastructure.OpenAI;
 using PoNovaWeight.Api.Infrastructure.TableStorage;
@@ -32,16 +35,17 @@ try
     // Configuration priority (highest wins):
     // 1. Environment variables
     // 2. User secrets (development only) - fallback for local dev
-    // 3. Azure Key Vault - primary source for secrets
+    // 3. Azure Key Vault - primary source for secrets (skipped in Development/Test to avoid auth failures)
     // 4. appsettings.{Environment}.json
     // 5. appsettings.json
 
-    // Add Azure Key Vault configuration
+    // Add Azure Key Vault configuration (Production/Staging only)
     // Uses DefaultAzureCredential which works with:
     // - Local: Azure CLI, Visual Studio, VS Code credentials
     // - Azure: Managed Identity
+    // Skip Key Vault in Development/Test environments where authentication is not available
     var keyVaultUri = builder.Configuration["KeyVault:VaultUri"];
-    if (!string.IsNullOrEmpty(keyVaultUri))
+    if (!string.IsNullOrEmpty(keyVaultUri) && !builder.Environment.IsDevelopment())
     {
         try
         {
@@ -62,6 +66,10 @@ try
         {
             Log.Warning(ex, "Failed to connect to Azure Key Vault ({VaultUri}). Falling back to user secrets.", keyVaultUri);
         }
+    }
+    else if (builder.Environment.IsDevelopment())
+    {
+        Log.Information("Key Vault skipped in Development environment - using appsettings and environment variables only");
     }
     else
     {
@@ -91,6 +99,30 @@ try
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddOpenApi();
     builder.Services.AddApplicationInsightsTelemetry();
+    
+    // Configure OpenTelemetry for distributed tracing
+    // Creates instrumentation for ASP.NET Core, HTTP client requests
+    var otlpEndpoint = builder.Configuration["OpenTelemetry:OtlpEndpoint"];
+    if (!string.IsNullOrEmpty(otlpEndpoint))
+    {
+        // Extension methods from OpenTelemetry.Extensions.Hosting package
+        builder.Services.AddOpenTelemetry()
+            .ConfigureResource(resource => resource
+                .AddService(serviceName: "PoNovaWeight.Api", serviceVersion: "1.0.0", serviceInstanceId: Environment.MachineName))
+            .WithTracing(tracingBuilder =>
+            {
+                tracingBuilder
+                    .AddAspNetCoreInstrumentation(options => options.RecordException = true)
+                    .AddHttpClientInstrumentation(options => options.RecordException = true)
+                    .AddOtlpExporter(options => options.Endpoint = new Uri(otlpEndpoint));
+            });
+        Log.Information("OpenTelemetry configured with OTLP Exporter: {Endpoint}", otlpEndpoint);
+    }
+    else
+    {
+        Log.Information("OpenTelemetry OTLP endpoint not configured - distributed tracing disabled");
+    }
+    
     builder.Services.AddDistributedMemoryCache();
     builder.Services.AddSession(options =>
     {
@@ -139,6 +171,10 @@ try
     // Register repositories using TableServiceClient
     builder.Services.AddSingleton<IDailyLogRepository, DailyLogRepository>();
     builder.Services.AddSingleton<IUserRepository, UserRepository>();
+    builder.Services.AddSingleton<IUserSettingsRepository, UserSettingsRepository>();
+
+    // Development test-user data generation service (used by /api/auth/dev-test-user-login)
+    builder.Services.AddSingleton<ITestUserDataSeeder, TestUserDataSeeder>();
 
     // Google OAuth + Cookie Authentication
     builder.Services.AddNovaAuthentication(builder.Configuration, builder.Environment);
@@ -155,12 +191,14 @@ try
             new Uri(openAiEndpoint),
             new Azure.AzureKeyCredential(openAiApiKey)));
         builder.Services.AddSingleton<IMealAnalysisService, MealAnalysisService>();
+        builder.Services.AddSingleton<IBpPredictionService, BpPredictionService>();
     }
     else
     {
-        // Use stub service when OpenAI is not configured
+        // Use stub services when OpenAI is not configured
         builder.Services.AddSingleton<IMealAnalysisService, StubMealAnalysisService>();
-        Log.Warning("Azure OpenAI not configured - meal scanning will return mock data");
+        builder.Services.AddSingleton<IBpPredictionService, StubBpPredictionService>();
+        Log.Warning("Azure OpenAI not configured - meal scanning and BP predictions will return mock data");
     }
 
     // Exception handling
@@ -171,8 +209,6 @@ try
     builder.Services.AddOutputCache(options =>
     {
         options.AddBasePolicy(builder => builder.Expire(TimeSpan.FromSeconds(60)));
-        options.AddPolicy("ShortCache", builder => builder.Expire(TimeSpan.FromSeconds(30)));
-        options.AddPolicy("TrendsCache", builder => builder.Expire(TimeSpan.FromMinutes(5)));
     });
 
     // Configure forwarded headers for running behind reverse proxy (Azure Container Apps)
@@ -189,6 +225,9 @@ try
 
     // Use forwarded headers (must be first in pipeline)
     app.UseForwardedHeaders();
+
+    // Correlation ID middleware - extract or generate correlation ID for distributed tracing
+    app.UseMiddleware<CorrelationIdMiddleware>();
 
     // Session middleware must be registered before any middleware tries to access context.Session
     app.UseSession();
@@ -235,10 +274,12 @@ try
     {
         var dailyLogRepo = scope.ServiceProvider.GetRequiredService<IDailyLogRepository>() as DailyLogRepository;
         var userRepo = scope.ServiceProvider.GetRequiredService<IUserRepository>() as UserRepository;
+        var settingsRepo = scope.ServiceProvider.GetRequiredService<IUserSettingsRepository>() as UserSettingsRepository;
 
         await Task.WhenAll(
             dailyLogRepo?.InitializeAsync() ?? Task.CompletedTask,
-            userRepo?.InitializeAsync() ?? Task.CompletedTask
+            userRepo?.InitializeAsync() ?? Task.CompletedTask,
+            settingsRepo?.InitializeAsync() ?? Task.CompletedTask
         );
     }
 
@@ -273,9 +314,10 @@ try
     // Map feature endpoints
     app.MapAuthEndpoints(app.Environment);
     app.MapDailyLogEndpoints();
+    app.MapSettingsEndpoints();
+    app.MapPredictionsEndpoints();
     app.MapWeeklySummaryEndpoints();
     app.MapMealScanEndpoints();
-    app.MapDiagnosticsEndpoints();
     app.MapControllers();
     app.MapFallbackToFile("index.html");
 

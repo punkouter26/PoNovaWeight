@@ -40,6 +40,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
             // Remove existing repository registrations
             services.RemoveAll<IDailyLogRepository>();
             services.RemoveAll<IUserRepository>();
+            services.RemoveAll<IUserSettingsRepository>();
 
             // Add mock repositories that don't require Azurite
             var mockDailyLogRepo = new Mock<IDailyLogRepository>();
@@ -58,8 +59,17 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
             mockUserRepo.Setup(r => r.UpsertAsync(It.IsAny<UserEntity>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
+            var mockSettingsRepo = new Mock<IUserSettingsRepository>();
+            mockSettingsRepo.Setup(r => r.InitializeAsync(It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask);
+            mockSettingsRepo.Setup(r => r.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((UserSettingsEntity?)null);
+            mockSettingsRepo.Setup(r => r.UpsertAsync(It.IsAny<UserSettingsEntity>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask);
+
             services.AddSingleton(mockDailyLogRepo.Object);
             services.AddSingleton(mockUserRepo.Object);
+            services.AddSingleton(mockSettingsRepo.Object);
 
             // CRITICAL: Override AI services with stubs to prevent real OpenAI calls in tests
             // Remove any existing AI service registrations (real or stub)
