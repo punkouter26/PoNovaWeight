@@ -45,7 +45,8 @@ try
     // - Local: Azure CLI, Visual Studio, VS Code credentials
     // - Azure: Managed Identity
     // Skip Key Vault in Development/Test environments where authentication is not available
-    var keyVaultUri = builder.Configuration["KeyVault:VaultUri"];
+    var keyVaultUri = builder.Configuration["KeyVault:VaultUri"]
+        ?? builder.Configuration["KeyVault:Url"];
     if (!string.IsNullOrEmpty(keyVaultUri) && !builder.Environment.IsDevelopment())
     {
         try
@@ -162,9 +163,10 @@ try
     builder.Services.AddHealthChecks();
 
     // Table Storage configuration
-    // Reads from PoNovaWeight:AzureStorage:ConnectionString (Key Vault) or ConnectionStrings:AzureStorage (local/fallback)
+    // Reads from PoNovaWeight:AzureStorage:ConnectionString (Key Vault) or ConnectionStrings:AzureStorage / ConnectionStrings:tables (App Service)
     var connectionString = builder.Configuration["PoNovaWeight:AzureStorage:ConnectionString"]
         ?? builder.Configuration.GetConnectionString("AzureStorage")
+        ?? builder.Configuration.GetConnectionString("tables")
         ?? throw new InvalidOperationException(
             "Azure Storage connection string is required. Set 'ConnectionStrings:AzureStorage' in configuration.");
     builder.Services.AddSingleton(new TableServiceClient(connectionString));
