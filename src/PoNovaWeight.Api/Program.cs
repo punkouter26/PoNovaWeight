@@ -1,4 +1,5 @@
 using Azure.AI.OpenAI;
+using Azure.Core;
 using Azure.Data.Tables;
 using Azure.Identity;
 using FluentValidation;
@@ -52,22 +53,30 @@ try
     {
         try
         {
-            // Configure credential options for better local dev experience
-            // Exclude credentials that are problematic or require additional packages
-            var credentialOptions = new DefaultAzureCredentialOptions
+            // In Production (Azure App Service with Managed Identity), use ManagedIdentityCredential
+            // directly. DefaultAzureCredential tries WorkloadIdentityCredential first, which can
+            // take 2+ minutes to fail before falling back to ManagedIdentity — consuming the
+            // entire 230-second App Service startup probe window.
+            TokenCredential kvCredential;
+            if (builder.Environment.IsProduction())
             {
-                ExcludeVisualStudioCodeCredential = true, // Requires Azure.Identity.Broker package
-                ExcludeInteractiveBrowserCredential = true
-            };
-            
-            builder.Configuration.AddAzureKeyVault(
-                new Uri(keyVaultUri),
-                new DefaultAzureCredential(credentialOptions));
+                kvCredential = new ManagedIdentityCredential();
+            }
+            else
+            {
+                kvCredential = new DefaultAzureCredential(new DefaultAzureCredentialOptions
+                {
+                    ExcludeVisualStudioCodeCredential = true,
+                    ExcludeInteractiveBrowserCredential = true
+                });
+            }
+
+            builder.Configuration.AddAzureKeyVault(new Uri(keyVaultUri), kvCredential);
             Log.Information("Azure Key Vault configured: {VaultUri}", keyVaultUri);
         }
         catch (Exception ex)
         {
-            Log.Warning(ex, "Failed to connect to Azure Key Vault ({VaultUri}). Falling back to user secrets.", keyVaultUri);
+            Log.Warning(ex, "Failed to connect to Azure Key Vault ({VaultUri}). Falling back to environment variables.", keyVaultUri);
         }
     }
     else if (builder.Environment.IsDevelopment())
@@ -84,9 +93,14 @@ try
     var dataProtectionBlobUri = builder.Configuration["DataProtection:BlobUri"];
     if (!string.IsNullOrEmpty(dataProtectionBlobUri) && !builder.Environment.IsDevelopment())
     {
+        // Use ManagedIdentityCredential in Production for fast token acquisition
+        TokenCredential dpCredential = builder.Environment.IsProduction()
+            ? new ManagedIdentityCredential()
+            : new DefaultAzureCredential();
+
         builder.Services.AddDataProtection()
             .SetApplicationName("PoNovaWeight")
-            .PersistKeysToAzureBlobStorage(new Uri(dataProtectionBlobUri), new DefaultAzureCredential());
+            .PersistKeysToAzureBlobStorage(new Uri(dataProtectionBlobUri), dpCredential);
         Log.Information("Data Protection configured with Azure Blob Storage: {BlobUri}", dataProtectionBlobUri);
     }
 
