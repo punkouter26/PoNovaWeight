@@ -23,10 +23,11 @@ using Scalar.AspNetCore;
 using Serilog;
 
 // Configure Serilog before building the host
+// Bootstrap logger: Console only (no File sink to avoid issues with read-only
+// WEBSITE_RUN_FROM_PACKAGE filesystem mounts in Azure App Service).
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
     .WriteTo.Console()
-    .WriteTo.File("logs/bootstrap-.txt", rollingInterval: RollingInterval.Day)
     .CreateBootstrapLogger();
 
 try
