@@ -52,6 +52,27 @@ public class DailyLogEntity : ITableEntity
     /// </summary>
     public bool? AlcoholConsumed { get; set; }
 
+    // Blood pressure and heart rate tracking (nullable for backward compatibility)
+    /// <summary>
+    /// Systolic blood pressure in mmHg (70-200 range).
+    /// </summary>
+    public double? SystolicBP { get; set; }
+
+    /// <summary>
+    /// Diastolic blood pressure in mmHg (40-130 range).
+    /// </summary>
+    public double? DiastolicBP { get; set; }
+
+    /// <summary>
+    /// Heart rate in beats per minute (30-220 range).
+    /// </summary>
+    public int? HeartRate { get; set; }
+
+    /// <summary>
+    /// Time of day when BP was recorded: "Morning", "Afternoon", "Evening".
+    /// </summary>
+    public string? BpReadingTime { get; set; }
+
     /// <summary>
     /// Creates an empty entity for the specified user and date.
     /// </summary>
