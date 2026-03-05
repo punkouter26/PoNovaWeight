@@ -1,0 +1,58 @@
+@* 
+    Tooltip Component - Shows contextual help text on hover
+    Usage:
+    <Tooltip Text="This is helpful info">
+        <button>Hover me</button>
+    </Tooltip>
+*@
+
+<div class="relative group inline-block">
+    @ChildContent
+
+    @if (!string.IsNullOrWhiteSpace(Text))
+    {
+        <div class="absolute z-50 px-3 py-2 text-sm font-medium text-white bg-gray-900 dark:bg-white dark:text-gray-900 rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-200 whitespace-nowrap @PositionClass">
+            @Text
+            
+            <!-- Arrow -->
+            <div class="absolute w-2 h-2 bg-inherit @ArrowClass"></div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string? Text { get; set; }
+
+    [Parameter]
+    public Position Direction { get; set; } = Position.Top;
+
+    private string PositionClass => Direction switch
+    {
+        Position.Top => "bottom-full left-1/2 -translate-x-1/2 mb-2",
+        Position.Bottom => "top-full left-1/2 -translate-x-1/2 mt-2",
+        Position.Left => "right-full top-1/2 -translate-y-1/2 mr-2",
+        Position.Right => "left-full top-1/2 -translate-y-1/2 ml-2",
+        _ => "bottom-full left-1/2 -translate-x-1/2 mb-2"
+    };
+
+    private string ArrowClass => Direction switch
+    {
+        Position.Top => "top-full left-1/2 -translate-x-1/2 rotate-45",
+        Position.Bottom => "bottom-full left-1/2 -translate-x-1/2 rotate-45",
+        Position.Left => "left-full top-1/2 -translate-y-1/2 rotate-45",
+        Position.Right => "right-full top-1/2 -translate-y-1/2 rotate-45",
+        _ => "top-full left-1/2 -translate-x-1/2 rotate-45"
+    };
+
+    public enum Position
+    {
+        Top,
+        Bottom,
+        Left,
+        Right
+    }
+}

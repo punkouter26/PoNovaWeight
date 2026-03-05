@@ -1,0 +1,28 @@
+# Build and dependency outputs
+bin/
+obj/
+node_modules/
+dist/
+build/
+
+# IDE and editor files
+.vs/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Azure local emulation
+azurite/
+
+# Test artifacts
+tests/e2e/.auth/
+coverage/
+.nyc_output/
+
+# Deployment and temporary artifacts
+publish/
+.azure/
+*.user
+*.log

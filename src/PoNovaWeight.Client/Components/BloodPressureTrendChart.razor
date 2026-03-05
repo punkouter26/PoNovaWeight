@@ -1,0 +1,314 @@
+@namespace PoNovaWeight.Client.Components
+@using PoNovaWeight.Shared.DTOs
+
+<div class="bp-trend-chart card-glass rounded-2xl shadow-elevation-2 border border-white/20 p-4 animate-fade-in">
+    <h3 class="text-title text-healthy-text dark:text-dark-text mb-4 flex items-center gap-2">
+        <span>💓</span>
+        Blood Pressure Trends
+        @if (DaysLogged > 0)
+        {
+            <span class="text-xs font-normal text-healthy-muted dark:text-dark-muted ml-auto">
+                @DaysLogged days logged
+            </span>
+        }
+    </h3>
+
+    @if (!HasData)
+    {
+        <!-- Empty State -->
+        <div class="flex flex-col items-center justify-center py-8 px-4">
+            <div class="w-16 h-16 rounded-full bg-gradient-to-br from-healthy-light dark:from-white/10 to-healthy-bg dark:to-white/5 flex items-center justify-center mb-4 shadow-elevation-1">
+                <span class="text-3xl">🩺</span>
+            </div>
+            <h4 class="text-sm font-semibold text-healthy-text dark:text-dark-text mb-1">No BP data yet</h4>
+            <p class="text-xs text-healthy-muted dark:text-dark-muted text-center max-w-xs mb-4">
+                Track your blood pressure to see trends and correlate with OMAD compliance and lifestyle.
+            </p>
+            <a href="/day/@DateOnly.FromDateTime(DateTime.Today).ToString("yyyy-MM-dd")"
+               class="inline-flex items-center gap-1 text-xs font-medium text-healthy-primary hover:text-healthy-dark dark:hover:text-healthy-secondary transition-colors hover:scale-105">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                </svg>
+                Log your first BP reading
+            </a>
+        </div>
+    }
+    else
+    {
+        <!-- BP Averages Summary with Insights -->
+        <div class="grid grid-cols-2 gap-3 mb-4">
+            @if (AverageSystolic.HasValue && AverageDiastolic.HasValue)
+            {
+                <div class="p-3 bg-white dark:bg-white/5 rounded-lg border border-healthy-light dark:border-white/10">
+                    <div class="text-xs text-healthy-muted dark:text-dark-muted mb-1 uppercase font-medium tracking-wide">Avg BP</div>
+                    <div class="text-lg font-bold @GetBpStatusColor(AverageSystolic.Value, AverageDiastolic.Value)">
+                        @AverageSystolic.Value.ToString("F0")/@AverageDiastolic.Value.ToString("F0")
+                    </div>
+                    <div class="text-[10px] text-healthy-muted dark:text-dark-muted">mmHg</div>
+                </div>
+            }
+            @if (AverageHeartRate.HasValue)
+            {
+                <div class="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div class="text-xs text-gray-600 dark:text-gray-400 mb-1">Avg Heart Rate</div>
+                    <div class="text-lg font-bold text-healthy-fruit">
+                        @((int)AverageHeartRate.Value)
+                    </div>
+                    <div class="text-[10px] text-gray-500 dark:text-gray-400">bpm</div>
+                </div>
+            }
+        </div>
+
+        <!-- Reference Lines Info -->
+        <div class="text-[10px] text-healthy-muted mb-3 px-2">
+            <div class="flex items-center gap-2 mb-1">
+                <div class="w-8 border-t-2 border-dashed border-green-500"></div>
+                <span>Normal: &lt;120/80</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <div class="w-8 border-t-2 border-dashed border-healthy-warning"></div>
+                <span>Hypertension: ≥140/90</span>
+            </div>
+        </div>
+
+        <!-- Dual-Line Chart for Systolic and Diastolic -->
+        <div class="relative h-48 lg:h-56 mb-4 border-l-2 border-b-2 border-healthy-light">
+            @if (DataPoints.Any(p => p.Systolic.HasValue || p.Diastolic.HasValue))
+            {
+                <!-- Y-axis labels -->
+                <div class="absolute left-0 top-0 bottom-0 -ml-9 flex flex-col justify-between text-[9px] text-healthy-muted">
+                    <span>200</span>
+                    <span>160</span>
+                    <span>120</span>
+                    <span>80</span>
+                    <span>40</span>
+                </div>
+
+                <!-- Reference lines -->
+                <div class="absolute inset-0">
+                    <!-- Normal BP line (120) -->
+                    <div class="absolute left-0 right-0 border-t border-dashed border-green-500 opacity-30"
+                         style="bottom: @CalculateYPosition(120m)%"></div>
+                    <!-- Hypertension line (140) -->
+                    <div class="absolute left-0 right-0 border-t border-dashed border-healthy-warning opacity-30"
+                         style="bottom: @CalculateYPosition(140m)%"></div>
+                </div>
+
+                <!-- Data points and lines -->
+                <div class="absolute inset-0">
+                    <svg class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Systolic line (red/pink) -->
+                        @if (HasSystolicPath)
+                        {
+                            <polyline
+                                points="@GetSystolicPoints()"
+                                fill="none"
+                                stroke="#ef4444"
+                                stroke-width="2.5"
+                                stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        }
+
+                        <!-- Diastolic line (blue) -->
+                        @if (HasDiastolicPath)
+                        {
+                            <polyline
+                                points="@GetDiastolicPoints()"
+                                fill="none"
+                                stroke="#3b82f6"
+                                stroke-width="2.5"
+                                stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        }
+
+                        <!-- Data points -->
+                        @for (int i = 0; i < DataPoints.Count; i++)
+                        {
+                            var point = DataPoints[i];
+                            var x = CalculateXPosition(i);
+
+                            @if (point.Systolic.HasValue)
+                            {
+                                var y = 100 - CalculateYPosition(point.Systolic.Value);
+                                <circle cx="@(x)%" cy="@(y)%" r="@(point.IsCarryForward ? 2 : 4)"
+                                        fill="#ef4444" opacity="@(point.IsCarryForward ? 0.5 : 1)"
+                                        class="cursor-pointer"
+                                        @onclick="() => ShowTooltip(i)"
+                                        @onmouseenter="() => ShowTooltip(i)"
+                                        @onmouseleave="HideTooltip">
+                                    <title>@GetTooltipText(point)</title>
+                                </circle>
+                            }
+
+                            @if (point.Diastolic.HasValue)
+                            {
+                                var y = 100 - CalculateYPosition(point.Diastolic.Value);
+                                <circle cx="@(x)%" cy="@(y)%" r="@(point.IsCarryForward ? 2 : 4)"
+                                        fill="#3b82f6" opacity="@(point.IsCarryForward ? 0.5 : 1)"
+                                        class="cursor-pointer">
+                                    <title>@GetTooltipText(point)</title>
+                                </circle>
+                            }
+
+                            @if (point.HeartRate.HasValue)
+                            {
+                                var y = 100 - CalculateYPosition((decimal)(point.HeartRate.Value));
+                                <circle cx="@(x)%" cy="@(y)%" r="2"
+                                        fill="#f59e0b" opacity="0.7">
+                                    <title>HR: @point.HeartRate bpm</title>
+                                </circle>
+                            }
+                        }
+                    </svg>
+                </div>
+            }
+        </div>
+
+        <!-- Legend -->
+        <div class="flex flex-wrap justify-center gap-4 text-[10px] text-healthy-muted">
+            <div class="flex items-center gap-1">
+                <div class="w-3 h-0.5 bg-red-500 rounded"></div>
+                <span>Systolic</span>
+            </div>
+            <div class="flex items-center gap-1">
+                <div class="w-3 h-0.5 bg-blue-500 rounded"></div>
+                <span>Diastolic</span>
+            </div>
+            <div class="flex items-center gap-1">
+                <div class="w-2 h-2 bg-amber-500 rounded-full"></div>
+                <span>Heart Rate</span>
+            </div>
+            <div class="flex items-center gap-1">
+                <div class="w-2 h-2 bg-gray-400 rounded-full opacity-50"></div>
+                <span>Carry-forward</span>
+            </div>
+            <div class="flex items-center gap-1">
+                <span>🍺</span>
+                <span>Alcohol day</span>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public BloodPressureTrendsDto? TrendsData { get; set; }
+
+    private List<BpTrendDataPoint> DataPoints => TrendsData?.DataPoints?.ToList() ?? new();
+    private int DaysLogged => TrendsData?.DaysLogged ?? 0;
+    private decimal? AverageSystolic => TrendsData?.AverageSystolic;
+    private decimal? AverageDiastolic => TrendsData?.AverageDiastolic;
+    private double? AverageHeartRate => TrendsData?.AverageHeartRate;
+
+    private bool HasData => DataPoints.Any(p => p.Systolic.HasValue || p.Diastolic.HasValue);
+    private bool HasSystolicPath => DataPoints.Any(p => p.Systolic.HasValue);
+    private bool HasDiastolicPath => DataPoints.Any(p => p.Diastolic.HasValue);
+
+    private decimal MinBP => 40m; // Chart min
+    private decimal MaxBP => 200m; // Chart max
+
+    private double CalculateYPosition(decimal value)
+    {
+        // Convert BP value to percentage height (0-100)
+        var range = MaxBP - MinBP;
+        var normalized = (value - MinBP) / range;
+        return (double)(normalized * 100);
+    }
+
+    private double CalculateXPosition(int index)
+    {
+        if (DataPoints.Count <= 1) return 50;
+        return ((double)index / (DataPoints.Count - 1)) * 100;
+    }
+
+    private string GetSystolicPoints()
+    {
+        var points = new List<string>();
+        for (int i = 0; i < DataPoints.Count; i++)
+        {
+            if (DataPoints[i].Systolic.HasValue)
+            {
+                var x = CalculateXPosition(i);
+                var y = 100 - CalculateYPosition(DataPoints[i].Systolic!.Value);
+                points.Add($"{x},{y}");
+            }
+        }
+        return string.Join(" ", points);
+    }
+
+    private string GetDiastolicPoints()
+    {
+        var points = new List<string>();
+        for (int i = 0; i < DataPoints.Count; i++)
+        {
+            if (DataPoints[i].Diastolic.HasValue)
+            {
+                var x = CalculateXPosition(i);
+                var y = 100 - CalculateYPosition(DataPoints[i].Diastolic!.Value);
+                points.Add($"{x},{y}");
+            }
+        }
+        return string.Join(" ", points);
+    }
+
+    private string GetTooltipText(BpTrendDataPoint point)
+    {
+        var parts = new List<string> { point.Date.ToString("MMM d") };
+        
+        if (point.Systolic.HasValue && point.Diastolic.HasValue)
+        {
+            parts.Add($"{point.Systolic.Value:F0}/{point.Diastolic.Value:F0} mmHg");
+        }
+        else if (point.Systolic.HasValue)
+        {
+            parts.Add($"{point.Systolic.Value:F0} (systolic)");
+        }
+        else if (point.Diastolic.HasValue)
+        {
+            parts.Add($"{point.Diastolic.Value:F0} (diastolic)");
+        }
+
+        if (point.HeartRate.HasValue)
+        {
+            parts.Add($"HR: {point.HeartRate} bpm");
+        }
+
+        if (!string.IsNullOrEmpty(point.ReadingTime))
+        {
+            parts.Add(point.ReadingTime);
+        }
+
+        if (point.IsCarryForward)
+        {
+            parts.Add("(carry-forward)");
+        }
+
+        if (point.AlcoholConsumed == true)
+        {
+            parts.Add("🍺");
+        }
+
+        return string.Join(" • ", parts);
+    }
+
+    private string GetBpStatusColor(decimal systolic, decimal diastolic)
+    {
+        if (systolic >= 140 || diastolic >= 90)
+            return "text-healthy-danger";
+        if (systolic >= 130 || diastolic >= 80)
+            return "text-healthy-warning";
+        if (systolic < 120 && diastolic < 80)
+            return "text-green-600";
+        return "text-healthy-muted";
+    }
+
+    private void ShowTooltip(int index)
+    {
+        // Tooltip is shown via SVG title attribute
+    }
+
+    private void HideTooltip()
+    {
+        // Tooltip is hidden automatically
+    }
+}

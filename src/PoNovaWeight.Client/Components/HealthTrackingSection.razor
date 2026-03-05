@@ -1,0 +1,289 @@
+@using PoNovaWeight.Shared.DTOs
+
+<div class="bg-healthy-card rounded-xl shadow-healthy p-3">
+    <h3 class="text-sm font-semibold text-healthy-text mb-3 flex items-center gap-2">
+        <span class="text-lg">🩺</span>
+        Health Tracking
+    </h3>
+
+    <!-- Weight Input -->
+    <div class="mb-3">
+        <label class="block text-xs font-medium text-healthy-muted mb-1">Weight (lbs)</label>
+        <div class="flex items-center gap-2">
+            <input type="number" 
+                   step="0.1" 
+                   min="50" 
+                   max="500"
+                   placeholder="Enter weight"
+                   value="@WeightInputValue"
+                   @onchange="OnWeightChange"
+                   class="flex-1 px-3 py-2 text-sm rounded-lg border border-healthy-light bg-healthy-bg text-healthy-text placeholder-healthy-muted focus:outline-none focus:ring-2 focus:ring-healthy-primary focus:border-transparent" />
+            @if (Weight.HasValue)
+            {
+                <button @onclick="ClearWeight" 
+                        class="p-2 text-healthy-muted hover:text-healthy-danger transition-colors"
+                        title="Clear weight">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            }
+        </div>
+        @if (ShowWeightWarning)
+        {
+            <p class="mt-1 text-xs text-healthy-warning">⚠️ Weight changed by @WeightDelta lbs from yesterday</p>
+        }
+    </div>
+
+    <!-- Blood Pressure Section -->
+    <div class="mb-3 p-2 bg-healthy-bg rounded-lg">
+        <label class="block text-xs font-medium text-healthy-muted mb-2">💓 Blood Pressure (mmHg)</label>
+        <div class="grid grid-cols-2 gap-2">
+            <div>
+                <label class="block text-xs text-healthy-muted mb-1">Systolic</label>
+                <div class="flex items-center gap-1">
+                    <input type="number" 
+                           step="1" 
+                           min="70" 
+                           max="200"
+                           placeholder=""
+                           value="@SystolicInputValue"
+                           @onchange="OnSystolicChange"
+                           class="flex-1 px-3 py-2 text-sm rounded-lg border border-healthy-light bg-white text-healthy-text placeholder-healthy-muted focus:outline-none focus:ring-2 focus:ring-healthy-primary focus:border-transparent" />
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs text-healthy-muted mb-1">Diastolic</label>
+                <div class="flex items-center gap-1">
+                    <input type="number" 
+                           step="1" 
+                           min="40" 
+                           max="130"
+                           placeholder=""
+                           value="@DiastolicInputValue"
+                           @onchange="OnDiastolicChange"
+                           class="flex-1 px-3 py-2 text-sm rounded-lg border border-healthy-light bg-white text-healthy-text placeholder-healthy-muted focus:outline-none focus:ring-2 focus:ring-healthy-primary focus:border-transparent" />
+                </div>
+            </div>
+        </div>
+        @if (ShowBpWarning)
+        {
+            <p class="mt-1 text-xs text-healthy-danger">⚠️ BP is elevated (≥140/90) - consider consulting a physician</p>
+        }
+    </div>
+
+    <!-- Heart Rate -->
+    <div class="mb-3">
+        <label class="block text-xs font-medium text-healthy-muted mb-1">❤️ Heart Rate (bpm)</label>
+        <div class="flex items-center gap-2">
+            <input type="number" 
+                   step="1" 
+                   min="30" 
+                   max="220"
+                   placeholder=""
+                   value="@HeartRateInputValue"
+                   @onchange="OnHeartRateChange"
+                   class="flex-1 px-3 py-2 text-sm rounded-lg border border-healthy-light bg-healthy-bg text-healthy-text placeholder-healthy-muted focus:outline-none focus:ring-2 focus:ring-healthy-primary focus:border-transparent" />
+        </div>
+    </div>
+
+    <!-- BP Reading Time -->
+    @if (SystolicBP.HasValue || DiastolicBP.HasValue)
+    {
+        <div class="mb-3">
+            <label class="block text-xs font-medium text-healthy-muted mb-1">🕐 Reading Time</label>
+            <div class="flex items-center gap-2">
+                <label class="flex items-center gap-1 cursor-pointer text-xs">
+                    <input type="radio" 
+                           name="readingTime" 
+                           checked="@(BpReadingTime == "Morning")"
+                           @onchange='() => SetBpTime("Morning")'
+                           class="w-3 h-3 text-healthy-primary focus:ring-healthy-primary" />
+                    <span class="text-healthy-text">Morning</span>
+                </label>
+                <label class="flex items-center gap-1 cursor-pointer text-xs">
+                    <input type="radio" 
+                           name="readingTime" 
+                           checked="@(BpReadingTime == "Afternoon")"
+                           @onchange='() => SetBpTime("Afternoon")'
+                           class="w-3 h-3 text-healthy-primary focus:ring-healthy-primary" />
+                    <span class="text-healthy-text">Afternoon</span>
+                </label>
+                <label class="flex items-center gap-1 cursor-pointer text-xs">
+                    <input type="radio" 
+                           name="readingTime" 
+                           checked="@(BpReadingTime == "Evening")"
+                           @onchange='() => SetBpTime("Evening")'
+                           class="w-3 h-3 text-healthy-primary focus:ring-healthy-primary" />
+                    <span class="text-healthy-text">Evening</span>
+                </label>
+            </div>
+        </div>
+    }
+
+    <!-- OMAD Radio -->
+    <div class="mb-3">
+        <div class="flex items-center gap-2 mb-2">
+            <span class="text-lg">🍽️</span>
+            <span class="text-sm font-medium text-healthy-text">Did you eat OMAD today?</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <label class="flex items-center gap-2 cursor-pointer">
+                <input type="radio" 
+                       name="omad" 
+                       checked="@(OmadCompliant == true)"
+                       @onchange="() => SetOmad(true)"
+                       class="w-4 h-4 text-healthy-primary focus:ring-healthy-primary" />
+                <span class="text-sm text-healthy-text">Yes</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+                <input type="radio" 
+                       name="omad" 
+                       checked="@(OmadCompliant == false)"
+                       @onchange="() => SetOmad(false)"
+                       class="w-4 h-4 text-healthy-primary focus:ring-healthy-primary" />
+                <span class="text-sm text-healthy-text">No</span>
+            </label>
+            @if (OmadCompliant.HasValue)
+            {
+                <button @onclick="ClearOmad" 
+                        class="p-1 text-healthy-muted hover:text-healthy-danger transition-colors text-xs"
+                        title="Clear selection">
+                    ✕ Clear
+                </button>
+            }
+        </div>
+    </div>
+
+    <!-- Alcohol Radio -->
+    <div>
+        <div class="flex items-center gap-2 mb-2">
+            <span class="text-lg">🍺</span>
+            <span class="text-sm font-medium text-healthy-text">Did you drink alcohol today?</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <label class="flex items-center gap-2 cursor-pointer">
+                <input type="radio" 
+                       name="alcohol" 
+                       checked="@(AlcoholConsumed == true)"
+                       @onchange="() => SetAlcohol(true)"
+                       class="w-4 h-4 text-healthy-primary focus:ring-healthy-primary" />
+                <span class="text-sm text-healthy-text">Yes</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+                <input type="radio" 
+                       name="alcohol" 
+                       checked="@(AlcoholConsumed == false)"
+                       @onchange="() => SetAlcohol(false)"
+                       class="w-4 h-4 text-healthy-primary focus:ring-healthy-primary" />
+                <span class="text-sm text-healthy-text">No</span>
+            </label>
+            @if (AlcoholConsumed.HasValue)
+            {
+                <button @onclick="ClearAlcohol" 
+                        class="p-1 text-healthy-muted hover:text-healthy-danger transition-colors text-xs"
+                        title="Clear selection">
+                    ✕ Clear
+                </button>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public decimal? Weight { get; set; }
+    [Parameter] public bool? OmadCompliant { get; set; }
+    [Parameter] public bool? AlcoholConsumed { get; set; }
+    [Parameter] public decimal? SystolicBP { get; set; }
+    [Parameter] public decimal? DiastolicBP { get; set; }
+    [Parameter] public int? HeartRate { get; set; }
+    [Parameter] public string? BpReadingTime { get; set; }
+    [Parameter] public decimal? PreviousDayWeight { get; set; }
+
+    [Parameter] public EventCallback<decimal?> WeightChanged { get; set; }
+    [Parameter] public EventCallback<bool?> OmadCompliantChanged { get; set; }
+    [Parameter] public EventCallback<bool?> AlcoholConsumedChanged { get; set; }
+    [Parameter] public EventCallback<decimal?> SystolicBPChanged { get; set; }
+    [Parameter] public EventCallback<decimal?> DiastolicBPChanged { get; set; }
+    [Parameter] public EventCallback<int?> HeartRateChanged { get; set; }
+    [Parameter] public EventCallback<string?> BpReadingTimeChanged { get; set; }
+
+    private string WeightInputValue => Weight?.ToString("0.#") ?? "";
+    private string SystolicInputValue => SystolicBP?.ToString("0") ?? "";
+    private string DiastolicInputValue => DiastolicBP?.ToString("0") ?? "";
+    private string HeartRateInputValue => HeartRate?.ToString() ?? "";
+
+    private bool ShowWeightWarning => 
+        Weight.HasValue && 
+        PreviousDayWeight.HasValue && 
+        Math.Abs(Weight.Value - PreviousDayWeight.Value) > 5m;
+
+    private bool ShowBpWarning => 
+        (SystolicBP.HasValue && SystolicBP.Value >= 140m) || 
+        (DiastolicBP.HasValue && DiastolicBP.Value >= 90m);
+
+    private decimal WeightDelta => 
+        Weight.HasValue && PreviousDayWeight.HasValue 
+            ? Math.Abs(Weight.Value - PreviousDayWeight.Value) 
+            : 0m;
+
+    private async Task OnWeightChange(ChangeEventArgs e)
+    {
+        if (decimal.TryParse(e.Value?.ToString(), out var weight))
+        {
+            weight = Math.Round(weight, 1);
+            await WeightChanged.InvokeAsync(weight);
+        }
+        else if (string.IsNullOrWhiteSpace(e.Value?.ToString()))
+        {
+            await WeightChanged.InvokeAsync(null);
+        }
+    }
+
+    private async Task OnSystolicChange(ChangeEventArgs e)
+    {
+        if (decimal.TryParse(e.Value?.ToString(), out var systolic))
+        {
+            await SystolicBPChanged.InvokeAsync(systolic);
+        }
+        else if (string.IsNullOrWhiteSpace(e.Value?.ToString()))
+        {
+            await SystolicBPChanged.InvokeAsync(null);
+        }
+    }
+
+    private async Task OnDiastolicChange(ChangeEventArgs e)
+    {
+        if (decimal.TryParse(e.Value?.ToString(), out var diastolic))
+        {
+            await DiastolicBPChanged.InvokeAsync(diastolic);
+        }
+        else if (string.IsNullOrWhiteSpace(e.Value?.ToString()))
+        {
+            await DiastolicBPChanged.InvokeAsync(null);
+        }
+    }
+
+    private async Task OnHeartRateChange(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var hr))
+        {
+            await HeartRateChanged.InvokeAsync(hr);
+        }
+        else if (string.IsNullOrWhiteSpace(e.Value?.ToString()))
+        {
+            await HeartRateChanged.InvokeAsync(null);
+        }
+    }
+
+    private async Task SetBpTime(string time)
+    {
+        await BpReadingTimeChanged.InvokeAsync(time);
+    }
+
+    private async Task ClearWeight() => await WeightChanged.InvokeAsync(null);
+    private async Task SetOmad(bool value) => await OmadCompliantChanged.InvokeAsync(value);
+    private async Task SetAlcohol(bool value) => await AlcoholConsumedChanged.InvokeAsync(value);
+    private async Task ClearOmad() => await OmadCompliantChanged.InvokeAsync(null);
+    private async Task ClearAlcohol() => await AlcoholConsumedChanged.InvokeAsync(null);
+}

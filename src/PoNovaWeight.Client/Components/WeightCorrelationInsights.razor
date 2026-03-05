@@ -1,0 +1,89 @@
+@using PoNovaWeight.Shared.DTOs
+
+<div class="bg-gradient-to-br from-healthy-primary/10 to-healthy-secondary/10 dark:from-healthy-primary/20 dark:to-healthy-secondary/20 rounded-2xl shadow-elevation-2 border border-healthy-light dark:border-dark-border p-5">
+    <!-- Header -->
+    <div class="flex items-start gap-3 mb-4">
+        <div class="w-10 h-10 rounded-lg bg-healthy-primary text-white flex items-center justify-center flex-shrink-0 shadow-healthy">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+        </div>
+        <div>
+            <h3 class="font-semibold text-healthy-text dark:text-dark-text">What Affects Your Weight?</h3>
+            <p class="text-xs text-healthy-muted dark:text-dark-muted mt-1">AI-discovered patterns in your data</p>
+        </div>
+    </div>
+
+    <!-- Insights List -->
+    @if (Insights != null && Insights.Any())
+    {
+        <div class="space-y-3">
+            @foreach (var insight in Insights.Take(3))
+            {
+                <div class="bg-white dark:bg-dark-card rounded-xl p-3.5 border border-healthy-light dark:border-dark-border">
+                    <div class="flex items-start gap-3">
+                        <!-- Trend Icon -->
+                        <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 @(insight.IsPositive ? "bg-red-100 dark:bg-red-900/30" : "bg-green-100 dark:bg-green-900/30")">
+                            <svg class="w-4 h-4 @(insight.IsPositive ? "text-red-600 dark:text-red-400" : "text-green-600 dark:text-green-400")" 
+                                 fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                @if (insight.IsPositive)
+                                {
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75"/>
+                                }
+                                else
+                                {
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m0 0l6.75-6.75M12 19.5l-6.75-6.75"/>
+                                }
+                            </svg>
+                        </div>
+                        
+                        <!-- Text Content -->
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium text-healthy-text dark:text-dark-text">@insight.Text</p>
+                            <p class="text-xs text-healthy-muted dark:text-dark-muted mt-1">@insight.Details</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-6">
+            <p class="text-sm text-healthy-muted dark:text-dark-muted">
+                Keep logging your meals and health metrics to discover personalized insights!
+            </p>
+        </div>
+    }
+
+    <!-- Footer note -->
+    <p class="text-xs text-healthy-muted dark:text-dark-muted mt-4 italic">
+        Insights updated weekly based on your logged data
+    </p>
+</div>
+
+@code {
+    /// <summary>
+    /// List of weight correlation insights to display
+    /// </summary>
+    [Parameter]
+    public List<InsightItem>? Insights { get; set; }
+
+    public class InsightItem
+    {
+        /// <summary>
+        /// Main insight text (e.g., "High starch days = weight gain")
+        /// </summary>
+        public string Text { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Detailed explanation with impact metric
+        /// </summary>
+        public string Details { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Whether this is positive (weight gain) or negative (weight loss) correlation
+        /// </summary>
+        public bool IsPositive { get; set; }
+    }
+}

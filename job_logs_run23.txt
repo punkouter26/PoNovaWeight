@@ -1,0 +1,210 @@
+∩╗┐2026-03-05T16:09:13.0993967Z Current runner version: '2.332.0'
+2026-03-05T16:09:13.1031600Z ##[group]Runner Image Provisioner
+2026-03-05T16:09:13.1033182Z Hosted Compute Agent
+2026-03-05T16:09:13.1034113Z Version: 20260213.493
+2026-03-05T16:09:13.1035089Z Commit: 5c115507f6dd24b8de37d8bbe0bb4509d0cc0fa3
+2026-03-05T16:09:13.1036422Z Build Date: 2026-02-13T00:28:41Z
+2026-03-05T16:09:13.1037545Z Worker ID: {c422d0b6-91fa-4262-91df-3a65d9648a83}
+2026-03-05T16:09:13.1038833Z Azure Region: eastus2
+2026-03-05T16:09:13.1039946Z ##[endgroup]
+2026-03-05T16:09:13.1042347Z ##[group]Operating System
+2026-03-05T16:09:13.1043359Z Ubuntu
+2026-03-05T16:09:13.1044217Z 24.04.3
+2026-03-05T16:09:13.1045092Z LTS
+2026-03-05T16:09:13.1045924Z ##[endgroup]
+2026-03-05T16:09:13.1046917Z ##[group]Runner Image
+2026-03-05T16:09:13.1047901Z Image: ubuntu-24.04
+2026-03-05T16:09:13.1048810Z Version: 20260302.42.1
+2026-03-05T16:09:13.1051044Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260302.42/images/ubuntu/Ubuntu2404-Readme.md
+2026-03-05T16:09:13.1053945Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260302.42
+2026-03-05T16:09:13.1055658Z ##[endgroup]
+2026-03-05T16:09:13.1057518Z ##[group]GITHUB_TOKEN Permissions
+2026-03-05T16:09:13.1060638Z Contents: read
+2026-03-05T16:09:13.1062131Z Metadata: read
+2026-03-05T16:09:13.1063067Z ##[endgroup]
+2026-03-05T16:09:13.1066395Z Secret source: Actions
+2026-03-05T16:09:13.1067962Z Prepare workflow directory
+2026-03-05T16:09:13.1643473Z Prepare all required actions
+2026-03-05T16:09:13.1700835Z Getting action download info
+2026-03-05T16:09:13.4865231Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+2026-03-05T16:09:13.6113729Z Download action repository 'actions/setup-dotnet@v4' (SHA:67a3573c9a986a3f9c594539f4ab511d57bb3ce9)
+2026-03-05T16:09:14.0237876Z Complete job name: Build and Test
+2026-03-05T16:09:14.1057701Z ##[group]Run actions/checkout@v4
+2026-03-05T16:09:14.1058684Z with:
+2026-03-05T16:09:14.1059152Z   repository: punkouter26/PoNovaWeight
+2026-03-05T16:09:14.1060083Z   token: ***
+2026-03-05T16:09:14.1060505Z   ssh-strict: true
+2026-03-05T16:09:14.1060934Z   ssh-user: git
+2026-03-05T16:09:14.1061350Z   persist-credentials: true
+2026-03-05T16:09:14.1062312Z   clean: true
+2026-03-05T16:09:14.1062818Z   sparse-checkout-cone-mode: true
+2026-03-05T16:09:14.1063337Z   fetch-depth: 1
+2026-03-05T16:09:14.1063766Z   fetch-tags: false
+2026-03-05T16:09:14.1064203Z   show-progress: true
+2026-03-05T16:09:14.1064657Z   lfs: false
+2026-03-05T16:09:14.1065050Z   submodules: false
+2026-03-05T16:09:14.1065487Z   set-safe-directory: true
+2026-03-05T16:09:14.1066281Z env:
+2026-03-05T16:09:14.1066704Z   DOTNET_VERSION: 10.0.x
+2026-03-05T16:09:14.1067212Z   AZURE_WEBAPP_NAME: PoNovaWeight-app
+2026-03-05T16:09:14.1067942Z   API_PROJECT: src/PoNovaWeight.Api/PoNovaWeight.Api.csproj
+2026-03-05T16:09:14.1068912Z   API_TEST_PROJECT: tests/PoNovaWeight.Api.Tests/PoNovaWeight.Api.Tests.csproj
+2026-03-05T16:09:14.1070054Z   CLIENT_TEST_PROJECT: tests/PoNovaWeight.Client.Tests/PoNovaWeight.Client.Tests.csproj
+2026-03-05T16:09:14.1070934Z ##[endgroup]
+2026-03-05T16:09:14.2292681Z Syncing repository: punkouter26/PoNovaWeight
+2026-03-05T16:09:14.2295629Z ##[group]Getting Git version info
+2026-03-05T16:09:14.2296901Z Working directory is '/home/runner/work/PoNovaWeight/PoNovaWeight'
+2026-03-05T16:09:14.2298682Z [command]/usr/bin/git version
+2026-03-05T16:09:14.2392576Z git version 2.53.0
+2026-03-05T16:09:14.2421324Z ##[endgroup]
+2026-03-05T16:09:14.2446830Z Temporarily overriding HOME='/home/runner/work/_temp/ac552f3a-7160-4f50-9680-eb85dc61c3c4' before making global git config changes
+2026-03-05T16:09:14.2448747Z Adding repository directory to the temporary git global config as a safe directory
+2026-03-05T16:09:14.2452927Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/PoNovaWeight/PoNovaWeight
+2026-03-05T16:09:14.2500013Z Deleting the contents of '/home/runner/work/PoNovaWeight/PoNovaWeight'
+2026-03-05T16:09:14.2504639Z ##[group]Initializing the repository
+2026-03-05T16:09:14.2509412Z [command]/usr/bin/git init /home/runner/work/PoNovaWeight/PoNovaWeight
+2026-03-05T16:09:14.2625877Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-03-05T16:09:14.2628330Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-03-05T16:09:14.2630612Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-03-05T16:09:14.2632630Z hint: call:
+2026-03-05T16:09:14.2633380Z hint:
+2026-03-05T16:09:14.2634085Z hint: 	git config --global init.defaultBranch <name>
+2026-03-05T16:09:14.2634932Z hint:
+2026-03-05T16:09:14.2635708Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-03-05T16:09:14.2636873Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-03-05T16:09:14.2637742Z hint:
+2026-03-05T16:09:14.2638157Z hint: 	git branch -m <name>
+2026-03-05T16:09:14.2638781Z hint:
+2026-03-05T16:09:14.2639934Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-03-05T16:09:14.2641230Z Initialized empty Git repository in /home/runner/work/PoNovaWeight/PoNovaWeight/.git/
+2026-03-05T16:09:14.2646890Z [command]/usr/bin/git remote add origin https://github.com/punkouter26/PoNovaWeight
+2026-03-05T16:09:14.2687688Z ##[endgroup]
+2026-03-05T16:09:14.2688996Z ##[group]Disabling automatic garbage collection
+2026-03-05T16:09:14.2692303Z [command]/usr/bin/git config --local gc.auto 0
+2026-03-05T16:09:14.2724828Z ##[endgroup]
+2026-03-05T16:09:14.2726067Z ##[group]Setting up auth
+2026-03-05T16:09:14.2733061Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-03-05T16:09:14.2767991Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-03-05T16:09:14.3137099Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-03-05T16:09:14.3173761Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-03-05T16:09:14.3429925Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-03-05T16:09:14.3465199Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-03-05T16:09:14.3715387Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-03-05T16:09:14.3755968Z ##[endgroup]
+2026-03-05T16:09:14.3757559Z ##[group]Fetching the repository
+2026-03-05T16:09:14.3767217Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +fdfff84da1ab14de2b513a4f2d452eb3d1f18da8:refs/remotes/origin/master
+2026-03-05T16:09:14.6430018Z From https://github.com/punkouter26/PoNovaWeight
+2026-03-05T16:09:14.6431696Z  * [new ref]         fdfff84da1ab14de2b513a4f2d452eb3d1f18da8 -> origin/master
+2026-03-05T16:09:14.6468945Z ##[endgroup]
+2026-03-05T16:09:14.6470574Z ##[group]Determining the checkout info
+2026-03-05T16:09:14.6472593Z ##[endgroup]
+2026-03-05T16:09:14.6478052Z [command]/usr/bin/git sparse-checkout disable
+2026-03-05T16:09:14.6525882Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-03-05T16:09:14.6557355Z ##[group]Checking out the ref
+2026-03-05T16:09:14.6562352Z [command]/usr/bin/git checkout --progress --force -B master refs/remotes/origin/master
+2026-03-05T16:09:14.6733931Z Reset branch 'master'
+2026-03-05T16:09:14.6741339Z branch 'master' set up to track 'origin/master'.
+2026-03-05T16:09:14.6746592Z ##[endgroup]
+2026-03-05T16:09:14.6788493Z [command]/usr/bin/git log -1 --format=%H
+2026-03-05T16:09:14.6815871Z fdfff84da1ab14de2b513a4f2d452eb3d1f18da8
+2026-03-05T16:09:14.7113598Z ##[group]Run actions/setup-dotnet@v4
+2026-03-05T16:09:14.7115007Z with:
+2026-03-05T16:09:14.7115828Z   dotnet-version: 10.0.x
+2026-03-05T16:09:14.7116800Z   cache: false
+2026-03-05T16:09:14.7117611Z env:
+2026-03-05T16:09:14.7118400Z   DOTNET_VERSION: 10.0.x
+2026-03-05T16:09:14.7119430Z   AZURE_WEBAPP_NAME: PoNovaWeight-app
+2026-03-05T16:09:14.7120897Z   API_PROJECT: src/PoNovaWeight.Api/PoNovaWeight.Api.csproj
+2026-03-05T16:09:14.7123216Z   API_TEST_PROJECT: tests/PoNovaWeight.Api.Tests/PoNovaWeight.Api.Tests.csproj
+2026-03-05T16:09:14.7125810Z   CLIENT_TEST_PROJECT: tests/PoNovaWeight.Client.Tests/PoNovaWeight.Client.Tests.csproj
+2026-03-05T16:09:14.7127777Z ##[endgroup]
+2026-03-05T16:09:14.9062223Z [command]/home/runner/work/_actions/actions/setup-dotnet/v4/externals/install-dotnet.sh --skip-non-versioned-files --runtime dotnet --channel LTS
+2026-03-05T16:09:15.2418504Z dotnet-install: Attempting to download using aka.ms link https://builds.dotnet.microsoft.com/dotnet/Runtime/10.0.3/dotnet-runtime-10.0.3-linux-x64.tar.gz
+2026-03-05T16:09:15.6279440Z dotnet-install: Remote file https://builds.dotnet.microsoft.com/dotnet/Runtime/10.0.3/dotnet-runtime-10.0.3-linux-x64.tar.gz size is 36636310 bytes.
+2026-03-05T16:09:15.6287522Z dotnet-install: Extracting archive from https://builds.dotnet.microsoft.com/dotnet/Runtime/10.0.3/dotnet-runtime-10.0.3-linux-x64.tar.gz
+2026-03-05T16:09:16.3272949Z dotnet-install: Downloaded file size is 36636310 bytes.
+2026-03-05T16:09:16.3274129Z dotnet-install: The remote and local file sizes are equal.
+2026-03-05T16:09:16.3629789Z dotnet-install: Installed version is 10.0.3
+2026-03-05T16:09:16.3697423Z dotnet-install: Adding to current process PATH: `/usr/share/dotnet`. Note: This change will be visible only when sourcing script.
+2026-03-05T16:09:16.3700485Z dotnet-install: Note that the script does not resolve dependencies during installation.
+2026-03-05T16:09:16.3702811Z dotnet-install: To check the list of dependencies, go to https://learn.microsoft.com/dotnet/core/install, select your operating system and check the "Dependencies" section.
+2026-03-05T16:09:16.3704585Z dotnet-install: Installation finished successfully.
+2026-03-05T16:09:16.3730237Z [command]/home/runner/work/_actions/actions/setup-dotnet/v4/externals/install-dotnet.sh --skip-non-versioned-files --channel 10.0
+2026-03-05T16:09:16.7087568Z dotnet-install: Attempting to download using aka.ms link https://builds.dotnet.microsoft.com/dotnet/Sdk/10.0.103/dotnet-sdk-10.0.103-linux-x64.tar.gz
+2026-03-05T16:09:18.2605381Z dotnet-install: Remote file https://builds.dotnet.microsoft.com/dotnet/Sdk/10.0.103/dotnet-sdk-10.0.103-linux-x64.tar.gz size is 240189641 bytes.
+2026-03-05T16:09:18.2607952Z dotnet-install: Extracting archive from https://builds.dotnet.microsoft.com/dotnet/Sdk/10.0.103/dotnet-sdk-10.0.103-linux-x64.tar.gz
+2026-03-05T16:09:22.9818183Z dotnet-install: Downloaded file size is 240189641 bytes.
+2026-03-05T16:09:22.9819157Z dotnet-install: The remote and local file sizes are equal.
+2026-03-05T16:09:23.2661682Z dotnet-install: Installed version is 10.0.103
+2026-03-05T16:09:23.2726613Z dotnet-install: Adding to current process PATH: `/usr/share/dotnet`. Note: This change will be visible only when sourcing script.
+2026-03-05T16:09:23.2728273Z dotnet-install: Note that the script does not resolve dependencies during installation.
+2026-03-05T16:09:23.2729553Z dotnet-install: To check the list of dependencies, go to https://learn.microsoft.com/dotnet/core/install, select your operating system and check the "Dependencies" section.
+2026-03-05T16:09:23.2730497Z dotnet-install: Installation finished successfully.
+2026-03-05T16:09:23.2908838Z ##[group]Run dotnet restore src/PoNovaWeight.Api/PoNovaWeight.Api.csproj
+2026-03-05T16:09:23.2909478Z [36;1mdotnet restore src/PoNovaWeight.Api/PoNovaWeight.Api.csproj[0m
+2026-03-05T16:09:23.2967265Z shell: /usr/bin/bash -e {0}
+2026-03-05T16:09:23.2967549Z env:
+2026-03-05T16:09:23.2967747Z   DOTNET_VERSION: 10.0.x
+2026-03-05T16:09:23.2968026Z   AZURE_WEBAPP_NAME: PoNovaWeight-app
+2026-03-05T16:09:23.2968406Z   API_PROJECT: src/PoNovaWeight.Api/PoNovaWeight.Api.csproj
+2026-03-05T16:09:23.2969182Z   API_TEST_PROJECT: tests/PoNovaWeight.Api.Tests/PoNovaWeight.Api.Tests.csproj
+2026-03-05T16:09:23.2969824Z   CLIENT_TEST_PROJECT: tests/PoNovaWeight.Client.Tests/PoNovaWeight.Client.Tests.csproj
+2026-03-05T16:09:23.2970309Z   DOTNET_ROOT: /usr/share/dotnet
+2026-03-05T16:09:23.2970561Z ##[endgroup]
+2026-03-05T16:09:24.1633209Z   Determining projects to restore...
+2026-03-05T16:09:26.0574767Z   Restored /home/runner/work/PoNovaWeight/PoNovaWeight/src/PoNovaWeight.Shared/PoNovaWeight.Shared.csproj (in 1.01 sec).
+2026-03-05T16:09:28.2909174Z   Restored /home/runner/work/PoNovaWeight/PoNovaWeight/src/PoNovaWeight.Api/PoNovaWeight.Api.csproj (in 3.26 sec).
+2026-03-05T16:09:28.4085681Z   Restored /home/runner/work/PoNovaWeight/PoNovaWeight/src/PoNovaWeight.Client/PoNovaWeight.Client.csproj (in 3.38 sec).
+2026-03-05T16:09:28.4507985Z ##[group]Run dotnet build src/PoNovaWeight.Api/PoNovaWeight.Api.csproj --configuration Release --no-restore
+2026-03-05T16:09:28.4508844Z [36;1mdotnet build src/PoNovaWeight.Api/PoNovaWeight.Api.csproj --configuration Release --no-restore[0m
+2026-03-05T16:09:28.4558611Z shell: /usr/bin/bash -e {0}
+2026-03-05T16:09:28.4558871Z env:
+2026-03-05T16:09:28.4559061Z   DOTNET_VERSION: 10.0.x
+2026-03-05T16:09:28.4559332Z   AZURE_WEBAPP_NAME: PoNovaWeight-app
+2026-03-05T16:09:28.4559711Z   API_PROJECT: src/PoNovaWeight.Api/PoNovaWeight.Api.csproj
+2026-03-05T16:09:28.4560240Z   API_TEST_PROJECT: tests/PoNovaWeight.Api.Tests/PoNovaWeight.Api.Tests.csproj
+2026-03-05T16:09:28.4560885Z   CLIENT_TEST_PROJECT: tests/PoNovaWeight.Client.Tests/PoNovaWeight.Client.Tests.csproj
+2026-03-05T16:09:28.4561377Z   DOTNET_ROOT: /usr/share/dotnet
+2026-03-05T16:09:28.4561635Z ##[endgroup]
+2026-03-05T16:09:33.5682009Z   PoNovaWeight.Shared -> /home/runner/work/PoNovaWeight/PoNovaWeight/src/PoNovaWeight.Shared/bin/Release/net10.0/PoNovaWeight.Shared.dll
+2026-03-05T16:09:38.7243171Z   PoNovaWeight.Client -> /home/runner/work/PoNovaWeight/PoNovaWeight/src/PoNovaWeight.Client/bin/Release/net10.0/PoNovaWeight.Client.dll
+2026-03-05T16:09:38.7257916Z   PoNovaWeight.Client (Blazor output) -> /home/runner/work/PoNovaWeight/PoNovaWeight/src/PoNovaWeight.Client/bin/Release/net10.0/wwwroot
+2026-03-05T16:09:40.3395786Z ##[error]/home/runner/work/PoNovaWeight/PoNovaWeight/src/PoNovaWeight.Api/Program.cs(115,22): error CS1061: 'TracerProviderBuilder' does not contain a definition for 'AddAspNetCoreInstrumentation' and no accessible extension method 'AddAspNetCoreInstrumentation' accepting a first argument of type 'TracerProviderBuilder' could be found (are you missing a using directive or an assembly reference?) [/home/runner/work/PoNovaWeight/PoNovaWeight/src/PoNovaWeight.Api/PoNovaWeight.Api.csproj]
+2026-03-05T16:09:40.3414867Z ##[error]/home/runner/work/PoNovaWeight/PoNovaWeight/src/PoNovaWeight.Api/Program.cs(177,35): error CS0246: The type or namespace name 'ITestUserDataSeeder' could not be found (are you missing a using directive or an assembly reference?) [/home/runner/work/PoNovaWeight/PoNovaWeight/src/PoNovaWeight.Api/PoNovaWeight.Api.csproj]
+2026-03-05T16:09:40.3420949Z ##[error]/home/runner/work/PoNovaWeight/PoNovaWeight/src/PoNovaWeight.Api/Program.cs(177,56): error CS0246: The type or namespace name 'TestUserDataSeeder' could not be found (are you missing a using directive or an assembly reference?) [/home/runner/work/PoNovaWeight/PoNovaWeight/src/PoNovaWeight.Api/PoNovaWeight.Api.csproj]
+2026-03-05T16:09:40.3427724Z ##[error]/home/runner/work/PoNovaWeight/PoNovaWeight/src/PoNovaWeight.Api/Program.cs(194,61): error CS0246: The type or namespace name 'BpPredictionService' could not be found (are you missing a using directive or an assembly reference?) [/home/runner/work/PoNovaWeight/PoNovaWeight/src/PoNovaWeight.Api/PoNovaWeight.Api.csproj]
+2026-03-05T16:09:40.3434436Z ##[error]/home/runner/work/PoNovaWeight/PoNovaWeight/src/PoNovaWeight.Api/Program.cs(230,23): error CS0246: The type or namespace name 'CorrelationIdMiddleware' could not be found (are you missing a using directive or an assembly reference?) [/home/runner/work/PoNovaWeight/PoNovaWeight/src/PoNovaWeight.Api/PoNovaWeight.Api.csproj]
+2026-03-05T16:09:40.3443129Z ##[error]/home/runner/work/PoNovaWeight/PoNovaWeight/src/PoNovaWeight.Api/Features/Predictions/PredictBloodPressure.cs(73,27): error CS1061: 'DailyLogEntity' does not contain a definition for 'SystolicBP' and no accessible extension method 'SystolicBP' accepting a first argument of type 'DailyLogEntity' could be found (are you missing a using directive or an assembly reference?) [/home/runner/work/PoNovaWeight/PoNovaWeight/src/PoNovaWeight.Api/PoNovaWeight.Api.csproj]
+2026-03-05T16:09:40.3453221Z ##[error]/home/runner/work/PoNovaWeight/PoNovaWeight/src/PoNovaWeight.Api/Features/Predictions/PredictBloodPressure.cs(73,52): error CS1061: 'DailyLogEntity' does not contain a definition for 'DiastolicBP' and no accessible extension method 'DiastolicBP' accepting a first argument of type 'DailyLogEntity' could be found (are you missing a using directive or an assembly reference?) [/home/runner/work/PoNovaWeight/PoNovaWeight/src/PoNovaWeight.Api/PoNovaWeight.Api.csproj]
+2026-03-05T16:09:40.3482507Z 
+2026-03-05T16:09:40.3486750Z Build FAILED.
+2026-03-05T16:09:40.3492644Z 
+2026-03-05T16:09:40.3500381Z ##[error]/home/runner/work/PoNovaWeight/PoNovaWeight/src/PoNovaWeight.Api/Program.cs(115,22): error CS1061: 'TracerProviderBuilder' does not contain a definition for 'AddAspNetCoreInstrumentation' and no accessible extension method 'AddAspNetCoreInstrumentation' accepting a first argument of type 'TracerProviderBuilder' could be found (are you missing a using directive or an assembly reference?) [/home/runner/work/PoNovaWeight/PoNovaWeight/src/PoNovaWeight.Api/PoNovaWeight.Api.csproj]
+2026-03-05T16:09:40.3522521Z ##[error]/home/runner/work/PoNovaWeight/PoNovaWeight/src/PoNovaWeight.Api/Program.cs(177,35): error CS0246: The type or namespace name 'ITestUserDataSeeder' could not be found (are you missing a using directive or an assembly reference?) [/home/runner/work/PoNovaWeight/PoNovaWeight/src/PoNovaWeight.Api/PoNovaWeight.Api.csproj]
+2026-03-05T16:09:40.3528918Z ##[error]/home/runner/work/PoNovaWeight/PoNovaWeight/src/PoNovaWeight.Api/Program.cs(177,56): error CS0246: The type or namespace name 'TestUserDataSeeder' could not be found (are you missing a using directive or an assembly reference?) [/home/runner/work/PoNovaWeight/PoNovaWeight/src/PoNovaWeight.Api/PoNovaWeight.Api.csproj]
+2026-03-05T16:09:40.3535496Z ##[error]/home/runner/work/PoNovaWeight/PoNovaWeight/src/PoNovaWeight.Api/Program.cs(194,61): error CS0246: The type or namespace name 'BpPredictionService' could not be found (are you missing a using directive or an assembly reference?) [/home/runner/work/PoNovaWeight/PoNovaWeight/src/PoNovaWeight.Api/PoNovaWeight.Api.csproj]
+2026-03-05T16:09:40.3542600Z ##[error]/home/runner/work/PoNovaWeight/PoNovaWeight/src/PoNovaWeight.Api/Program.cs(230,23): error CS0246: The type or namespace name 'CorrelationIdMiddleware' could not be found (are you missing a using directive or an assembly reference?) [/home/runner/work/PoNovaWeight/PoNovaWeight/src/PoNovaWeight.Api/PoNovaWeight.Api.csproj]
+2026-03-05T16:09:40.3552414Z ##[error]/home/runner/work/PoNovaWeight/PoNovaWeight/src/PoNovaWeight.Api/Features/Predictions/PredictBloodPressure.cs(73,27): error CS1061: 'DailyLogEntity' does not contain a definition for 'SystolicBP' and no accessible extension method 'SystolicBP' accepting a first argument of type 'DailyLogEntity' could be found (are you missing a using directive or an assembly reference?) [/home/runner/work/PoNovaWeight/PoNovaWeight/src/PoNovaWeight.Api/PoNovaWeight.Api.csproj]
+2026-03-05T16:09:40.3560298Z ##[error]/home/runner/work/PoNovaWeight/PoNovaWeight/src/PoNovaWeight.Api/Features/Predictions/PredictBloodPressure.cs(73,52): error CS1061: 'DailyLogEntity' does not contain a definition for 'DiastolicBP' and no accessible extension method 'DiastolicBP' accepting a first argument of type 'DailyLogEntity' could be found (are you missing a using directive or an assembly reference?) [/home/runner/work/PoNovaWeight/PoNovaWeight/src/PoNovaWeight.Api/PoNovaWeight.Api.csproj]
+2026-03-05T16:09:40.3563516Z     0 Warning(s)
+2026-03-05T16:09:40.3563787Z     7 Error(s)
+2026-03-05T16:09:40.3563968Z 
+2026-03-05T16:09:40.3564109Z Time Elapsed 00:00:11.68
+2026-03-05T16:09:40.3807283Z ##[error]Process completed with exit code 1.
+2026-03-05T16:09:40.3930226Z Post job cleanup.
+2026-03-05T16:09:40.4932304Z [command]/usr/bin/git version
+2026-03-05T16:09:40.4971508Z git version 2.53.0
+2026-03-05T16:09:40.5018795Z Temporarily overriding HOME='/home/runner/work/_temp/72adf334-bb9c-4188-b991-95b88ecad796' before making global git config changes
+2026-03-05T16:09:40.5020288Z Adding repository directory to the temporary git global config as a safe directory
+2026-03-05T16:09:40.5034601Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/PoNovaWeight/PoNovaWeight
+2026-03-05T16:09:40.5074165Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-03-05T16:09:40.5110818Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-03-05T16:09:40.5365098Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-03-05T16:09:40.5390080Z http.https://github.com/.extraheader
+2026-03-05T16:09:40.5404749Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-03-05T16:09:40.5439181Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-03-05T16:09:40.5697492Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-03-05T16:09:40.5737763Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-03-05T16:09:40.6109576Z Cleaning up orphan processes
+2026-03-05T16:09:40.6546705Z Terminate orphan process: pid (2857) (dotnet)
+2026-03-05T16:09:40.6702757Z Terminate orphan process: pid (2937) (VBCSCompiler)
