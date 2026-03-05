@@ -35,7 +35,11 @@ public sealed class GetDailyLogHandler(IDailyLogRepository repository) : IReques
             WaterSegments = entity.WaterSegments,
             Weight = entity.Weight.HasValue ? (decimal)entity.Weight.Value : null,
             OmadCompliant = entity.OmadCompliant,
-            AlcoholConsumed = entity.AlcoholConsumed
+            AlcoholConsumed = entity.AlcoholConsumed,
+            SystolicBP = entity.SystolicBP.HasValue ? (decimal)entity.SystolicBP.Value : null,
+            DiastolicBP = entity.DiastolicBP.HasValue ? (decimal)entity.DiastolicBP.Value : null,
+            HeartRate = entity.HeartRate,
+            BpReadingTime = entity.BpReadingTime
         };
     }
 }

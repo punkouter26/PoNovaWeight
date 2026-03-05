@@ -61,7 +61,14 @@ public sealed class GetWeeklySummaryHandler(IDailyLogRepository repository, IMem
                     Starches = entity.Starches,
                     Fats = entity.Fats,
                     Dairy = entity.Dairy,
-                    WaterSegments = entity.WaterSegments
+                    WaterSegments = entity.WaterSegments,
+                    Weight = entity.Weight.HasValue ? (decimal)entity.Weight.Value : null,
+                    OmadCompliant = entity.OmadCompliant,
+                    AlcoholConsumed = entity.AlcoholConsumed,
+                    SystolicBP = entity.SystolicBP.HasValue ? (decimal)entity.SystolicBP.Value : null,
+                    DiastolicBP = entity.DiastolicBP.HasValue ? (decimal)entity.DiastolicBP.Value : null,
+                    HeartRate = entity.HeartRate,
+                    BpReadingTime = entity.BpReadingTime
                 });
             }
             else

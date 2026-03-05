@@ -30,6 +30,12 @@ public sealed class UpsertDailyLogHandler(IDailyLogRepository repository) : IReq
         entity.OmadCompliant = request.DailyLog.OmadCompliant;
         entity.AlcoholConsumed = request.DailyLog.AlcoholConsumed;
 
+        // Blood pressure and heart-rate fields
+        entity.SystolicBP = request.DailyLog.SystolicBP.HasValue ? (double)request.DailyLog.SystolicBP.Value : null;
+        entity.DiastolicBP = request.DailyLog.DiastolicBP.HasValue ? (double)request.DailyLog.DiastolicBP.Value : null;
+        entity.HeartRate = request.DailyLog.HeartRate;
+        entity.BpReadingTime = request.DailyLog.BpReadingTime;
+
         await repository.UpsertAsync(entity, cancellationToken);
 
         return request.DailyLog;
