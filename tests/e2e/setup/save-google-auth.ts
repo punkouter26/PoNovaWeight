@@ -17,7 +17,7 @@ import * as fs from 'fs';
  */
 
 const AUTH_STATE_PATH = path.join(__dirname, '..', '.auth', 'google-state.json');
-const BASE_URL = process.env.BASE_URL ?? 'https://localhost:5001';
+const BASE_URL = process.env.BASE_URL ?? 'http://localhost:5000';
 
 async function main() {
   // Ensure .auth directory exists

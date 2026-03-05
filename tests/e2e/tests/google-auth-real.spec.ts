@@ -22,7 +22,7 @@ test.describe('Google Authenticated User', () => {
   // Use the saved Google auth state for all tests in this describe block
   test.use({
     storageState: AUTH_STATE_PATH,
-    baseURL: 'https://localhost:5001',
+    baseURL: 'http://localhost:5000',
     ignoreHTTPSErrors: true,
   });
 
@@ -101,7 +101,7 @@ test.describe('Google Auth API Tests', () => {
   });
 
   test('Auth/me returns authenticated user with Google token', async ({ request }) => {
-    const response = await request.get('https://localhost:5001/api/auth/me', {
+    const response = await request.get('http://localhost:5000/api/auth/me', {
       headers: { 'Authorization': `Bearer ${idToken}` },
       ignoreHTTPSErrors: true,
     });
@@ -115,7 +115,7 @@ test.describe('Google Auth API Tests', () => {
 
   test('Protected daily-logs endpoint works with Google token', async ({ request }) => {
     const today = new Date().toISOString().split('T')[0];
-    const response = await request.get(`https://localhost:5001/api/daily-logs/${today}`, {
+    const response = await request.get(`http://localhost:5000/api/daily-logs/${today}`, {
       headers: { 'Authorization': `Bearer ${idToken}` },
       ignoreHTTPSErrors: true,
     });
@@ -124,7 +124,7 @@ test.describe('Google Auth API Tests', () => {
   });
 
   test('Auth sync endpoint works with Google token', async ({ request }) => {
-    const response = await request.post('https://localhost:5001/api/auth/sync', {
+    const response = await request.post('http://localhost:5000/api/auth/sync', {
       headers: { 'Authorization': `Bearer ${idToken}` },
       ignoreHTTPSErrors: true,
     });

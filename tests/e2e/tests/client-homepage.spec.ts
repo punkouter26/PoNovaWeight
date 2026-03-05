@@ -1,4 +1,5 @@
-import { test, expect, Request } from '@playwright/test';
+import { test, expect } from './fixtures';
+import { Request } from '@playwright/test';
 
 /**
  * End-to-end tests for the Blazor WebAssembly client homepage.

@@ -6,12 +6,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Moq;
 using PoNovaWeight.Api.Infrastructure.TableStorage;
+using PoNovaWeight.Api.Infrastructure.OpenAI;
 
 namespace PoNovaWeight.Api.Tests.Integration;
 
 /// <summary>
-/// Custom WebApplicationFactory for integration tests that properly configures
-/// the test host without Aspire dependencies.
+/// Custom WebApplicationFactory for integration tests.
+/// Overrides AI services with stub implementations to prevent real OpenAI calls.
 /// </summary>
 public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 {
@@ -21,7 +22,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 
         builder.ConfigureServices(services =>
         {
-            // Remove Aspire-configured TableServiceClient if present
+            // Remove any existing TableServiceClient to use test configuration
             services.RemoveAll<TableServiceClient>();
 
             // Add test TableServiceClient with development storage
@@ -59,6 +60,16 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 
             services.AddSingleton(mockDailyLogRepo.Object);
             services.AddSingleton(mockUserRepo.Object);
+
+            // CRITICAL: Override AI services with stubs to prevent real OpenAI calls in tests
+            // Remove any existing AI service registrations (real or stub)
+            services.RemoveAll<IMealAnalysisService>();
+            services.RemoveAll<IBpPredictionService>();
+
+            // Register stub implementations that return deterministic test data
+            // These avoid accidental Azure OpenAI API calls during test runs
+            services.AddSingleton<IMealAnalysisService, StubMealAnalysisService>();
+            services.AddSingleton<IBpPredictionService, StubBpPredictionService>();
         });
 
         // Ensure the configuration has required settings for Google OAuth

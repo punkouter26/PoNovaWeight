@@ -11,7 +11,7 @@ permissions:
 
 env:
   DOTNET_VERSION: 10.0.x
-  AZURE_WEBAPP_NAME: ponovaweight-app
+  AZURE_WEBAPP_NAME: PoNovaWeight-app
   API_PROJECT: src/PoNovaWeight.Api/PoNovaWeight.Api.csproj
   API_TEST_PROJECT: tests/PoNovaWeight.Api.Tests/PoNovaWeight.Api.Tests.csproj
   CLIENT_TEST_PROJECT: tests/PoNovaWeight.Client.Tests/PoNovaWeight.Client.Tests.csproj

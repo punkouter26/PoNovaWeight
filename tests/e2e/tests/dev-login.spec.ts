@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 import { devLogin, getAuthStatus } from '../helpers/auth';
 
 /**
@@ -47,5 +47,27 @@ test.describe('Dev Login API Tests', () => {
     const authStatus = await meResponse.json();
     expect(authStatus.isAuthenticated).toBe(true);
     expect(authStatus.user.email).toBe('token-test@local');
+  });
+
+  test('Dev test user login seeds data and returns trend data', async ({ page }) => {
+    // Trigger deterministic seed + login for test user
+    const loginResponse = await page.request.post('/api/auth/dev-test-user-login');
+    expect(loginResponse.ok()).toBeTruthy();
+
+    const login = await loginResponse.json();
+    expect(login.isAuthenticated).toBe(true);
+    expect(login.user.email).toBe('test-user@local');
+
+    // Verify seeded data is available for charts/trends.
+    const trendsResponse = await page.request.get('/api/daily-logs/trends?days=30', {
+      headers: {
+        'Authorization': `Bearer ${login.token}`
+      }
+    });
+
+    expect(trendsResponse.ok()).toBeTruthy();
+    const trends = await trendsResponse.json();
+    expect(trends.totalDaysLogged).toBeGreaterThan(0);
+    expect(trends.dataPoints.length).toBeGreaterThan(0);
   });
 });

@@ -12,7 +12,7 @@ param environmentName string = 'prod'
 param location string = resourceGroup().location
 
 @description('Base name for resources')
-param baseName string = 'ponovaweight'
+param baseName string = 'PoNovaWeight'
 
 @description('Budget limit in USD')
 param budgetAmount int = 5
