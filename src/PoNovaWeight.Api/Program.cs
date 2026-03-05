@@ -176,6 +176,10 @@ try
     builder.Services.AddSingleton<IUserRepository, UserRepository>();
     builder.Services.AddSingleton<IUserSettingsRepository, UserSettingsRepository>();
 
+    // Initialize Table Storage tables in the background so the warm-up probe
+    // succeeds immediately instead of blocking the 230-second startup window.
+    builder.Services.AddHostedService<BackgroundTableInitService>();
+
     // Development test-user data generation service (used by /api/auth/dev-test-user-login)
     builder.Services.AddSingleton<ITestUserDataSeeder, TestUserDataSeeder>();
 
@@ -271,20 +275,6 @@ try
 
         return next();
     });
-
-    // Initialize Table Storage (create tables if not exist)
-    using (var scope = app.Services.CreateScope())
-    {
-        var dailyLogRepo = scope.ServiceProvider.GetRequiredService<IDailyLogRepository>() as DailyLogRepository;
-        var userRepo = scope.ServiceProvider.GetRequiredService<IUserRepository>() as UserRepository;
-        var settingsRepo = scope.ServiceProvider.GetRequiredService<IUserSettingsRepository>() as UserSettingsRepository;
-
-        await Task.WhenAll(
-            dailyLogRepo?.InitializeAsync() ?? Task.CompletedTask,
-            userRepo?.InitializeAsync() ?? Task.CompletedTask,
-            settingsRepo?.InitializeAsync() ?? Task.CompletedTask
-        );
-    }
 
     // Configure the HTTP request pipeline
     if (app.Environment.IsDevelopment())
