@@ -33,6 +33,26 @@ public record DailyLogDto
     public bool? AlcoholConsumed { get; init; }
 
     /// <summary>
+    /// Systolic blood pressure in mmHg (70-200 range). Null if not logged.
+    /// </summary>
+    public decimal? SystolicBP { get; init; }
+
+    /// <summary>
+    /// Diastolic blood pressure in mmHg (40-130 range). Null if not logged.
+    /// </summary>
+    public decimal? DiastolicBP { get; init; }
+
+    /// <summary>
+    /// Heart rate in beats per minute (30-200 range). Null if not logged.
+    /// </summary>
+    public int? HeartRate { get; init; }
+
+    /// <summary>
+    /// Time of day when blood pressure was measured (Morning, Afternoon, Evening). Null if not logged.
+    /// </summary>
+    public string? BpReadingTime { get; init; }
+
+    /// <summary>
     /// Client's local "today" date for timezone-safe validation.
     /// When provided, server uses this instead of server's DateTime.Today.
     /// </summary>
@@ -82,6 +102,10 @@ public record DailyLogDto
         Weight = null,
         OmadCompliant = null,
         AlcoholConsumed = null,
+        SystolicBP = null,
+        DiastolicBP = null,
+        HeartRate = null,
+        BpReadingTime = null,
         ClientDate = DateOnly.FromDateTime(DateTime.Today)
     };
 }
