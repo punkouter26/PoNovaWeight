@@ -84,3 +84,4 @@ dotnet test --filter "Category!=Docker"
 ## License
 
 MIT
+# Trigger CI
