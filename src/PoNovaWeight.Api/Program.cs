@@ -164,12 +164,34 @@ try
 
     // Table Storage configuration
     // Reads from PoNovaWeight:AzureStorage:ConnectionString (Key Vault) or ConnectionStrings:AzureStorage / ConnectionStrings:tables (App Service)
-    var connectionString = builder.Configuration["PoNovaWeight:AzureStorage:ConnectionString"]
+    // App Service stores the endpoint URL (https://...) rather than a full connection string,
+    // so we detect which form is present and construct the client accordingly.
+    var tableStorageValue = builder.Configuration["PoNovaWeight:AzureStorage:ConnectionString"]
         ?? builder.Configuration.GetConnectionString("AzureStorage")
         ?? builder.Configuration.GetConnectionString("tables")
         ?? throw new InvalidOperationException(
             "Azure Storage connection string is required. Set 'ConnectionStrings:AzureStorage' in configuration.");
-    builder.Services.AddSingleton(new TableServiceClient(connectionString));
+
+    TableServiceClient tableServiceClient;
+    if (Uri.TryCreate(tableStorageValue, UriKind.Absolute, out var tableEndpointUri)
+        && (tableEndpointUri.Scheme == "https" || tableEndpointUri.Scheme == "http"))
+    {
+        // URL-style endpoint — use Managed Identity / DefaultAzureCredential
+        var credOpts = new DefaultAzureCredentialOptions
+        {
+            ExcludeVisualStudioCodeCredential = true,
+            ExcludeInteractiveBrowserCredential = true
+        };
+        tableServiceClient = new TableServiceClient(tableEndpointUri, new DefaultAzureCredential(credOpts));
+        Log.Information("Table Storage configured with URI + DefaultAzureCredential: {Endpoint}", tableEndpointUri);
+    }
+    else
+    {
+        // Full connection string — use directly
+        tableServiceClient = new TableServiceClient(tableStorageValue);
+        Log.Information("Table Storage configured with connection string.");
+    }
+    builder.Services.AddSingleton(tableServiceClient);
 
     // Register repositories using TableServiceClient
     builder.Services.AddSingleton<IDailyLogRepository, DailyLogRepository>();
