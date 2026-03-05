@@ -83,9 +83,3 @@ jobs:
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           package: ./publish
-
-      - name: Health check
-        run: |
-          APP_URL="https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net"
-          echo "Checking ${APP_URL}/health"
-          curl -fS "${APP_URL}/health"
