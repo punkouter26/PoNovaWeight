@@ -191,14 +191,29 @@ try
     if (Uri.TryCreate(tableStorageValue, UriKind.Absolute, out var tableEndpointUri)
         && (tableEndpointUri.Scheme == "https" || tableEndpointUri.Scheme == "http"))
     {
-        // URL-style endpoint — use Managed Identity / DefaultAzureCredential
-        var credOpts = new DefaultAzureCredentialOptions
+        // URL-style endpoint — use Managed Identity in Production to avoid the
+        // slow DefaultAzureCredential fallback chain consuming the App Service
+        // startup probe window before the app begins listening.
+        TokenCredential tableCredential;
+        if (builder.Environment.IsProduction())
         {
-            ExcludeVisualStudioCodeCredential = true,
-            ExcludeInteractiveBrowserCredential = true
-        };
-        tableServiceClient = new TableServiceClient(tableEndpointUri, new DefaultAzureCredential(credOpts));
-        Log.Information("Table Storage configured with URI + DefaultAzureCredential: {Endpoint}", tableEndpointUri);
+            tableCredential = new ManagedIdentityCredential();
+        }
+        else
+        {
+            var credOpts = new DefaultAzureCredentialOptions
+            {
+                ExcludeVisualStudioCodeCredential = true,
+                ExcludeInteractiveBrowserCredential = true
+            };
+            tableCredential = new DefaultAzureCredential(credOpts);
+        }
+
+        tableServiceClient = new TableServiceClient(tableEndpointUri, tableCredential);
+        Log.Information(
+            "Table Storage configured with URI + {CredentialType}: {Endpoint}",
+            tableCredential.GetType().Name,
+            tableEndpointUri);
     }
     else
     {
