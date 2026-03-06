@@ -74,12 +74,10 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
             // CRITICAL: Override AI services with stubs to prevent real OpenAI calls in tests
             // Remove any existing AI service registrations (real or stub)
             services.RemoveAll<IMealAnalysisService>();
-            services.RemoveAll<IBpPredictionService>();
 
             // Register stub implementations that return deterministic test data
             // These avoid accidental Azure OpenAI API calls during test runs
             services.AddSingleton<IMealAnalysisService, StubMealAnalysisService>();
-            services.AddSingleton<IBpPredictionService, StubBpPredictionService>();
         });
 
         // Ensure the configuration has required settings for Google OAuth

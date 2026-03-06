@@ -12,12 +12,12 @@ public abstract class TableStorageEntity : ITableEntity
     /// <summary>
     /// Gets or sets the partition key, typically representing a user or logical grouping.
     /// </summary>
-    public string PartitionKey { get; set; } = string.Empty;
+    public virtual string PartitionKey { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the row key, which uniquely identifies this entity within the partition.
     /// </summary>
-    public string RowKey { get; set; } = string.Empty;
+    public virtual string RowKey { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the Azure-managed timestamp for concurrency control.
