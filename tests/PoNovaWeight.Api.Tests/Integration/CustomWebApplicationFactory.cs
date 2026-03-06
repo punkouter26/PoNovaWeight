@@ -87,7 +87,9 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
             {
                 ["Google:ClientId"] = "test-client-id",
                 ["Google:ClientSecret"] = "test-client-secret",
-                ["ConnectionStrings:AzureStorage"] = "UseDevelopmentStorage=true"
+                ["ConnectionStrings:AzureStorage"] = "UseDevelopmentStorage=true",
+                ["AzureOpenAI:Endpoint"] = "https://test.openai.azure.com",
+                ["AzureOpenAI:ApiKey"] = "test-api-key"
             });
         });
     }
