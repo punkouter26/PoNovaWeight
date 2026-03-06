@@ -150,10 +150,13 @@ public static class ServiceCollectionExtensions
 
         services.AddNovaAuthentication(configuration, environment);
 
-        var openAiEndpoint = configuration["AzureOpenAI:Endpoint"]
-            ?? throw new InvalidOperationException("AzureOpenAI:Endpoint is required. Configure via Key Vault or appsettings.");
-        var openAiApiKey = configuration["AzureOpenAI:ApiKey"]
-            ?? throw new InvalidOperationException("AzureOpenAI:ApiKey is required. Configure via Key Vault or appsettings.");
+        var openAiEndpoint = configuration["AzureOpenAI:Endpoint"];
+        if (string.IsNullOrWhiteSpace(openAiEndpoint))
+            throw new InvalidOperationException("AzureOpenAI:Endpoint is required. Configure via Key Vault or appsettings.");
+        
+        var openAiApiKey = configuration["AzureOpenAI:ApiKey"];
+        if (string.IsNullOrWhiteSpace(openAiApiKey))
+            throw new InvalidOperationException("AzureOpenAI:ApiKey is required. Configure via Key Vault or appsettings.");
 
         services.AddSingleton(new AzureOpenAIClient(
             new Uri(openAiEndpoint),
