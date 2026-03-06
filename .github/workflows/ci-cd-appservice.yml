@@ -75,5 +75,21 @@ jobs:
       - name: Health check
         run: |
           APP_URL="https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net"
+          echo "Waiting 30s for app to warm up..."
+          sleep 30
           echo "Checking ${APP_URL}/health"
-          curl -fS "${APP_URL}/health"
+          for i in 1 2 3 4 5; do
+            STATUS=$(curl -s -o /tmp/health_response.txt -w "%{http_code}" "${APP_URL}/health" || echo "000")
+            echo "Attempt $i: HTTP $STATUS"
+            if [ "$STATUS" = "200" ]; then
+              cat /tmp/health_response.txt
+              echo ""
+              echo "Health check passed!"
+              exit 0
+            fi
+            echo "Not ready yet (HTTP $STATUS), retrying in 15s..."
+            sleep 15
+          done
+          echo "Health check failed after 5 attempts"
+          cat /tmp/health_response.txt
+          exit 1
