@@ -23,8 +23,7 @@ public class AzuriteIntegrationTestFixture : WebApplicationFactory<Program>
 
     public async Task InitializeAsync()
     {
-        _azuriteContainer = new AzuriteBuilder()
-            .WithImage("mcr.microsoft.com/azure-storage/azurite:latest")
+        _azuriteContainer = new AzuriteBuilder("mcr.microsoft.com/azure-storage/azurite:latest")
             .WithCleanUp(true)
             .Build();
 

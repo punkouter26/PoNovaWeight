@@ -14,7 +14,8 @@ public static class Endpoints
     {
         var group = app.MapGroup("/api/meal-scan")
             .WithTags("Meal Scan")
-            .RequireAuthorization();
+            .RequireAuthorization()
+            .RequireRateLimiting("api");
 
         group.MapPost("/", ScanMeal)
             .WithName("ScanMeal")

@@ -25,18 +25,6 @@ window.PoNovaWeightAuth = {
     },
 
     /**
-     * Retrieves dev token from local storage
-     */
-    getDevToken: function() {
-        try {
-            return localStorage.getItem('dev_auth_token');
-        } catch (error) {
-            console.error('Error retrieving dev token:', error);
-            return null;
-        }
-    },
-
-    /**
      * Retrieves Microsoft token from session storage
      */
     getMicrosoftToken: function() {
@@ -44,6 +32,23 @@ window.PoNovaWeightAuth = {
             return sessionStorage.getItem('microsoft_id_token');
         } catch (error) {
             console.error('Error retrieving Microsoft token:', error);
+            return null;
+        }
+    },
+
+    /**
+     * Extracts id_token from URL hash fragment (OAuth implicit flow)
+     * @returns {string|null} The id_token value or null if not found
+     */
+    extractTokenFromUrlHash: function() {
+        try {
+            const hash = window.location.hash.substring(1);
+            if (!hash) return null;
+            
+            const params = new URLSearchParams(hash);
+            return params.get('id_token');
+        } catch (error) {
+            console.error('Error extracting token from URL hash:', error);
             return null;
         }
     }

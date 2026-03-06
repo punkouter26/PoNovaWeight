@@ -35,13 +35,7 @@
         {
             // Extract id_token from the URL fragment (#id_token=...)
             // Microsoft implicit flow returns tokens in the URL fragment
-            var idToken = await JS.InvokeAsync<string?>("eval", @"
-                (function() {
-                    const hash = window.location.hash.substring(1);
-                    const params = new URLSearchParams(hash);
-                    return params.get('id_token');
-                })()
-            ");
+            var idToken = await JS.InvokeAsync<string?>("PoNovaWeightAuth.extractTokenFromUrlHash");
 
             if (string.IsNullOrEmpty(idToken))
             {
@@ -49,9 +43,6 @@
                 StateHasChanged();
                 return;
             }
-
-            // Clear any stale dev token so Microsoft token takes priority
-            await JS.InvokeVoidAsync("localStorage.removeItem", "dev_auth_token");
 
             // Store the Microsoft ID token in sessionStorage
             await JS.InvokeVoidAsync("sessionStorage.setItem", "microsoft_id_token", idToken);

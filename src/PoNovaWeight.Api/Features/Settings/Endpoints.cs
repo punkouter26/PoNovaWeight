@@ -13,7 +13,8 @@ public static class Endpoints
     {
         var group = app.MapGroup("/api/settings")
             .WithTags("Settings")
-            .RequireAuthorization();
+            .RequireAuthorization()
+            .RequireRateLimiting("api");
 
         // GET /api/settings
         group.MapGet("/", async (HttpContext httpContext, IMediator mediator, CancellationToken cancellationToken) =>

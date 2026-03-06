@@ -34,8 +34,17 @@ public sealed class GetAlcoholCorrelationHandler(IDailyLogRepository repository,
         var alcoholDays = validEntries.Where(e => e.AlcoholConsumed == true).ToList();
         var nonAlcoholDays = validEntries.Where(e => e.AlcoholConsumed == false).ToList();
 
-        var daysWithAlcohol = alcoholDays.Count;
-        var daysWithoutAlcohol = nonAlcoholDays.Count;
+        var alcoholWeights = alcoholDays
+            .Select(e => e.Weight)
+            .OfType<double>()
+            .ToList();
+        var nonAlcoholWeights = nonAlcoholDays
+            .Select(e => e.Weight)
+            .OfType<double>()
+            .ToList();
+
+        var daysWithAlcohol = alcoholWeights.Count;
+        var daysWithoutAlcohol = nonAlcoholWeights.Count;
 
         // Need at least 1 day of each to calculate meaningful correlation
         if (daysWithAlcohol == 0 || daysWithoutAlcohol == 0)
@@ -51,8 +60,8 @@ public sealed class GetAlcoholCorrelationHandler(IDailyLogRepository repository,
             };
         }
 
-        var avgWithAlcohol = (decimal)alcoholDays.Average(e => e.Weight!.Value);
-        var avgWithoutAlcohol = (decimal)nonAlcoholDays.Average(e => e.Weight!.Value);
+        var avgWithAlcohol = (decimal)alcoholWeights.Average();
+        var avgWithoutAlcohol = (decimal)nonAlcoholWeights.Average();
         var difference = avgWithAlcohol - avgWithoutAlcohol;
 
         return new AlcoholCorrelationDto

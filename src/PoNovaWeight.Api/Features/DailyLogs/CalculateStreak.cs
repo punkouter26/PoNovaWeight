@@ -12,10 +12,12 @@ public record CalculateStreakQuery(string UserId = "dev-user") : IRequest<Streak
 /// <summary>
 /// Handler for CalculateStreakQuery.
 /// Calculates streak from stored logs on-demand.
-/// Requires consecutive days - gaps break the streak.
+/// Allows a single missing or unlogged day grace period.
 /// </summary>
 public sealed class CalculateStreakHandler(IDailyLogRepository repository, TimeProvider timeProvider) : IRequestHandler<CalculateStreakQuery, StreakDto>
 {
+    private const int AllowedGapDays = 1;
+
     public async Task<StreakDto> Handle(CalculateStreakQuery request, CancellationToken cancellationToken)
     {
         // Query the last 365 days of logs
@@ -36,36 +38,50 @@ public sealed class CalculateStreakHandler(IDailyLogRepository repository, TimeP
         // Create a dictionary for O(1) lookup by date
         var logsByDate = entities.ToDictionary(e => e.GetDate());
 
-        // Calculate streak starting from today, going backwards
-        // Requires consecutive days with OmadCompliant = true
+        // Calculate streak starting from today, going backwards.
+        // A single missing/unlogged day is tolerated once streak has started.
         int streak = 0;
         DateOnly? streakStartDate = null;
         var expectedDate = today;
+        var remainingGapDays = AllowedGapDays;
 
         while (expectedDate >= startDate)
         {
             if (!logsByDate.TryGetValue(expectedDate, out var log))
             {
-                // No log for this date - gap in data, break streak
+                // If the streak has started, tolerate a limited number of data gaps.
+                if (streak > 0 && remainingGapDays > 0)
+                {
+                    remainingGapDays--;
+                    expectedDate = expectedDate.AddDays(-1);
+                    continue;
+                }
+
                 break;
             }
 
             if (!log.OmadCompliant.HasValue)
             {
-                // Null (not logged) - treat as gap, break streak
+                if (streak > 0 && remainingGapDays > 0)
+                {
+                    remainingGapDays--;
+                    expectedDate = expectedDate.AddDays(-1);
+                    continue;
+                }
+
                 break;
             }
 
             if (log.OmadCompliant == true)
             {
-                // OMAD compliant on this consecutive day - increment streak
+                // OMAD compliant day extends the active streak.
                 streak++;
                 streakStartDate = expectedDate;
                 expectedDate = expectedDate.AddDays(-1);
             }
             else
             {
-                // OmadCompliant = false - explicitly broke streak
+                // OmadCompliant = false explicitly breaks streak.
                 break;
             }
         }

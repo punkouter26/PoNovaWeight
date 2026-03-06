@@ -20,9 +20,17 @@ azurite/
 tests/e2e/.auth/
 coverage/
 .nyc_output/
+playwright-report/
+test-results/
+screenshots/
 
 # Deployment and temporary artifacts
 publish/
+publish*/
 .azure/
 *.user
 *.log
+app-logs*/
+extracted*/
+*-logs-extracted/
+*.zip

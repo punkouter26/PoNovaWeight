@@ -1,7 +1,4 @@
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
-using Microsoft.IdentityModel.Tokens;
 using PoNovaWeight.Api.Infrastructure.TableStorage;
 using PoNovaWeight.Shared.DTOs;
 
@@ -20,7 +17,8 @@ public static class Endpoints
     public static IEndpointRouteBuilder MapAuthEndpoints(this IEndpointRouteBuilder app, IWebHostEnvironment env)
     {
         var group = app.MapGroup("/api/auth")
-            .WithTags("Authentication");
+            .WithTags("Authentication")
+            .RequireRateLimiting("api");
 
         group.MapGet("/me", GetCurrentUser)
             .WithName("GetCurrentUser")
@@ -35,22 +33,6 @@ public static class Endpoints
             .RequireAuthorization()
             .Produces<AuthStatus>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status401Unauthorized);
-
-        // Dev login endpoint - only available in Development environment for E2E testing
-        if (env.IsDevelopment())
-        {
-            group.MapPost("/dev-login", DevLogin)
-                .WithName("DevLogin")
-                .WithDescription("Development-only endpoint for E2E testing. Creates a fake JWT token.")
-                .Produces<DevLoginResponse>(StatusCodes.Status200OK)
-                .ExcludeFromDescription(); // Hide from OpenAPI in prod
-
-            group.MapPost("/dev-test-user-login", DevTestUserLogin)
-                .WithName("DevTestUserLogin")
-                .WithDescription("Development-only endpoint that seeds 3-year demo data and returns a dev JWT for test-user@local.")
-                .Produces<DevLoginResponse>(StatusCodes.Status200OK)
-                .ExcludeFromDescription();
-        }
 
         return app;
     }
@@ -133,115 +115,4 @@ public static class Endpoints
             PictureUrl = picture
         }));
     }
-
-    /// <summary>
-    /// Development-only endpoint that creates a fake JWT token for E2E testing.
-    /// This bypasses Google OAuth entirely and should NEVER be used in production.
-    /// </summary>
-    private static IResult DevLogin(
-        HttpContext context,
-        IConfiguration configuration)
-    {
-        var email = context.Request.Query["email"].FirstOrDefault() ?? "dev-user@local";
-        var displayName = email.Split('@')[0];
-
-        // Create a fake JWT token for testing
-        var claims = new[]
-        {
-            new Claim(ClaimTypes.Email, email),
-            new Claim("email", email),
-            new Claim(ClaimTypes.Name, displayName),
-            new Claim("name", displayName),
-            new Claim(ClaimTypes.NameIdentifier, email),
-            new Claim("sub", email)
-        };
-
-        // Use a simple key for dev testing - this is NOT secure and only for local dev
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("dev-test-key-that-is-long-enough-for-hmac-sha256"));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-        var token = new JwtSecurityToken(
-            issuer: "dev-issuer",
-            audience: configuration["Google:ClientId"] ?? "dev-audience",
-            claims: claims,
-            expires: DateTime.UtcNow.AddDays(30),
-            signingCredentials: creds);
-
-        var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
-
-        return Results.Ok(new DevLoginResponse
-        {
-            Token = tokenString,
-            IsAuthenticated = true,
-            User = new UserInfo
-            {
-                Email = email,
-                DisplayName = displayName
-            }
-        });
-    }
-
-    /// <summary>
-    /// Development-only endpoint that seeds deterministic demo data for test-user@local
-    /// and returns a dev JWT. Used by E2E tests and screenshot capture.
-    /// </summary>
-    private static async Task<IResult> DevTestUserLogin(
-        HttpContext context,
-        IConfiguration configuration,
-        ITestUserDataSeeder seeder,
-        ILoggerFactory loggerFactory)
-    {
-        var logger = loggerFactory.CreateLogger("Auth");
-        var seedResult = await seeder.EnsureSeededAsync(context.RequestAborted);
-
-        logger.LogInformation(
-            "Dev test user login requested. Seeded={Seeded}, CreatedEntries={CreatedEntries}, FullDays={FullDays}, PartialDays={PartialDays}, MissingDays={MissingDays}",
-            seedResult.Seeded, seedResult.CreatedEntries, seedResult.FullDays, seedResult.PartialDays, seedResult.MissingDays);
-
-        const string email = TestUserDataSeeder.TestUserEmail;
-        const string displayName = TestUserDataSeeder.TestUserDisplayName;
-
-        var claims = new[]
-        {
-            new Claim(ClaimTypes.Email, email),
-            new Claim("email", email),
-            new Claim(ClaimTypes.Name, displayName),
-            new Claim("name", displayName),
-            new Claim(ClaimTypes.NameIdentifier, email),
-            new Claim("sub", email)
-        };
-
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("dev-test-key-that-is-long-enough-for-hmac-sha256"));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-        var token = new JwtSecurityToken(
-            issuer: "dev-issuer",
-            audience: configuration["Google:ClientId"] ?? "dev-audience",
-            claims: claims,
-            expires: DateTime.UtcNow.AddDays(30),
-            signingCredentials: creds);
-
-        var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
-
-        return Results.Ok(new DevLoginResponse
-        {
-            Token = tokenString,
-            IsAuthenticated = true,
-            User = new UserInfo
-            {
-                Email = email,
-                DisplayName = displayName
-            }
-        });
-    }
-}
-
-/// <summary>
-/// Response from the dev-login endpoint.
-/// </summary>
-public record DevLoginResponse
-{
-    public required string Token { get; init; }
-    public bool IsAuthenticated { get; init; }
-    public UserInfo? User { get; init; }
 }

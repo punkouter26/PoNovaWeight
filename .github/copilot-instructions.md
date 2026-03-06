@@ -22,8 +22,8 @@ In Plan Mode, if there is any ambiguity or need for further input, you must use 
 Testing Strategy
 Unit (C#): Pure logic and domain rules.
 Integration (C#): API/DB testing using Testcontainers (SQL/Redis).
-E2E (Playwright/TS): Headless Chromium/Mobile for critical paths. Run headed in dev. Auth Bypass: Use a test-only login endpoint or custom AuthenticationHandler.
-If app uses Google or Microsoft login: add AddTestAuth() in Dev to allow faking OAuth via /dev-login / Use dev login for e2e testing and testing manually running locally
+E2E (Playwright/TS): Headless Chromium/Mobile for critical paths. Run headed in dev. Auth Bypass: Use a custom AuthenticationHandler for integration tests.
+For apps using Google or Microsoft login: use saved Google auth state (setup/save-google-auth.ts) for E2E tests requiring authentication.
 Create http endpoints for all main functions so it can easily be tested  via curl or http endpoints 
 
 

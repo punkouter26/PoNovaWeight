@@ -27,39 +27,27 @@ public class LoginTests : BunitContext
             .ReturnsAsync(new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity())));
         Services.AddSingleton<AuthenticationStateProvider>(mockAuthStateProvider.Object);
         
-        // Register mock configuration (dev mode - no Google ClientId)
+        // Register mock configuration with no OAuth configured
         var mockConfiguration = new Mock<IConfiguration>();
         mockConfiguration.Setup(c => c["Google:ClientId"]).Returns((string?)null);
+        mockConfiguration.Setup(c => c["Microsoft:ClientId"]).Returns((string?)null);
         Services.AddSingleton<IConfiguration>(mockConfiguration.Object);
         
         // Register AuthService
         Services.AddSingleton(sp => new AuthService(
             sp.GetRequiredService<AuthenticationStateProvider>(),
             sp.GetRequiredService<NavigationManager>(),
-            sp.GetRequiredService<IConfiguration>(),
             sp.GetRequiredService<IJSRuntime>()));
     }
 
     [Fact]
-    public void Login_RendersDevLoginButton()
+    public void Login_ShowsNoAuthMessage_WhenNoProviderConfigured()
     {
         // Act
         var cut = Render<Login>();
 
-        // Assert - In dev mode (no ClientId), shows Dev Login
-        cut.Markup.Should().Contain("Dev Login");
-        cut.Markup.Should().Contain("Development mode");
-    }
-
-    [Fact]
-    public void Login_ContainsLoginButton()
-    {
-        // Act
-        var cut = Render<Login>();
-
-        // Assert - Now it's a button, not a link
-        var button = cut.Find("button");
-        button.Should().NotBeNull();
+        // Assert - No OAuth configured, shows error message
+        cut.Markup.Should().Contain("No authentication method configured");
     }
 
     [Fact]
@@ -74,14 +62,25 @@ public class LoginTests : BunitContext
     }
 
     [Fact]
-    public void Login_HasEmailInput_InDevMode()
+    public void Login_ShowsGoogleButton_WhenGoogleConfigured()
     {
+        // Arrange - Configure Google ClientId
+        var mockConfig = new Mock<IConfiguration>();
+        mockConfig.Setup(c => c["Google:ClientId"]).Returns("test-google-client-id");
+        mockConfig.Setup(c => c["Microsoft:ClientId"]).Returns((string?)null);
+        Services.AddSingleton<IConfiguration>(mockConfig.Object);
+
+        // Re-register AuthService with new config
+        Services.AddSingleton(sp => new AuthService(
+            sp.GetRequiredService<AuthenticationStateProvider>(),
+            sp.GetRequiredService<NavigationManager>(),
+            sp.GetRequiredService<IJSRuntime>()));
+
         // Act
         var cut = Render<Login>();
 
-        // Assert - Dev mode shows email input
-        var input = cut.Find("input[type='email']");
-        input.Should().NotBeNull();
+        // Assert
+        cut.Markup.Should().Contain("Sign in with Google");
     }
 
     private class FakeNavigationManager : NavigationManager

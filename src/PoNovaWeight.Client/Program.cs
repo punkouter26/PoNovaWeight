@@ -1,6 +1,4 @@
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using PoNovaWeight.Client;
 using PoNovaWeight.Client.Services;
@@ -14,17 +12,9 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 var googleClientId = builder.Configuration["Google:ClientId"];
 var hasGoogleClientId = !string.IsNullOrEmpty(googleClientId) && googleClientId != "YOUR_GOOGLE_CLIENT_ID";
 
-// Always register dev auth components for dev login fallback
-builder.Services.AddScoped<DevAuthStateProvider>();
 builder.Services.AddScoped<CombinedAuthorizationHandler>();
 
-// Register a plain HttpClient for unauthenticated calls (like dev-login)
-builder.Services.AddHttpClient("UnauthenticatedClient", client =>
-{
-    client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
-});
-
-// Register the authenticated HttpClient - CombinedAuthorizationHandler handles both dev and OIDC tokens
+// Register the authenticated HttpClient - CombinedAuthorizationHandler handles OIDC tokens
 builder.Services.AddHttpClient("PoNovaWeight.Api", client =>
 {
     client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
@@ -35,7 +25,6 @@ builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().Cre
 
 if (hasGoogleClientId)
 {
-    // Google OIDC configured: Use OIDC for primary auth, but keep dev login available
     builder.Services.AddOidcAuthentication(options =>
     {
         options.ProviderOptions.Authority = "https://accounts.google.com";
@@ -51,8 +40,6 @@ if (hasGoogleClientId)
 }
 else
 {
-    // No Google ClientId: Use dev auth only
-    builder.Services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredService<DevAuthStateProvider>());
     builder.Services.AddAuthorizationCore();
 }
 

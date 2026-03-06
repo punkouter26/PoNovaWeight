@@ -1,9 +1,14 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
 
 name: PoNovaWeight
-services:  
+metadata:
+  template: PoNovaWeight
+infra:
+  provider: bicep
+  path: ./infra
+services:
   app:
     language: dotnet
-    project: ./src/PoNovaWeight.Api/PoNovaWeight.Api.csproj
+    project: ./src/PoNovaWeight.Api
     host: appservice
 

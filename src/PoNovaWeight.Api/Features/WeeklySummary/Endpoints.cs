@@ -14,7 +14,8 @@ public static class Endpoints
     {
         var group = app.MapGroup("/api/weekly-summary")
             .WithTags("Weekly Summary")
-            .RequireAuthorization();
+            .RequireAuthorization()
+            .RequireRateLimiting("api");
 
         // GET /api/weekly-summary/{date}
         // Direct handler - no MediatR overhead for single-use query

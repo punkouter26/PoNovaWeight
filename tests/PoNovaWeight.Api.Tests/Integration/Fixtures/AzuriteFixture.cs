@@ -38,8 +38,7 @@ public class AzuriteFixture : IAsyncLifetime
     public AzuriteFixture()
     {
         // Configure Azurite container with table service enabled
-        _container = new AzuriteBuilder()
-            .WithImage("mcr.microsoft.com/azure-storage/azurite:latest")
+        _container = new AzuriteBuilder("mcr.microsoft.com/azure-storage/azurite:latest")
             .Build();
     }
 

@@ -11,8 +11,12 @@ public sealed class DailyLogDtoValidator : AbstractValidator<DailyLogDto>
 {
     public DailyLogDtoValidator()
     {
+        RuleFor(x => x.ClientDate)
+            .NotNull()
+            .WithMessage("ClientDate is required for timezone-safe validation");
+
         RuleFor(x => x.Date)
-            .Must((dto, date) => NotBeInFuture(date, dto.ClientDate))
+            .Must((dto, date) => !dto.ClientDate.HasValue || NotBeInFuture(date, dto.ClientDate.Value))
             .WithMessage("Cannot log entries for future dates");
 
         RuleFor(x => x.Proteins).GreaterThanOrEqualTo(0);
@@ -59,11 +63,9 @@ public sealed class DailyLogDtoValidator : AbstractValidator<DailyLogDto>
             .WithMessage("Diastolic BP cannot be higher than systolic BP");
     }
 
-    private static bool NotBeInFuture(DateOnly date, DateOnly? clientDate)
+    private static bool NotBeInFuture(DateOnly date, DateOnly clientDate)
     {
-        // Use client's date if provided (timezone-safe), otherwise fall back to server's date
-        var today = clientDate ?? DateOnly.FromDateTime(DateTime.Today);
-        return date <= today;
+        return date <= clientDate;
     }
 
     private static bool HaveAtMostOneDecimalPlace(decimal? weight)

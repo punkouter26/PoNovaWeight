@@ -1,0 +1,104 @@
+@namespace PoNovaWeight.Client.Components
+
+@* 
+Reusable empty state component with customizable icon, title, description, and action
+Usage: <EmptyState Icon="@IconContent" Title="No data" Description="Start tracking..." PrimaryActionUrl="/log" PrimaryActionText="Log First Meal" />
+*@
+
+<div class="empty-state">
+    <!-- Icon Container -->
+    <div class="empty-state-icon">
+        @Icon
+    </div>
+
+    <!-- Title & Description -->
+    <h2 class="text-xl lg:text-2xl font-bold text-healthy-text dark:text-dark-text mb-2">
+        @Title
+    </h2>
+    
+    @if (!string.IsNullOrEmpty(Description))
+    {
+        <p class="text-sm lg:text-base text-healthy-muted dark:text-dark-muted max-w-sm mb-8 leading-relaxed">
+            @Description
+        </p>
+    }
+
+    <!-- Primary CTA -->
+    @if (!string.IsNullOrEmpty(PrimaryActionUrl) && !string.IsNullOrEmpty(PrimaryActionText))
+    {
+        <a href="@PrimaryActionUrl"
+           class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-healthy-primary to-healthy-secondary text-white rounded-xl font-medium hover:from-healthy-dark hover:to-healthy-primary transition-all shadow-healthy text-sm lg:text-base">
+            @if (PrimaryActionIcon is not null)
+            {
+                @PrimaryActionIcon
+            }
+            @PrimaryActionText
+        </a>
+    }
+
+    <!-- Secondary Action (Optional) -->
+    @if (SecondaryAction is not null)
+    {
+        <div class="flex items-center gap-3 mt-4">
+            @SecondaryAction
+        </div>
+    }
+
+    <!-- Additional Content (Optional) -->
+    @if (AdditionalContent is not null)
+    {
+        <div class="mt-10 pt-8 border-t border-healthy-light dark:border-dark-border w-full max-w-md">
+            @AdditionalContent
+        </div>
+    }
+</div>
+
+@code {
+    /// <summary>
+    /// Icon to display at the top (RenderFragment for SVG or emoji)
+    /// </summary>
+    [Parameter]
+    public RenderFragment? Icon { get; set; }
+
+    /// <summary>
+    /// Main title text
+    /// </summary>
+    [Parameter]
+    public string Title { get; set; } = "No data available";
+
+    /// <summary>
+    /// Description text explaining the empty state
+    /// </summary>
+    [Parameter]
+    public string? Description { get; set; }
+
+    /// <summary>
+    /// Primary action button URL
+    /// </summary>
+    [Parameter]
+    public string? PrimaryActionUrl { get; set; }
+
+    /// <summary>
+    /// Primary action button text
+    /// </summary>
+    [Parameter]
+    public string? PrimaryActionText { get; set; }
+
+    /// <summary>
+    /// Optional icon for primary action button (RenderFragment for SVG)
+    /// </summary>
+    [Parameter]
+    public RenderFragment? PrimaryActionIcon { get; set; }
+
+    /// <summary>
+    /// Optional secondary action area (RenderFragment for custom content)
+    /// </summary>
+    [Parameter]
+    public RenderFragment? SecondaryAction { get; set; }
+
+    /// <summary>
+    /// Optional additional content at the bottom (RenderFragment for feature highlights, etc.)
+    /// </summary>
+    [Parameter]
+    public RenderFragment? AdditionalContent { get; set; }
+}

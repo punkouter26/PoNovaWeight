@@ -48,14 +48,8 @@ Open your browser and navigate to:
 http://localhost:5000
 ```
 
-### 4. Login with Dev Credentials
-Use the test user endpoint for demo data:
-```
-Email: test-user@local
-Password: (any value, not checked in dev)
-```
-
-Or click "Dev Login" if available on the Login page.
+### 4. Login with OAuth
+Authentication requires Google or Microsoft OAuth. Configure your OAuth credentials in `appsettings.Development.json`.
 
 ---
 
@@ -245,26 +239,21 @@ curl http://localhost:5000/api/auth/status
 # Expected: {"isAuthenticated": false, "user": null}
 ```
 
-### 3. Dev Test User Login (Demo Data)
+### 3. Get Today's Log
 ```bash
-curl -X POST http://localhost:5000/api/auth/dev-test-user-login
-# Expected: JWT token + user info
-```
-
-### 4. Get Today's Log
-```bash
-AUTHORIZATION="Bearer YOUR_JWT_TOKEN_FROM_STEP_3"
+# Requires a valid OAuth JWT token
+AUTHORIZATION="Bearer YOUR_JWT_TOKEN"
 curl -H "Authorization: $AUTHORIZATION" \
      http://localhost:5000/api/daily-logs/$(date +%Y-%m-%d)
 # Expected: Daily log data or empty if none exists
 ```
 
-### 5. Open UI in Browser
+### 4. Open UI in Browser
 ```bash
 http://localhost:5000
 ```
 
-You should see the Login page. Click "Dev Login" or use test-user credentials.
+You should see the Login page. Sign in with Google or Microsoft OAuth.
 
 ---
 

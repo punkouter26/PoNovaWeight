@@ -77,8 +77,8 @@ async function main() {
           } catch { /* skip */ }
         }
       }
-      // Check localStorage for dev token
-      return localStorage.getItem('dev_auth_token');
+      // Check sessionStorage for Microsoft token
+      return sessionStorage.getItem('microsoft_id_token');
     });
 
     if (idToken) {

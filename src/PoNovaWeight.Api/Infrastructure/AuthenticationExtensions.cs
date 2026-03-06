@@ -3,7 +3,6 @@ using Microsoft.IdentityModel.Tokens;
 using PoNovaWeight.Api.Infrastructure.TableStorage;
 using Serilog;
 using System.Security.Claims;
-using System.Text;
 
 namespace PoNovaWeight.Api.Infrastructure;
 
@@ -12,13 +11,9 @@ namespace PoNovaWeight.Api.Infrastructure;
 /// </summary>
 public static class AuthenticationExtensions
 {
-    // Dev test key - must match the one in Endpoints.cs for dev-login
-    private const string DevTestKey = "dev-test-key-that-is-long-enough-for-hmac-sha256";
 
     /// <summary>
-    /// Configures JWT Bearer authentication for validating Google ID tokens from the client.
-    /// The Blazor WASM client handles the OAuth flow and sends the ID token to the API.
-    /// In Development mode, also accepts dev test tokens for E2E testing.
+    /// Configures JWT Bearer authentication for validating Google and Microsoft ID tokens from the client.
     /// </summary>
     public static IServiceCollection AddNovaAuthentication(
         this IServiceCollection services,
@@ -47,7 +42,6 @@ public static class AuthenticationExtensions
         })
         .AddJwtBearer(options =>
         {
-            // In development, we accept both Google tokens and dev test tokens
             if (environment.IsDevelopment())
             {
                 ConfigureDevAuthentication(options, googleClientId);
@@ -65,26 +59,20 @@ public static class AuthenticationExtensions
 
     private static void ConfigureDevAuthentication(JwtBearerOptions options, string? googleClientId)
     {
-        // In dev mode, we handle Google, Microsoft, and dev test tokens
+        // In dev mode, we handle Google and Microsoft tokens with relaxed HTTPS
         options.RequireHttpsMetadata = false;
         
-        // Don't set Authority — we use multiple issuers and resolve keys dynamically
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
             IssuerValidator = ValidateMultiProviderIssuer,
-            ValidateAudience = false, // Dev tokens may have different audiences
+            ValidateAudience = false,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
             NameClaimType = "name",
-            RoleClaimType = "role",
-            // Provide the symmetric key for dev tokens
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(DevTestKey)),
-            // Also try signature validation with the key
-            TryAllIssuerSigningKeys = true
+            RoleClaimType = "role"
         };
 
-        // Add multiple token validation via events - try Google and Microsoft OIDC configs
         ConfigureMultiProviderEvents(options, googleClientId);
     }
 
@@ -134,13 +122,6 @@ public static class AuthenticationExtensions
                 keys.AddRange(msConfig.SigningKeys);
             }
             catch { /* Microsoft keys unavailable */ }
-            // Add dev key if present in parameters
-            if (parameters.IssuerSigningKey is not null)
-            {
-                keys.Add(parameters.IssuerSigningKey);
-            }
-            // Always include the dev symmetric key for dev-login tokens
-            keys.Add(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(DevTestKey)));
             return keys;
         };
 
@@ -235,7 +216,7 @@ public static class AuthenticationExtensions
     }
 
     /// <summary>
-    /// Custom issuer validator that accepts Google, any Microsoft tenant, and dev issuers.
+    /// Custom issuer validator that accepts Google and any Microsoft tenant.
     /// Microsoft tokens use the user's actual tenant ID in the issuer claim, so we can't
     /// use a static list — we validate the pattern instead.
     /// </summary>
@@ -251,10 +232,6 @@ public static class AuthenticationExtensions
         // Microsoft issuers: https://login.microsoftonline.com/{tenant-id}/v2.0
         if (issuer.StartsWith("https://login.microsoftonline.com/", StringComparison.OrdinalIgnoreCase) &&
             issuer.EndsWith("/v2.0", StringComparison.OrdinalIgnoreCase))
-            return issuer;
-
-        // Dev issuer
-        if (issuer == "dev-issuer")
             return issuer;
 
         throw new SecurityTokenInvalidIssuerException($"Issuer '{issuer}' is not valid.") { InvalidIssuer = issuer };

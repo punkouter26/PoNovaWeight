@@ -40,7 +40,11 @@ public class ApiClient(HttpClient httpClient)
     /// </summary>
     public async Task UpsertDailyLogAsync(DailyLogDto dailyLog, CancellationToken cancellationToken = default)
     {
-        var response = await httpClient.PutAsJsonAsync("api/daily-logs", dailyLog, cancellationToken);
+        var payload = dailyLog.ClientDate.HasValue
+            ? dailyLog
+            : dailyLog with { ClientDate = DateOnly.FromDateTime(DateTime.Today) };
+
+        var response = await httpClient.PutAsJsonAsync("api/daily-logs", payload, cancellationToken);
         response.EnsureSuccessStatusCode();
     }
 
@@ -143,16 +147,5 @@ public class ApiClient(HttpClient httpClient)
         var response = await httpClient.GetAsync($"api/daily-logs/alcohol-correlation?days={days}", cancellationToken);
         response.EnsureSuccessStatusCode();
         return await response.Content.ReadFromJsonAsync<AlcoholCorrelationDto>(cancellationToken);
-    }
-
-    /// <summary>
-    /// Gets all dashboard analytics (weight trends, alcohol correlation, health correlations) in a single request.
-    /// Recommended for dashboard to replace multiple individual trend calls.
-    /// </summary>
-    public async Task<DashboardAnalyticsDto?> GetDashboardAnalyticsAsync(int days = 30, CancellationToken cancellationToken = default)
-    {
-        var response = await httpClient.GetAsync($"api/daily-logs/analytics?days={days}", cancellationToken);
-        response.EnsureSuccessStatusCode();
-        return await response.Content.ReadFromJsonAsync<DashboardAnalyticsDto>(cancellationToken);
     }
 }

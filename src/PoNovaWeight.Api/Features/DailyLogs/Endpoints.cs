@@ -13,7 +13,8 @@ public static class Endpoints
     {
         var group = app.MapGroup("/api/daily-logs")
             .WithTags("Daily Logs")
-            .RequireAuthorization();
+            .RequireAuthorization()
+            .RequireRateLimiting("api");
 
         // GET /api/daily-logs/{date}
         group.MapGet("/{date}", async (DateOnly date, HttpContext httpContext, IMediator mediator, CancellationToken cancellationToken) =>
@@ -107,17 +108,6 @@ public static class Endpoints
         .WithName("GetAlcoholCorrelation")
         .WithSummary("Get weight correlation between alcohol and non-alcohol days")
         .Produces<AlcoholCorrelationDto>(StatusCodes.Status200OK)
-        .CacheOutput("TrendsCache");
-
-        // GET /api/daily-logs/analytics?days=30 - Unified analytics endpoint (replaces 3+ individual calls)
-        group.MapGet("/analytics", async (int days, HttpContext httpContext, IMediator mediator, CancellationToken cancellationToken) =>
-        {
-            var result = await mediator.Send(new GetDashboardAnalyticsQuery(days, httpContext.GetUserId()), cancellationToken);
-            return Results.Ok(result);
-        })
-        .WithName("GetDashboardAnalytics")
-        .WithSummary("Get all dashboard analytics (weight trends, alcohol correlation, health correlations) in a single request")
-        .Produces<DashboardAnalyticsDto>(StatusCodes.Status200OK)
         .CacheOutput("TrendsCache");
 
         // DELETE /api/daily-logs/{date}

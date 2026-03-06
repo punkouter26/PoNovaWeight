@@ -7,22 +7,13 @@ using System.Security.Claims;
 namespace PoNovaWeight.Client.Services;
 
 /// <summary>
-/// Client-side authentication service that works with both dev auth and OIDC.
+/// Client-side authentication service that works with Google and Microsoft OIDC.
 /// </summary>
 public class AuthService(
     AuthenticationStateProvider authStateProvider, 
     NavigationManager navigationManager,
-    IConfiguration configuration,
     IJSRuntime jsRuntime)
 {
-    private bool IsDevMode
-    {
-        get
-        {
-            var clientId = configuration["Google:ClientId"];
-            return string.IsNullOrEmpty(clientId) || clientId == "YOUR_GOOGLE_CLIENT_ID";
-        }
-    }
 
     /// <summary>
     /// Gets the current user's email from the authentication state.
@@ -48,14 +39,7 @@ public class AuthService(
     /// </summary>
     public void Login(string? returnUrl = "/")
     {
-        if (IsDevMode)
-        {
-            navigationManager.NavigateTo($"/login?returnUrl={Uri.EscapeDataString(returnUrl ?? "/")}");
-        }
-        else
-        {
-            navigationManager.NavigateToLogin($"authentication/login?returnUrl={Uri.EscapeDataString(returnUrl ?? "/")}");
-        }
+        navigationManager.NavigateToLogin($"authentication/login?returnUrl={Uri.EscapeDataString(returnUrl ?? "/")}");
     }
 
     /// <summary>
@@ -63,22 +47,13 @@ public class AuthService(
     /// </summary>
     public async Task LogoutAsync()
     {
-        // Always clear all token types to prevent stale tokens
+        // Clear all token types to prevent stale tokens
         try
         {
-            await jsRuntime.InvokeVoidAsync("localStorage.removeItem", "dev_auth_token");
             await jsRuntime.InvokeVoidAsync("sessionStorage.removeItem", "microsoft_id_token");
         }
         catch { /* JS interop may not be available */ }
 
-        if (IsDevMode && authStateProvider is DevAuthStateProvider devAuth)
-        {
-            await devAuth.LogoutAsync();
-            navigationManager.NavigateTo("/login", forceLoad: true);
-        }
-        else
-        {
-            navigationManager.NavigateToLogout("authentication/logout");
-        }
+        navigationManager.NavigateToLogout("authentication/logout");
     }
 }

@@ -5,7 +5,6 @@
 @inject NavigationManager Navigation
 @inject IConfiguration Configuration
 @inject IServiceProvider ServiceProvider
-@inject IWebAssemblyHostEnvironment HostEnvironment
 
 <PageTitle>Sign In - PoNovaWeight</PageTitle>
 
@@ -69,55 +68,7 @@
                         </button>
                     }
                     
-                    @if (_showDevLogin)
-                    {
-                        @if (_hasGoogleClientId)
-                        {
-                            <div class="relative my-4">
-                                <div class="absolute inset-0 flex items-center">
-                                    <div class="w-full border-t border-gray-200 dark:border-dark-border"></div>
-                                </div>
-                                <div class="relative flex justify-center text-sm">
-                                    <span class="px-2 bg-white dark:bg-dark-card text-healthy-muted dark:text-dark-muted">or use dev login</span>
-                                </div>
-                            </div>
-                        }
-                        
-                        <!-- Dev Mode Login -->
-                        <div class="space-y-3">
-                            <div>
-                                <label class="block text-sm font-medium text-healthy-text dark:text-dark-text mb-1">Email</label>
-                                <input type="email" @bind="_devEmail" 
-                                       class="w-full px-3 py-2 border border-gray-300 dark:border-dark-border rounded-lg bg-white dark:bg-dark-bg text-healthy-text dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-healthy-primary"
-                                       placeholder="dev-user@local" />
-                            </div>
-                            
-                            <button @onclick="DevLogin" disabled="@_isLoading"
-                                    class="w-full flex justify-center items-center gap-3 py-3 px-4 border border-transparent rounded-xl shadow-sm bg-gray-600 text-white text-sm font-medium hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200 disabled:opacity-50">
-                                @if (_isLoading)
-                                {
-                                    <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                    <span>Signing in...</span>
-                                }
-                                else
-                                {
-                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-                                    </svg>
-                                    <span>Dev Login</span>
-                                }
-                            </button>
-                            
-                            <p class="text-xs text-center text-healthy-muted dark:text-dark-muted">
-                                🔧 Development mode - bypasses OAuth
-                            </p>
-                        </div>
-                    }
-                    
-                    @if (!_hasGoogleClientId && !_hasMicrosoftClientId && !_showDevLogin)
+                    @if (!_hasGoogleClientId && !_hasMicrosoftClientId)
                     {
                         <p class="text-center text-sm text-red-600">
                             No authentication method configured. Set Google:ClientId or Microsoft:ClientId in appsettings.json.
@@ -146,9 +97,6 @@
     private bool _hasGoogleClientId;
     private bool _hasMicrosoftClientId;
     private string? _microsoftClientId;
-    private bool _showDevLogin;
-    private bool _isLoading;
-    private string _devEmail = "dev-user@local";
 
     protected override void OnInitialized()
     {
@@ -157,9 +105,6 @@
         
         _microsoftClientId = Configuration["Microsoft:ClientId"];
         _hasMicrosoftClientId = !string.IsNullOrEmpty(_microsoftClientId);
-        
-        // Show dev login in Development environment OR when no OAuth is configured
-        _showDevLogin = HostEnvironment.IsDevelopment() || (!_hasGoogleClientId && !_hasMicrosoftClientId);
         
         if (!string.IsNullOrEmpty(Error))
         {
@@ -172,38 +117,6 @@
         }
     }
 
-    private async Task DevLogin()
-    {
-        _isLoading = true;
-        ErrorMessage = null;
-        
-        try
-        {
-            var devAuthProvider = ServiceProvider.GetService<DevAuthStateProvider>();
-            if (devAuthProvider != null)
-            {
-                var success = await devAuthProvider.LoginAsync(_devEmail);
-                if (success)
-                {
-                    var returnUrl = string.IsNullOrEmpty(ReturnUrl) ? "/" : ReturnUrl;
-                    Navigation.NavigateTo(returnUrl, forceLoad: true);
-                }
-                else
-                {
-                    ErrorMessage = "Dev login failed. Make sure the API is running.";
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            ErrorMessage = $"Login error: {ex.Message}";
-        }
-        finally
-        {
-            _isLoading = false;
-        }
-    }
-
     private void LoginWithGoogle()
     {
         var returnUrl = string.IsNullOrEmpty(ReturnUrl) ? "/" : ReturnUrl;
@@ -212,8 +125,6 @@
 
     private void LoginWithMicrosoft()
     {
-        // Build Microsoft OAuth 2.0 implicit flow URL
-        // Using /common/ endpoint for multi-tenant + personal accounts
         var nonce = Guid.NewGuid().ToString("N");
         var state = Guid.NewGuid().ToString("N");
         var redirectUri = Uri.EscapeDataString(Navigation.BaseUri + "auth/microsoft-callback");

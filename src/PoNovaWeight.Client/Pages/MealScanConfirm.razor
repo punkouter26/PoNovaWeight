@@ -269,7 +269,8 @@
                 Fruits = Math.Min(100, currentLog.Fruits + SuggestedFruits),
                 Starches = Math.Min(100, currentLog.Starches + SuggestedStarches),
                 Fats = Math.Min(100, currentLog.Fats + SuggestedFats),
-                Dairy = Math.Min(100, currentLog.Dairy + SuggestedDairy)
+                Dairy = Math.Min(100, currentLog.Dairy + SuggestedDairy),
+                ClientDate = DateOnly.FromDateTime(DateTime.Today)
             };
             
             // Single atomic upsert - no race condition

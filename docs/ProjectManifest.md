@@ -27,7 +27,7 @@ This document provides an inventory of all documentation assets in the /docs fol
 | [adr/001-table-storage-over-sql.md](adr/001-table-storage-over-sql.md) | ADR | Database decision | ✅ |
 | [adr/002-blazor-wasm-framework.md](adr/002-blazor-wasm-framework.md) | ADR | Frontend framework decision | ✅ |
 | [adr/003-mediatr-cqrs.md](adr/003-mediatr-cqrs.md) | ADR | MediatR decision | ✅ |
-| [adr/004-dev-auth-local.md](adr/004-dev-auth-local.md) | ADR | DevAuth decision | ✅ |
+
 | [README.md](../README.md) | Markdown | Project overview & quick links | ✅ |
 
 ---

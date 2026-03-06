@@ -27,24 +27,7 @@ public sealed class IncrementUnitHandler(IDailyLogRepository repository) : IRequ
         // Persist changes
         await repository.UpsertAsync(entity, cancellationToken);
 
-        return new DailyLogDto
-        {
-            Date = entity.GetDate(),
-            Proteins = entity.Proteins,
-            Vegetables = entity.Vegetables,
-            Fruits = entity.Fruits,
-            Starches = entity.Starches,
-            Fats = entity.Fats,
-            Dairy = entity.Dairy,
-            WaterSegments = entity.WaterSegments,
-            Weight = entity.Weight.HasValue ? (decimal)entity.Weight.Value : null,
-            OmadCompliant = entity.OmadCompliant,
-            AlcoholConsumed = entity.AlcoholConsumed,
-            SystolicBP = entity.SystolicBP.HasValue ? (decimal)entity.SystolicBP.Value : null,
-            DiastolicBP = entity.DiastolicBP.HasValue ? (decimal)entity.DiastolicBP.Value : null,
-            HeartRate = entity.HeartRate,
-            BpReadingTime = entity.BpReadingTime
-        };
+        return entity.ToDto();
     }
 
     private const int MaxUnitsPerCategory = 100;

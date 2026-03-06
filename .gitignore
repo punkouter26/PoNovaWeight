@@ -109,6 +109,7 @@ tests/e2e/.auth/
 
 # Publish output (build artifacts)
 publish/
+publish*/
 
 # Diagnostic logs
 *.zip
@@ -118,7 +119,15 @@ settings.json
 
 # App Service / Kudu deployment logs (downloaded artifacts)
 appservice-logs/
+app-logs*/
+extracted*/
+*-logs-extracted/
 appservice-logs2/
+app-logs-extracted/
+app-logs3/
+debug_logs/
+debug_logs2/
+extracted_logs/
 
 # Publish artifact directories
 publish-fix/

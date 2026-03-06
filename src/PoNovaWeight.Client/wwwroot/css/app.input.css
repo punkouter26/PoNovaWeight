@@ -4,6 +4,32 @@
 
 /* Healthy theme custom component styles */
 @layer components {
+    /* Page gradient backgrounds - reusable across login/auth pages */
+    .page-gradient-bg {
+        @apply min-h-screen flex items-center justify-center bg-gradient-to-br from-healthy-primary/10 via-healthy-bg to-healthy-secondary/10 dark:from-dark-bg dark:via-dark-card dark:to-dark-bg;
+    }
+    
+    /* Button variants - consistent transitions and hover states */
+    .btn-primary {
+        @apply px-4 py-2 bg-healthy-primary text-white rounded-lg hover:bg-healthy-dark transition-colors font-medium;
+    }
+    
+    .btn-secondary {
+        @apply px-4 py-2 bg-healthy-secondary text-white rounded-lg hover:bg-healthy-primary transition-colors font-medium;
+    }
+    
+    .btn-danger {
+        @apply px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium;
+    }
+    
+    .btn-ghost {
+        @apply px-4 py-2 hover:bg-white/10 rounded-lg transition-colors;
+    }
+    
+    .btn-ghost-light {
+        @apply px-4 py-2 hover:bg-healthy-light transition-colors rounded-lg;
+    }
+
     /* Compact unit stepper button styles */
     .stepper-btn {
         @apply w-9 h-9 rounded-full flex items-center justify-center text-lg font-bold transition-all duration-150 active:scale-95 shadow-sm;

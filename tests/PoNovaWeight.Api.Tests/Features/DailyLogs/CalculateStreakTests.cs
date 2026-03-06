@@ -7,7 +7,7 @@ namespace PoNovaWeight.Api.Tests.Features.DailyLogs;
 
 /// <summary>
 /// Unit tests for CalculateStreakHandler.
-/// Tests both basic streak counting and the unlogged days rule.
+/// Tests basic streak counting and one-day gap tolerance.
 /// </summary>
 public class CalculateStreakTests
 {
@@ -91,14 +91,14 @@ public class CalculateStreakTests
     }
 
     [Fact]
-    public async Task Handle_UnloggedDaysBreakStreak()
+    public async Task Handle_UnloggedDayWithinGraceWindow_PreservesStreak()
     {
-        // Arrange - unlogged day (null OmadCompliant) BREAKS streak (consecutive days required)
+        // Arrange - one unlogged day is tolerated once the streak has started
         var today = _fixedToday;
         var entities = new List<DailyLogEntity>
         {
             CreateEntity(today, omadCompliant: true),
-            CreateEntity(today.AddDays(-1), omadCompliant: null), // Unlogged - breaks streak
+            CreateEntity(today.AddDays(-1), omadCompliant: null), // Grace gap
             CreateEntity(today.AddDays(-2), omadCompliant: true)
         };
 
@@ -110,9 +110,9 @@ public class CalculateStreakTests
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
 
-        // Assert - streak is only 1 (today), unlogged day breaks it
-        Assert.Equal(1, result.CurrentStreak);
-        Assert.Equal(today, result.StreakStartDate);
+        // Assert - both compliant days count, gap is tolerated
+        Assert.Equal(2, result.CurrentStreak);
+        Assert.Equal(today.AddDays(-2), result.StreakStartDate);
     }
 
     [Fact]
@@ -167,14 +167,14 @@ public class CalculateStreakTests
     }
 
     [Fact]
-    public async Task Handle_GapsInDates_BreakStreak()
+    public async Task Handle_SingleMissingDateWithinGraceWindow_PreservesStreak()
     {
-        // Arrange - there's a gap in dates (no entry for day -1)
+        // Arrange - one missing date is tolerated once streak has started
         var today = _fixedToday;
         var entities = new List<DailyLogEntity>
         {
             CreateEntity(today, omadCompliant: true),
-            // No entry for today.AddDays(-1) - gap breaks streak
+            // No entry for today.AddDays(-1) - grace gap
             CreateEntity(today.AddDays(-2), omadCompliant: true)
         };
 
@@ -186,7 +186,33 @@ public class CalculateStreakTests
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
 
-        // Assert - streak is only 1 (today) because missing day breaks consecutive requirement
+        // Assert - both compliant days count, missing day is tolerated
+        Assert.Equal(2, result.CurrentStreak);
+        Assert.Equal(today.AddDays(-2), result.StreakStartDate);
+    }
+
+    [Fact]
+    public async Task Handle_TwoConsecutiveGaps_BreakStreakAfterGrace()
+    {
+        // Arrange - only one gap day is allowed
+        var today = _fixedToday;
+        var entities = new List<DailyLogEntity>
+        {
+            CreateEntity(today, omadCompliant: true),
+            // Gap at day -1 (grace consumed)
+            // Gap at day -2 (break)
+            CreateEntity(today.AddDays(-3), omadCompliant: true)
+        };
+
+        var query = new CalculateStreakQuery();
+        _repositoryMock
+            .Setup(r => r.GetRangeAsync("dev-user", It.IsAny<DateOnly>(), It.IsAny<DateOnly>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(entities);
+
+        // Act
+        var result = await _handler.Handle(query, CancellationToken.None);
+
+        // Assert - streak stops at first compliant day once grace is exhausted
         Assert.Equal(1, result.CurrentStreak);
         Assert.Equal(today, result.StreakStartDate);
     }

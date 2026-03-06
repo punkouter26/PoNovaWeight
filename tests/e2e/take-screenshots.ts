@@ -25,26 +25,14 @@ async function takeScreenshots() {
     });
     console.log('✅ Login page saved');
 
-    // Screenshot 2: Dev Test User Login
-    console.log('📸 Logging in with dev credentials...');
-    const devLoginBtn = page.locator('button:has-text("Dev Login"), a:has-text("Dev-Test")');
-    if (await devLoginBtn.isVisible()) {
-      await devLoginBtn.click();
-      await page.waitForNavigation({ waitUntil: 'networkidle' }).catch(() => {});
-    } else {
-      // Try dev login endpoint directly
-      const response = await page.request.post(`${BASE_URL}/api/auth/dev-test-user-login`);
-      if (response.ok()) {
-        const data = await response.json();
-        if (data.token) {
-          // Store token in localStorage
-          await page.evaluate((token: string) => {
-            localStorage.setItem('jwtToken', token);
-          }, data.token);
-          await page.reload({ waitUntil: 'networkidle' });
-        }
-      }
-    }
+    // Screenshot 2: Login page (no auth required)
+    console.log('📸 Capturing Login page...');
+    await page.goto(`${BASE_URL}/login`, { waitUntil: 'networkidle' });
+    await page.screenshot({
+      path: path.join(SCREENSHOTS_DIR, '02_Login.png'),
+      fullPage: true
+    });
+    console.log('✅ Login page saved');
 
     // Screenshot 3: Dashboard
     console.log('📸 Capturing Dashboard page...');

@@ -6,10 +6,6 @@
 ### Authentication
 ### =====================
 
-### Dev Login (Development only - bypasses OAuth)
-### Creates a cookie-based session without Google OAuth
-POST {{baseUrl}}/api/auth/dev-login?email=dev-user@local
-
 ### Get Current User (check auth status)
 GET {{baseUrl}}/api/auth/me
 

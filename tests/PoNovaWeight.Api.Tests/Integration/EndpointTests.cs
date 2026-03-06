@@ -110,6 +110,7 @@ public class EndpointTests
         var dto = new DailyLogDto
         {
             Date = testDate,
+            ClientDate = testDate,
             Proteins = 3,
             Vegetables = 4,
             Fruits = 2,

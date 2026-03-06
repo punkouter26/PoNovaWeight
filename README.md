@@ -62,10 +62,10 @@ src/
 - [Data Pipeline](docs/DataPipeline.mmd) - Data workflow & CRUD operations
 
 ### Technical Documentation
-- [Product Specification](docs/ProductSpec.md) - PRD & success metrics
+- [Product Specification](docs/specifications/ProductSpec.md) - PRD & success metrics
 - [API Contract](docs/ApiContract.md) - API specs & error handling
-- [DevOps Guide](docs/DevOps.md) - Deployment pipeline & environment secrets
-- [Local Setup](docs/LocalSetup.md) - Day 1 guide for direct API and Docker workflows
+- [DevOps Guide](docs/guides/DevOps.md) - Deployment pipeline & environment secrets
+- [Local Setup](docs/guides/LocalSetup.md) - Day 1 guide for direct API and Docker workflows
 
 ### Architecture Decision Records (ADRs)
 - [001: Table Storage over SQL](docs/adr/001-table-storage-over-sql.md)

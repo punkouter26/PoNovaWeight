@@ -56,6 +56,7 @@ public class WeightThresholdTests
         var dto = new DailyLogDto
         {
             Date = DateOnly.FromDateTime(DateTime.Today),
+            ClientDate = DateOnly.FromDateTime(DateTime.Today),
             Proteins = 0,
             Vegetables = 0,
             Fruits = 0,
@@ -115,6 +116,7 @@ public class WeightThresholdTests
         var dto = new DailyLogDto
         {
             Date = tomorrow,
+            ClientDate = DateOnly.FromDateTime(DateTime.Today),
             Proteins = 0,
             Vegetables = 0,
             Fruits = 0,
@@ -143,6 +145,7 @@ public class WeightThresholdTests
         var dto = new DailyLogDto
         {
             Date = today,
+            ClientDate = today,
             Proteins = 0,
             Vegetables = 0,
             Fruits = 0,
@@ -170,6 +173,7 @@ public class WeightThresholdTests
         var dto = new DailyLogDto
         {
             Date = yesterday,
+            ClientDate = DateOnly.FromDateTime(DateTime.Today),
             Proteins = 0,
             Vegetables = 0,
             Fruits = 0,
@@ -194,6 +198,7 @@ public class WeightThresholdTests
         return new DailyLogDto
         {
             Date = DateOnly.FromDateTime(DateTime.Today),
+            ClientDate = DateOnly.FromDateTime(DateTime.Today),
             Proteins = 0,
             Vegetables = 0,
             Fruits = 0,
@@ -205,5 +210,19 @@ public class WeightThresholdTests
             OmadCompliant = null,
             AlcoholConsumed = null
         };
+    }
+
+    [Fact]
+    public void Validate_MissingClientDate_ShouldFail()
+    {
+        // Arrange
+        var dto = DailyLogDto.Empty(DateOnly.FromDateTime(DateTime.Today)) with { ClientDate = null };
+
+        // Act
+        var result = _validator.TestValidate(dto);
+
+        // Assert
+        result.ShouldHaveValidationErrorFor(x => x.ClientDate)
+            .WithErrorMessage("ClientDate is required for timezone-safe validation");
     }
 }
