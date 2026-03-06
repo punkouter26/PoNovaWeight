@@ -150,17 +150,23 @@ public static class ServiceCollectionExtensions
 
         services.AddNovaAuthentication(configuration, environment);
 
+        // AzureOpenAI configuration: Required in Production, optional in Development (tests use stubs)
         var openAiEndpoint = configuration["AzureOpenAI:Endpoint"];
-        if (string.IsNullOrWhiteSpace(openAiEndpoint))
-            throw new InvalidOperationException("AzureOpenAI:Endpoint is required. Configure via Key Vault or appsettings.");
-        
         var openAiApiKey = configuration["AzureOpenAI:ApiKey"];
-        if (string.IsNullOrWhiteSpace(openAiApiKey))
-            throw new InvalidOperationException("AzureOpenAI:ApiKey is required. Configure via Key Vault or appsettings.");
+        
+        if (environment.IsProduction() && string.IsNullOrWhiteSpace(openAiEndpoint))
+            throw new InvalidOperationException("AzureOpenAI:Endpoint is required in Production. Configure via Key Vault.");
+        
+        if (environment.IsProduction() && string.IsNullOrWhiteSpace(openAiApiKey))
+            throw new InvalidOperationException("AzureOpenAI:ApiKey is required in Production. Configure via Key Vault.");
 
-        services.AddSingleton(new AzureOpenAIClient(
-            new Uri(openAiEndpoint),
-            new Azure.AzureKeyCredential(openAiApiKey)));
+        // Only register AzureOpenAIClient if configuration is available (Production or configured Development)
+        if (!string.IsNullOrWhiteSpace(openAiEndpoint) && !string.IsNullOrWhiteSpace(openAiApiKey))
+        {
+            services.AddSingleton(new AzureOpenAIClient(
+                new Uri(openAiEndpoint),
+                new Azure.AzureKeyCredential(openAiApiKey)));
+        }
         services.AddSingleton<IMealAnalysisService, MealAnalysisService>();
 
         services.AddExceptionHandler<GlobalExceptionHandler>();
