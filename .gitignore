@@ -115,3 +115,24 @@ publish/
 api-stdout.log
 api-stderr.log
 settings.json
+
+# App Service / Kudu deployment logs (downloaded artifacts)
+appservice-logs/
+appservice-logs2/
+
+# Publish artifact directories
+publish-fix/
+
+# Temporary run/job log files
+run_log.txt
+run_failed_log.txt
+job_logs_run*.txt
+
+# Temporary report files from tooling runs
+PROTUNE_SIMPLIFICATION_REPORT.md
+SIMPLIFICATION_COMPLETE.md
+PoGitPush_DEPLOYMENT_REPORT.md
+.runsettings
+
+# Playwright MCP session files
+.playwright-mcp/

@@ -1,4 +1,0 @@
-<step title="Incoming Request" date="2026-03-05T20:27:47.057" instance="14081d" url="/dump" method="GET" type="request" pid="857,1,21" Host="ponovaweight-app.scm.azurewebsites.net" User-Agent="AZURECLI/2.83.0 (MSI)" Accept-Encoding="identity" Authorization="Bea..." x-ms-client-request-id="c27e8ae9-18d1-11f1-a178-e8a72f88f0de" X-ARR-LOG-ID="c27e8ae9-18d1-11f1-a178-e8a72f88f0de" CLIENT-IP="73.135.148.163:49206" X-SITE-DEPLOYMENT-ID="ponovaweight-app" WAS-DEFAULT-HOSTNAME="ponovaweight-app.scm.azurewebsites.net" X-Forwarded-Proto="https" X-AppService-Proto="https" X-Forwarded-TlsVersion="1.3" X-WAWS-Unencoded-URL="/dump" X-Client-IP="73.135.148.163" X-Client-Port="49206" >
-  <step title="Cleanup Xml Logs" date="2026-03-05T20:27:47.085" /><!-- duration: 383ms -->
-  <step title="Outgoing response" date="2026-03-05T20:28:10.227" type="response" statusCode="200" statusText="OK" /><!-- duration: 31ms -->
-</step><!-- duration: 23811ms -->

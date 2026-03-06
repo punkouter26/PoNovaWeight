@@ -1,9 +1,0 @@
-<step title="Incoming Request" date="2026-02-05T03:11:07.123" instance="5d4311" url="/api/deployments/latest" method="GET" type="request" pid="851,1,5" Accept="*/*" Host="ponovaweight-app.scm.azurewebsites.net" User-Agent="AZURECLI/2.80.0 (MSI)" Accept-Encoding="gzip, deflate" Authorization="Bea..." x-ms-client-request-id="3a980f7a-0240-11f1-8b9c-e8a72f88f0de" X-ARR-LOG-ID="3a980f7a-0240-11f1-8b9c-e8a72f88f0de" CLIENT-IP="73.135.148.163:50522" X-SITE-DEPLOYMENT-ID="ponovaweight-app" WAS-DEFAULT-HOSTNAME="ponovaweight-app.scm.azurewebsites.net" X-Forwarded-Proto="https" X-AppService-Proto="https" X-Forwarded-TlsVersion="1.3" X-WAWS-Unencoded-URL="/api/deployments/latest" X-Client-IP="73.135.148.163" X-Client-Port="50522" >
-  <step title="Cleanup Xml Logs" date="2026-02-05T03:11:07.130" /><!-- duration: 29ms -->
-  <step title="DeploymentService.GetResult" date="2026-02-05T03:11:07.185" >
-    <step title="DeploymentService.GetLatestDeployment" date="2026-02-05T03:11:07.196" >
-      <step title="DeploymentManager.GetResults" date="2026-02-05T03:11:07.203" /><!-- duration: 385ms -->
-    </step><!-- duration: 403ms -->
-  </step><!-- duration: 423ms -->
-  <step title="Outgoing response" date="2026-02-05T03:11:07.615" type="response" statusCode="202" statusText="Accepted" /><!-- duration: 10ms -->
-</step><!-- duration: 516ms -->

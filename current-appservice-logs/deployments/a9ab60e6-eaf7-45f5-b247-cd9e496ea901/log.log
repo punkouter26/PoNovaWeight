@@ -1,9 +1,0 @@
-2026-03-05T20:52:24.3471139Z,Updating submodules.,eca4e863-6ebd-470e-89fd-cd92aa1a3892,0
-2026-03-05T20:52:25.9274715Z,Preparing deployment for commit id 'a9ab60e6-e'.,7f55eb2e-ac82-4975-b509-39de77c57451,0
-2026-03-05T20:52:28.1500227Z,PreDeployment: context.CleanOutputPath False,9639e575-c694-4668-93be-a3aeff98bd1a,0
-2026-03-05T20:52:28.4828109Z,PreDeployment: context.OutputPath /home/site/wwwroot,67382e65-4447-43b5-b229-1dee029e244a,0
-2026-03-05T20:52:28.8049108Z,Skipping build. Project type: Run-From-Zip,f6aed76b-e409-42fe-bee4-4693b2d23fab,0
-2026-03-05T20:52:29.2266785Z,Skipping post build. Project type: Run-From-Zip,b77898cb-16d2-40e5-a99c-5dba7cbf0bed,0
-2026-03-05T20:52:29.5490665Z,Triggering container recycle for OneDeploy by adding/updating restartTrigger.txt to the site root path,fc13d700-7dd0-4a66-aada-104f230a5790,0
-2026-03-05T20:52:30.1125122Z,Updating /home/data/SitePackages/packagename.txt with deployment 20260305205213.zip,f8473e3a-c72a-4662-95b5-5a416df78be7,0
-2026-03-05T20:52:30.5116169Z,Deployment successful. deployer = OneDeploy deploymentPath = OneDeploy,6540794c-6628-469e-b8b0-e7e2ac9cf068,0

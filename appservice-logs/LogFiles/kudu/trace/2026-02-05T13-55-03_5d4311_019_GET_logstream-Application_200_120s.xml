@@ -1,6 +1,0 @@
-<step title="Incoming Request" date="2026-02-05T13:55:03.153" instance="5d4311" url="/logstream/Application" method="GET" type="request" pid="851,1,51" Host="ponovaweight-app.scm.azurewebsites.net" User-Agent="AZURECLI/2.80.0 (MSI)" Accept-Encoding="identity" Authorization="Bea..." x-ms-client-request-id="3bf30293-029a-11f1-85cc-e8a72f88f0de" X-ARR-LOG-ID="3bf30293-029a-11f1-85cc-e8a72f88f0de" CLIENT-IP="73.135.148.163:50503" X-SITE-DEPLOYMENT-ID="ponovaweight-app" WAS-DEFAULT-HOSTNAME="ponovaweight-app.scm.azurewebsites.net" X-Forwarded-Proto="https" X-AppService-Proto="https" X-Forwarded-TlsVersion="1.3" X-WAWS-Unencoded-URL="/logstream/Application" X-Client-IP="73.135.148.163" X-Client-Port="50503" >
-  <step title="Cleanup Xml Logs" date="2026-02-05T13:55:03.156" /><!-- duration: 8ms -->
-  <step title="LogStreamHandlerMiddleware.Invoke" date="2026-02-05T13:55:03.178" /><!-- duration: 155ms -->
-  <step title="Error occurred" date="2026-02-05T13:57:03.332" type="error" text="LogStreamManager: ProcessRequest end" /><!-- duration: 5ms -->
-  <step title="Outgoing response" date="2026-02-05T13:57:03.346" type="response" statusCode="200" statusText="OK" /><!-- duration: 4ms -->
-</step><!-- duration: 120200ms -->
