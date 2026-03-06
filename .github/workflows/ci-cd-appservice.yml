@@ -11,7 +11,7 @@ permissions:
 
 env:
   DOTNET_VERSION: 10.0.x
-  AZURE_WEBAPP_NAME: PoNovaWeight-app
+  AZURE_WEBAPP_NAME: ponovaweight-app
   API_PROJECT: src/PoNovaWeight.Api/PoNovaWeight.Api.csproj
   API_TEST_PROJECT: tests/PoNovaWeight.Api.Tests/PoNovaWeight.Api.Tests.csproj
   CLIENT_TEST_PROJECT: tests/PoNovaWeight.Client.Tests/PoNovaWeight.Client.Tests.csproj
@@ -35,18 +35,6 @@ jobs:
 
       - name: Build API
         run: dotnet build ${{ env.API_PROJECT }} --configuration Release --no-restore
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Start Azurite
-        run: |
-          npm install -g azurite
-          mkdir -p ./azurite
-          nohup azurite --silent --location ./azurite --debug ./azurite/debug.log > ./azurite/stdout.log 2>&1 &
-          sleep 5
 
       - name: Run API tests
         run: dotnet test ${{ env.API_TEST_PROJECT }} --configuration Release --verbosity normal
@@ -83,3 +71,9 @@ jobs:
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           package: ./publish
+
+      - name: Health check
+        run: |
+          APP_URL="https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net"
+          echo "Checking ${APP_URL}/health"
+          curl -fS "${APP_URL}/health"
