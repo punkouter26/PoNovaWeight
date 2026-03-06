@@ -20,6 +20,20 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
     {
         builder.UseEnvironment("Development");
 
+        // CRITICAL: Configure app configuration FIRST before services are registered
+        // This ensures test configuration overrides are available when Program.cs runs
+        builder.ConfigureAppConfiguration((context, config) =>
+        {
+            config.AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["Google:ClientId"] = "test-client-id",
+                ["Google:ClientSecret"] = "test-client-secret",
+                ["ConnectionStrings:AzureStorage"] = "UseDevelopmentStorage=true",
+                ["AzureOpenAI:Endpoint"] = "https://test.openai.azure.com",
+                ["AzureOpenAI:ApiKey"] = "test-api-key"
+            });
+        });
+
         builder.ConfigureServices(services =>
         {
             // Remove any existing TableServiceClient to use test configuration
@@ -78,19 +92,6 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
             // Register stub implementations that return deterministic test data
             // These avoid accidental Azure OpenAI API calls during test runs
             services.AddSingleton<IMealAnalysisService, StubMealAnalysisService>();
-        });
-
-        // Ensure the configuration has required settings for Google OAuth
-        builder.ConfigureAppConfiguration((context, config) =>
-        {
-            config.AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["Google:ClientId"] = "test-client-id",
-                ["Google:ClientSecret"] = "test-client-secret",
-                ["ConnectionStrings:AzureStorage"] = "UseDevelopmentStorage=true",
-                ["AzureOpenAI:Endpoint"] = "https://test.openai.azure.com",
-                ["AzureOpenAI:ApiKey"] = "test-api-key"
-            });
         });
     }
 }
