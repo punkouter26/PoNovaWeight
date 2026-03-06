@@ -6,20 +6,17 @@ namespace PoNovaWeight.Api.Infrastructure.TableStorage;
 /// <summary>
 /// Azure Table Storage entity for user settings.
 /// </summary>
-public class UserSettingsEntity : ITableEntity
+public class UserSettingsEntity : TableStorageEntity
 {
     /// <summary>
     /// Fixed partition key for all user settings.
     /// </summary>
-    public string PartitionKey { get; set; } = "settings";
+    public override string PartitionKey { get; set; } = "settings";
 
     /// <summary>
     /// User identifier as row key.
     /// </summary>
-    public string RowKey { get; set; } = string.Empty;
-
-    public DateTimeOffset? Timestamp { get; set; }
-    public ETag ETag { get; set; }
+    public override string RowKey { get; set; } = string.Empty;
 
     // BP and HR goals
     public int? TargetSystolic { get; set; }

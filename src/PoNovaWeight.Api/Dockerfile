@@ -9,8 +9,6 @@ COPY Directory.Packages.props .
 COPY src/PoNovaWeight.Api/PoNovaWeight.Api.csproj src/PoNovaWeight.Api/
 COPY src/PoNovaWeight.Client/PoNovaWeight.Client.csproj src/PoNovaWeight.Client/
 COPY src/PoNovaWeight.Shared/PoNovaWeight.Shared.csproj src/PoNovaWeight.Shared/
-COPY src/PoNovaWeight.AppHost/PoNovaWeight.AppHost.csproj src/PoNovaWeight.AppHost/
-COPY src/PoNovaWeight.ServiceDefaults/PoNovaWeight.ServiceDefaults.csproj src/PoNovaWeight.ServiceDefaults/
 COPY tests/PoNovaWeight.Api.Tests/PoNovaWeight.Api.Tests.csproj tests/PoNovaWeight.Api.Tests/
 COPY tests/PoNovaWeight.Client.Tests/PoNovaWeight.Client.Tests.csproj tests/PoNovaWeight.Client.Tests/
 
@@ -21,7 +19,6 @@ RUN dotnet restore src/PoNovaWeight.Api/PoNovaWeight.Api.csproj
 COPY src/PoNovaWeight.Api/ src/PoNovaWeight.Api/
 COPY src/PoNovaWeight.Client/ src/PoNovaWeight.Client/
 COPY src/PoNovaWeight.Shared/ src/PoNovaWeight.Shared/
-COPY src/PoNovaWeight.ServiceDefaults/ src/PoNovaWeight.ServiceDefaults/
 
 # Build and publish
 RUN dotnet publish src/PoNovaWeight.Api/PoNovaWeight.Api.csproj -c Release -o /app/publish

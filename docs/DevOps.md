@@ -236,7 +236,7 @@ az deployment group create --resource-group ponovaweight-rg --template-file infr
 
 | Environment | How to Run | Auth |
 |-------------|------------|------|
-| Local | `dotnet run --project src/PoNovaWeight.AppHost` | User Secrets |
+| Local | `dotnet run --project src/PoNovaWeight.Api` | User Secrets |
 | Dev | Azure Container Apps (dev) | Key Vault |
 | Prod | Azure Container Apps (prod) | Key Vault |
 

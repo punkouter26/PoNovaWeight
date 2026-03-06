@@ -1,0 +1,15 @@
+<step title="Incoming Request" date="2026-03-05T19:01:35.264" instance="14081d" url="/api/publish?async=true&amp;deployer=GITHUB_ONE_DEPLOY&amp;type=zip&amp;message=%7B%22type%22%3A%22deployment%22%2C%22sha%22%3A%22090e6480c40ed54dd97ca2b20da839f40a9ea793%22%2C%22repoName%22%3A%22punkouter26%2FPoNovaWeight%22%2C%22actor%22%3A%22punkouter26%22%2C%22slotName%22%3A%22production%22%2C%22commitMessage%22%3A%22ci%3A%20remove%20health%20check%20from%20deploy%20job%20-%20just%20build%20and%20deploy%22%7D" method="POST" type="request" pid="859,1,21" Host="ponovaweight-app.scm.azurewebsites.net" User-Agent="GITHUBACTIONS_DeployWebAppToAzure_cdce2c904e52a65ce3302c4654b23c5f11fa288e1787a9c50576576d299b0c21_v3.0.7" Authorization="Bea..." Content-Type="application/octet-stream" Cookie="ARRAffinity=14081d20018b15b1623fc720b48f16fa62465e5170c988d77c1ce70393fc7d40; ARRAffinitySameSite=14081d20018b15b1623fc720b48f16fa62465e5170c988d77c1ce70393fc7d40" Transfer-Encoding="chunked" X-ARR-LOG-ID="496aeeaa-236c-413b-97ba-a1c24223c48b" CLIENT-IP="68.154.118.246:58416" X-SITE-DEPLOYMENT-ID="ponovaweight-app" WAS-DEFAULT-HOSTNAME="ponovaweight-app.scm.azurewebsites.net" X-Forwarded-Proto="https" X-AppService-Proto="https" X-Forwarded-TlsVersion="1.3" X-WAWS-Unencoded-URL="/api/publish?async=true&amp;deployer=GITHUB_ONE_DEPLOY&amp;type=zip&amp;message=%7B%22type%22%3A%22deployment%22%2C%22sha%22%3A%22090e6480c40ed54dd97ca2b20da839f40a9ea793%22%2C%22repoName%22%3A%22punkouter26%2FPoNovaWeight%22%2C%22actor%22%3A%22punkouter26%22%2C%22slotName%22%3A%22production%22%2C%22commitMessage%22%3A%22ci%3A%20remove%20health%20check%20from%20deploy%20job%20-%20just%20build%20and%20deploy%22%7D" X-Client-IP="68.154.118.246" X-Client-Port="58416" >
+  <step title="Cleanup Xml Logs" date="2026-03-05T19:01:35.321" /><!-- duration: 229ms -->
+  <step title="OneDeploy" date="2026-03-05T19:01:35.628" >
+    <step title="Starting PushDeployAsync" date="2026-03-05T19:01:35.638" /><!-- duration: 20ms -->
+    <step title="WEBSITE_RUN_FROM_PACKAGE is set to 1. Writing zip to SitePackagesPath" date="2026-03-05T19:01:35.768" /><!-- duration: 19ms -->
+    <step title="Copying zip to SitePackages /home/data/SitePackages/20260305190135.zip from request body" date="2026-03-05T19:01:35.803" /><!-- duration: 10ms -->
+    <step title="Writing multipart request body to /home/data/SitePackages/20260305190135.zip" date="2026-03-05T19:01:36.196" /><!-- duration: 20ms -->
+    <step title="Deleting outdated zip file /home/data/SitePackages/20260214231157.zip" date="2026-03-05T19:01:38.198" /><!-- duration: 18ms -->
+    <step title="Start deployment in the background" date="2026-03-05T19:01:38.256" >
+      <step title="Acquiring Deployment Lock" date="2026-03-05T19:01:38.405" /><!-- duration: 42ms -->
+      <step title="Acquired Deployment Lock" date="2026-03-05T19:01:38.535" /><!-- duration: 11ms -->
+    </step><!-- duration: 457ms -->
+  </step><!-- duration: 3092ms -->
+  <step title="Outgoing response" date="2026-03-05T19:01:38.724" type="response" statusCode="202" statusText="Accepted" /><!-- duration: 3ms -->
+</step><!-- duration: 3465ms -->

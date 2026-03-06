@@ -1,0 +1,47 @@
+2026-02-21T16:06:31.8202917Z State: Starting, Action: EstablishingSiteNetworks, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-02-21T16:06:34.9952849Z State: Starting, Action: StartingMsiContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-02-21T16:06:43.8880273Z State: Starting, Action: StartingSiteContainers, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-02-21T16:06:43.8889965Z Container start method called.
+2026-02-21T16:06:43.8891370Z State: Starting, Action: PullingImage, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pulling image 10.1.0.6:13209/appsvc/dotnetcore:10.0_20260115.4.tuxprod for ponovaweight-app., DetailsLevel: INFO
+2026-02-21T16:06:43.8894356Z Establishing network.
+2026-02-21T16:06:43.8896302Z Pulling image: appsvc/dotnetcore:10.0_20260115.4.tuxprod.
+2026-02-21T16:08:42.9755201Z Image appsvc/dotnetcore:10.0_20260115.4.tuxprod is pulled from registry 10.1.0.4:13209
+2026-02-21T16:08:42.9772908Z Container is starting.
+2026-02-21T16:08:42.9913811Z State: Starting, Action: MountingVolumes, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Mounting volumes for ponovaweight-app., DetailsLevel: INFO
+2026-02-21T16:08:42.9916766Z Establishing user namespace if not established already.
+2026-02-21T16:08:42.9918167Z Establishing network if not established already.
+2026-02-21T16:08:42.9924545Z Mounting volumes.
+2026-02-21T16:08:42.9948312Z Nested mountpoint site/wwwroot
+2026-02-21T16:08:43.0151688Z Nested mountpoint volatile/logs
+2026-02-21T16:08:43.0580932Z Nested mountpoint 
+2026-02-21T16:08:43.1186023Z Nested mountpoint 
+2026-02-21T16:08:43.5664813Z Nested mountpoint 
+2026-02-21T16:08:43.5676015Z Nested mountpoint 
+2026-02-21T16:08:45.4317839Z State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Finished pulling container image and mounting volumes for ponovaweight-app. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-02-21T16:08:45.4319387Z Creating container.
+2026-02-21T16:08:45.4320619Z Creating pipes for streaming container io.
+2026-02-21T16:08:45.4322688Z Creating stdout named pipe at /podr/container/pipe/bc6b627e4ae0_ponovaweight-app/stdout_be1be55751304cfca55e5e2ff13d8756.
+2026-02-21T16:08:45.5307508Z Successfully created stdout named pipe at: /podr/container/pipe/bc6b627e4ae0_ponovaweight-app/stdout_be1be55751304cfca55e5e2ff13d8756.
+2026-02-21T16:08:45.5315097Z Opening named pipe /podr/container/pipe/bc6b627e4ae0_ponovaweight-app/stdout_be1be55751304cfca55e5e2ff13d8756 for reading in non-blocking mode.
+2026-02-21T16:08:45.5322365Z Successfully opened named pipe: /podr/container/pipe/bc6b627e4ae0_ponovaweight-app/stdout_be1be55751304cfca55e5e2ff13d8756.
+2026-02-21T16:08:45.5323772Z Successfully removed non-blocking flag from /podr/container/pipe/bc6b627e4ae0_ponovaweight-app/stdout_be1be55751304cfca55e5e2ff13d8756.
+2026-02-21T16:08:45.5326298Z Creating stderr named pipe at /podr/container/pipe/bc6b627e4ae0_ponovaweight-app/stderr_dd846e5e74514ae7ac2722bfa32e1493.
+2026-02-21T16:08:45.5328736Z Successfully created stderr named pipe at: /podr/container/pipe/bc6b627e4ae0_ponovaweight-app/stderr_dd846e5e74514ae7ac2722bfa32e1493.
+2026-02-21T16:08:45.5330230Z Opening named pipe /podr/container/pipe/bc6b627e4ae0_ponovaweight-app/stderr_dd846e5e74514ae7ac2722bfa32e1493 for reading in non-blocking mode.
+2026-02-21T16:08:45.5332016Z Successfully opened named pipe: /podr/container/pipe/bc6b627e4ae0_ponovaweight-app/stderr_dd846e5e74514ae7ac2722bfa32e1493.
+2026-02-21T16:08:45.5333270Z Successfully removed non-blocking flag from /podr/container/pipe/bc6b627e4ae0_ponovaweight-app/stderr_dd846e5e74514ae7ac2722bfa32e1493.
+2026-02-21T16:08:45.5337674Z Creating container with image: appsvc/dotnetcore:10.0_20260115.4.tuxprod from registry: 10.1.0.4:13209 and fully qualified image name: 10.1.0.4:13209/appsvc/dotnetcore:10.0_20260115.4.tuxprod
+2026-02-21T16:08:46.2208581Z Starting container: bc6b627e4ae0_ponovaweight-app.
+2026-02-21T16:08:46.2653689Z Starting watchers and probes.
+2026-02-21T16:08:46.2802407Z Starting metrics collection.
+2026-02-21T16:08:46.2811854Z Container is running.
+2026-02-21T16:08:46.2812865Z State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container ponovaweight-app successfully created and is running., DetailsLevel: INFO
+2026-02-21T16:08:46.3184912Z Container start method finished after 122429 ms.
+2026-02-21T16:08:46.3207252Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container ponovaweight-app successfully created and is running., DetailsLevel: INFO
+2026-02-21T16:08:46.3287646Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-02-21T16:09:05.6665423Z Site startup probe succeeded after 19.3007469 seconds.
+2026-02-21T16:09:05.7498797Z State: Starting, Action: WarmUpProbeSucceeded, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site startup probe succeeded after 19.3007469 seconds., DetailsLevel: INFO
+2026-02-21T16:09:05.8081214Z Site is running with deployment version: 4552be68-cbb0-4f2a-8451-ad6fa450873b
+2026-02-21T16:09:05.8099521Z Site started.
+2026-02-21T16:09:05.8113369Z State: Started, Action: None, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site started at 02/21/2026 16:09:05 (UTC), DetailsLevel: INFO
+2026-02-21T16:09:05.9238729Z Site is running with patch version DOTNETCORE 10.0.2

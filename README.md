@@ -4,7 +4,7 @@ A personal food journaling Progressive Web App (PWA) for tracking daily nutritio
 
 [![.NET 10](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
 [![Blazor WASM](https://img.shields.io/badge/Blazor-WebAssembly-512BD4?logo=blazor)](https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor)
-[![Azure](https://img.shields.io/badge/Azure-Container%20Apps-0078D4?logo=microsoftazure)](https://azure.microsoft.com/)
+[![Azure](https://img.shields.io/badge/Azure-App%20Service-0078D4?logo=microsoftazure)](https://azure.microsoft.com/)
 
 ## Quick Start
 
@@ -14,11 +14,14 @@ git clone <repository-url>
 cd PoNovaWeight
 dotnet restore
 
-# Run the API directly (requires Azurite for local Table Storage)
+# Start Azurite for local Table Storage
+azurite --silent --location ./azurite --debug ./azurite/debug.log
+
+# Run the API directly
 dotnet run --project src/PoNovaWeight.Api
 ```
-E
-**Access Points:**E
+
+**Access Points:**
 - 🌐 **App**: http://localhost:5000
 
 ## Features
@@ -46,8 +49,7 @@ E
 src/
 ├── PoNovaWeight.Api/          # ASP.NET Core API
 ├── PoNovaWeight.Client/       # Blazor WASM frontend
-├── PoNovaWeight.Shared/       # DTOs & validation
-└── PoNovaWeight.ServiceDefaults/  # OpenTelemetry config
+└── PoNovaWeight.Shared/       # DTOs & validation
 ```
 
 ## Documentation
@@ -63,7 +65,7 @@ src/
 - [Product Specification](docs/ProductSpec.md) - PRD & success metrics
 - [API Contract](docs/ApiContract.md) - API specs & error handling
 - [DevOps Guide](docs/DevOps.md) - Deployment pipeline & environment secrets
-- [Local Setup](docs/LocalSetup.md) - Day 1 guide & Docker Compose
+- [Local Setup](docs/LocalSetup.md) - Day 1 guide for direct API and Docker workflows
 
 ### Architecture Decision Records (ADRs)
 - [001: Table Storage over SQL](docs/adr/001-table-storage-over-sql.md)

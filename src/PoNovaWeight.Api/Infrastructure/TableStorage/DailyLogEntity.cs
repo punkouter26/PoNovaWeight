@@ -6,27 +6,17 @@ namespace PoNovaWeight.Api.Infrastructure.TableStorage;
 /// <summary>
 /// Azure Table Storage entity for daily food journal logs.
 /// </summary>
-public class DailyLogEntity : ITableEntity
+public class DailyLogEntity : TableStorageEntity
 {
     /// <summary>
     /// User identifier. Fixed to "dev-user" for MVP (no authentication).
     /// </summary>
-    public string PartitionKey { get; set; } = "dev-user";
+    public override string PartitionKey { get; set; } = "dev-user";
 
     /// <summary>
     /// Date in yyyy-MM-dd format.
     /// </summary>
-    public string RowKey { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Azure-managed timestamp for concurrency.
-    /// </summary>
-    public DateTimeOffset? Timestamp { get; set; }
-
-    /// <summary>
-    /// Azure-managed ETag for optimistic concurrency.
-    /// </summary>
-    public ETag ETag { get; set; }
+    public override string RowKey { get; set; } = string.Empty;
 
     public int Proteins { get; set; }
     public int Vegetables { get; set; }

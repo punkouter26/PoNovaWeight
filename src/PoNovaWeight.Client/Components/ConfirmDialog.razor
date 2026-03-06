@@ -1,34 +1,36 @@
 @namespace PoNovaWeight.Client.Components
 
-@if (IsOpen)
-{
-    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" @onclick="OnCancel">
-        <div class="bg-healthy-card rounded-xl shadow-healthy p-6 m-4 max-w-sm" @onclick:stopPropagation>
-            <h3 class="text-lg font-semibold text-healthy-text mb-2">@Title</h3>
-            <p class="text-sm text-healthy-muted mb-4">
-                @ChildContent
-            </p>
-            <div class="flex gap-3">
-                <button @onclick="OnCancel" 
-                        class="flex-1 py-2 text-sm font-medium text-healthy-muted bg-healthy-light rounded-lg hover:bg-gray-200 transition-colors">
-                    @CancelText
-                </button>
-                <button @onclick="OnConfirm" 
-                        disabled="@IsProcessing"
-                        class="flex-1 py-2 text-sm font-medium text-white @ConfirmButtonClass rounded-lg transition-colors disabled:opacity-50">
-                    @if (IsProcessing)
-                    {
-                        <span>@ProcessingText</span>
-                    }
-                    else
-                    {
-                        <span>@ConfirmText</span>
-                    }
-                </button>
+<ClickOutsideDetector IsOpen="@IsOpen" OnClickOutside="@OnCancel" OverlayZIndex="50" ContentZIndex="51">
+    @if (IsOpen)
+    {
+        <div style="position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 51;">
+            <div class="bg-healthy-card rounded-xl shadow-healthy p-6 m-4 max-w-sm" @onclick:stopPropagation="true">
+                <h3 class="text-lg font-semibold text-healthy-text mb-2">@Title</h3>
+                <p class="text-sm text-healthy-muted mb-4">
+                    @ChildContent
+                </p>
+                <div class="flex gap-3">
+                    <button @onclick="OnCancel" 
+                            class="flex-1 py-2 text-sm font-medium text-healthy-muted bg-healthy-light rounded-lg hover:bg-gray-200 transition-colors">
+                        @CancelText
+                    </button>
+                    <button @onclick="OnConfirm" 
+                            disabled="@IsProcessing"
+                            class="flex-1 py-2 text-sm font-medium text-white @ConfirmButtonClass rounded-lg transition-colors disabled:opacity-50">
+                        @if (IsProcessing)
+                        {
+                            <span>@ProcessingText</span>
+                        }
+                        else
+                        {
+                            <span>@ConfirmText</span>
+                        }
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
-}
+    }
+</ClickOutsideDetector>
 
 @code {
     [Parameter]

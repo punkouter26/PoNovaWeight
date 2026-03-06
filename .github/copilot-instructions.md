@@ -1,5 +1,5 @@
 General Engineering Principles + .NET API
-Unified Identity: Use Po{SolutionName} as the master prefix for all namespaces, Azure Resource Groups, and Aspire resources (e.g., PoTask1.API, rg-PoTask1-prod).
+Unified Identity: Use Po{SolutionName} as the master prefix for all namespaces, Azure Resource Groups, and shared resources (e.g., PoTask1.API, rg-PoTask1-prod).
 Global Cleanup: Maintain a "zero-waste" codebase by deleting unused files, dead code, and obsolete assets.
 Safety Standards: Use Directory.Build.props at the root to enforce <TreatWarningsAsErrors>true</TreatWarningsAsErrors> and <Nullable>enable</Nullable>.
 Health Checks: Implement a /health endpoint to verify connections to all APIs and databases.

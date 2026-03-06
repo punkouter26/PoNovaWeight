@@ -1,11 +1,11 @@
 // Azure App Service Module
-// Deploys App Service Plan and Web App with managed identity
+// Deploys Web App with managed identity (uses shared App Service Plan from PoShared)
 
 @description('App Service name')
 param name string
 
-@description('App Service Plan name')
-param planName string
+@description('Shared App Service Plan resource ID (from PoShared RG)')
+param appServicePlanId string
 
 @description('Azure region')
 param location string
@@ -37,23 +37,7 @@ param openAiApiKey string = ''
 @description('Azure OpenAI Deployment Name')
 param openAiDeploymentName string = 'gpt-4o'
 
-// App Service Plan (Standard tier for production)
-resource appServicePlan 'Microsoft.Web/serverfarms@2023-01-01' = {
-  name: planName
-  location: location
-  tags: tags
-  sku: {
-    name: 'S1'
-    tier: 'Standard'
-    capacity: 1
-  }
-  kind: 'linux'
-  properties: {
-    reserved: true
-  }
-}
-
-// Web App
+// Web App (uses shared App Service Plan)
 resource webApp 'Microsoft.Web/sites@2023-01-01' = {
   name: name
   location: location
@@ -62,7 +46,7 @@ resource webApp 'Microsoft.Web/sites@2023-01-01' = {
     type: 'SystemAssigned'
   }
   properties: {
-    serverFarmId: appServicePlan.id
+    serverFarmId: appServicePlanId
     httpsOnly: true
     siteConfig: {
       linuxFxVersion: 'DOTNETCORE|10.0'

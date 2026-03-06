@@ -48,7 +48,7 @@ This document provides an inventory of all documentation assets in the /docs fol
 dotnet build
 
 # Run locally
-dotnet run --project src/PoNovaWeight.AppHost
+dotnet run --project src/PoNovaWeight.Api
 
 # Test
 dotnet test

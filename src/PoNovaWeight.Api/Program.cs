@@ -15,7 +15,6 @@ using PoNovaWeight.Api.Features.DailyLogs;
 using PoNovaWeight.Api.Features.MealScan;
 using PoNovaWeight.Api.Features.WeeklySummary;
 using PoNovaWeight.Api.Features.Settings;
-using PoNovaWeight.Api.Features.Predictions;
 using PoNovaWeight.Api.Infrastructure;
 using PoNovaWeight.Api.Infrastructure.OpenAI;
 using PoNovaWeight.Api.Infrastructure.TableStorage;
@@ -250,14 +249,12 @@ try
             new Uri(openAiEndpoint),
             new Azure.AzureKeyCredential(openAiApiKey)));
         builder.Services.AddSingleton<IMealAnalysisService, MealAnalysisService>();
-        builder.Services.AddSingleton<IBpPredictionService, BpPredictionService>();
     }
     else
     {
-        // Use stub services when OpenAI is not configured
+        // Use stub service when OpenAI is not configured
         builder.Services.AddSingleton<IMealAnalysisService, StubMealAnalysisService>();
-        builder.Services.AddSingleton<IBpPredictionService, StubBpPredictionService>();
-        Log.Warning("Azure OpenAI not configured - meal scanning and BP predictions will return mock data");
+        Log.Warning("Azure OpenAI not configured - meal scanning will return mock data");
     }
 
     // Exception handling
@@ -360,7 +357,6 @@ try
     app.MapAuthEndpoints(app.Environment);
     app.MapDailyLogEndpoints();
     app.MapSettingsEndpoints();
-    app.MapPredictionsEndpoints();
     app.MapWeeklySummaryEndpoints();
     app.MapMealScanEndpoints();
     app.MapControllers();

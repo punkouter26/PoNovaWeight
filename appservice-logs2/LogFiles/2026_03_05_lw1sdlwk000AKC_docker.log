@@ -1,0 +1,737 @@
+2026-03-05T14:07:36.5501706Z State: Starting, Action: EstablishingSiteNetworks, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-03-05T14:07:54.2242790Z State: Starting, Action: StartingMsiContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-03-05T14:08:59.7913013Z State: Starting, Action: StartingSiteContainers, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-03-05T14:08:59.7989094Z Container start method called.
+2026-03-05T14:08:59.7990394Z State: Starting, Action: PullingImage, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pulling image 10.1.0.4:13209/appsvc/dotnetcore:10.0_20260115.4.tuxprod for ponovaweight-app., DetailsLevel: INFO
+2026-03-05T14:08:59.7993358Z Establishing network.
+2026-03-05T14:08:59.7995599Z Pulling image: appsvc/dotnetcore:10.0_20260115.4.tuxprod.
+2026-03-05T14:09:04.1841303Z Image appsvc/dotnetcore:10.0_20260115.4.tuxprod is pulled from registry 10.1.0.4:13209
+2026-03-05T14:09:04.1843110Z Container is starting.
+2026-03-05T14:09:04.1844415Z State: Starting, Action: MountingVolumes, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Mounting volumes for ponovaweight-app., DetailsLevel: INFO
+2026-03-05T14:09:04.1846135Z Establishing user namespace if not established already.
+2026-03-05T14:09:04.1847718Z Establishing network if not established already.
+2026-03-05T14:09:04.1849352Z Mounting volumes.
+2026-03-05T14:09:04.1851585Z Nested mountpoint site/wwwroot
+2026-03-05T14:09:04.5713494Z Nested mountpoint volatile/logs
+2026-03-05T14:09:04.8700356Z Nested mountpoint 
+2026-03-05T14:09:05.5725401Z Nested mountpoint 
+2026-03-05T14:09:14.2824627Z Nested mountpoint 
+2026-03-05T14:09:14.5200552Z Nested mountpoint 
+2026-03-05T14:09:23.1654915Z State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Finished pulling container image and mounting volumes for ponovaweight-app. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-03-05T14:09:23.3592970Z Creating container.
+2026-03-05T14:09:23.3596594Z Creating pipes for streaming container io.
+2026-03-05T14:09:23.5460495Z Creating stdout named pipe at /podr/container/pipe/e5ad691e5172_ponovaweight-app/stdout_5aa17d4aacf947e99989d4fe4e9dc9de.
+2026-03-05T14:09:23.5563184Z Successfully created stdout named pipe at: /podr/container/pipe/e5ad691e5172_ponovaweight-app/stdout_5aa17d4aacf947e99989d4fe4e9dc9de.
+2026-03-05T14:09:23.5565266Z Opening named pipe /podr/container/pipe/e5ad691e5172_ponovaweight-app/stdout_5aa17d4aacf947e99989d4fe4e9dc9de for reading in non-blocking mode.
+2026-03-05T14:09:23.5567285Z Successfully opened named pipe: /podr/container/pipe/e5ad691e5172_ponovaweight-app/stdout_5aa17d4aacf947e99989d4fe4e9dc9de.
+2026-03-05T14:09:23.5855295Z Successfully removed non-blocking flag from /podr/container/pipe/e5ad691e5172_ponovaweight-app/stdout_5aa17d4aacf947e99989d4fe4e9dc9de.
+2026-03-05T14:09:23.5991691Z Creating stderr named pipe at /podr/container/pipe/e5ad691e5172_ponovaweight-app/stderr_59721ea2b8b34d42986dce7b834af686.
+2026-03-05T14:09:23.7481191Z Successfully created stderr named pipe at: /podr/container/pipe/e5ad691e5172_ponovaweight-app/stderr_59721ea2b8b34d42986dce7b834af686.
+2026-03-05T14:09:23.8533000Z Opening named pipe /podr/container/pipe/e5ad691e5172_ponovaweight-app/stderr_59721ea2b8b34d42986dce7b834af686 for reading in non-blocking mode.
+2026-03-05T14:09:23.8544780Z Successfully opened named pipe: /podr/container/pipe/e5ad691e5172_ponovaweight-app/stderr_59721ea2b8b34d42986dce7b834af686.
+2026-03-05T14:09:23.8869248Z Successfully removed non-blocking flag from /podr/container/pipe/e5ad691e5172_ponovaweight-app/stderr_59721ea2b8b34d42986dce7b834af686.
+2026-03-05T14:09:24.1432498Z Creating container with image: appsvc/dotnetcore:10.0_20260115.4.tuxprod from registry: 10.1.0.4:13209 and fully qualified image name: 10.1.0.4:13209/appsvc/dotnetcore:10.0_20260115.4.tuxprod
+2026-03-05T14:09:33.0351515Z Starting container: e5ad691e5172_ponovaweight-app.
+2026-03-05T14:09:33.7869120Z Starting watchers and probes.
+2026-03-05T14:09:33.8548238Z Starting metrics collection.
+2026-03-05T14:09:33.8554774Z Container is running.
+2026-03-05T14:09:33.8756571Z State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container ponovaweight-app successfully created and is running., DetailsLevel: INFO
+2026-03-05T14:09:34.5327106Z Container start method finished after 34733 ms.
+2026-03-05T14:09:34.5434215Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container ponovaweight-app successfully created and is running., DetailsLevel: INFO
+2026-03-05T14:09:34.5746611Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-03-05T14:13:26.7355686Z Site startup probe failed after 231.655553 seconds.
+2026-03-05T14:13:32.5082810Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 14:13:32, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: ERR
+2026-03-05T14:13:32.9091732Z Failed to start site. Revert by stopping site.
+2026-03-05T14:13:32.9615334Z State: Stopping, Action: StoppingSite, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 14:13:32, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: ERR
+2026-03-05T14:13:33.2600267Z State: Stopping, Action: StoppingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 14:13:32, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: ERR
+2026-03-05T14:13:33.2721435Z Container is terminating. Grace period: 5 seconds.
+2026-03-05T14:13:34.3374767Z Stop and delete container. Retry count = 0
+2026-03-05T14:13:34.3381673Z Stopping container: e5ad691e5172_ponovaweight-app.
+2026-03-05T14:13:39.8070371Z Deleting container: e5ad691e5172_ponovaweight-app. Retry count = 0
+2026-03-05T14:13:43.8350256Z Container spec TerminationMessagePolicy  path 
+2026-03-05T14:13:43.8651680Z Container is terminated. Total time elapsed: 10575 ms.
+2026-03-05T14:13:43.8937560Z Site container: ponovaweight-app terminated during site startup.
+2026-03-05T14:13:43.8954919Z State: Stopping, Action: CancellingStartup, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 14:13:32, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T14:13:44.0355556Z Site: ponovaweight-app stopped.
+2026-03-05T14:13:44.1661584Z State: Stopping, Action: UnmountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 14:13:32, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T14:13:57.5512962Z Site container: ponovaweight-app_managedIdentity terminated during site startup.
+2026-03-05T14:13:57.5903800Z State: Stopping, Action: UnmountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 14:13:32, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T14:13:59.3903675Z State: Stopping, Action: StoppingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 14:13:32, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T14:14:04.5289066Z State: Stopped, Action: None, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 14:13:32, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 14:14:04 (UTC), DetailsLevel: ERR
+2026-03-05T14:14:06.5096395Z State: Stopped, Action: None, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 14:13:32, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 14:14:04 (UTC), DetailsLevel: ERR
+2026-03-05T14:14:27.1752289Z State: Starting, Action: EstablishingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 14:13:32, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 14:14:04 (UTC), DetailsLevel: ERR
+2026-03-05T14:14:39.2975923Z State: Starting, Action: StartingMsiContainer, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 14:13:32, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 14:14:04 (UTC), DetailsLevel: ERR
+2026-03-05T14:15:14.0429384Z State: Starting, Action: StartingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 14:13:32, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 14:14:04 (UTC), DetailsLevel: ERR
+2026-03-05T14:15:14.0502609Z Container start method called.
+2026-03-05T14:15:14.0504501Z State: Starting, Action: PullingImage, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 14:13:32, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pulling image 10.1.0.4:13209/appsvc/dotnetcore:10.0_20260115.4.tuxprod for ponovaweight-app., DetailsLevel: INFO
+2026-03-05T14:15:14.8821000Z Establishing network.
+2026-03-05T14:15:14.8825529Z Pulling image: appsvc/dotnetcore:10.0_20260115.4.tuxprod.
+2026-03-05T14:15:18.5149416Z Container is starting.
+2026-03-05T14:15:18.5246332Z State: Starting, Action: MountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 14:13:32, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Mounting volumes for ponovaweight-app., DetailsLevel: INFO
+2026-03-05T14:15:18.5251941Z Establishing user namespace if not established already.
+2026-03-05T14:15:18.5543066Z Establishing network if not established already.
+2026-03-05T14:15:18.5545443Z Mounting volumes.
+2026-03-05T14:15:18.5839879Z Nested mountpoint site/wwwroot
+2026-03-05T14:15:18.6563394Z Nested mountpoint volatile/logs
+2026-03-05T14:15:19.0778440Z Nested mountpoint 
+2026-03-05T14:15:19.1869766Z Nested mountpoint 
+2026-03-05T14:15:19.7873382Z Nested mountpoint 
+2026-03-05T14:15:19.8378369Z Nested mountpoint 
+2026-03-05T14:15:26.7494962Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 14:13:32, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Finished pulling container image and mounting volumes for ponovaweight-app. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-03-05T14:15:27.0003953Z Creating container.
+2026-03-05T14:15:27.0009372Z Creating pipes for streaming container io.
+2026-03-05T14:15:27.0072811Z Creating stdout named pipe at /podr/container/pipe/aad049564f09_ponovaweight-app/stdout_085761890f9144f0a940a16f97207541.
+2026-03-05T14:15:27.0096771Z Successfully created stdout named pipe at: /podr/container/pipe/aad049564f09_ponovaweight-app/stdout_085761890f9144f0a940a16f97207541.
+2026-03-05T14:15:27.1363710Z Opening named pipe /podr/container/pipe/aad049564f09_ponovaweight-app/stdout_085761890f9144f0a940a16f97207541 for reading in non-blocking mode.
+2026-03-05T14:15:27.3426436Z Successfully opened named pipe: /podr/container/pipe/aad049564f09_ponovaweight-app/stdout_085761890f9144f0a940a16f97207541.
+2026-03-05T14:15:27.3733208Z Successfully removed non-blocking flag from /podr/container/pipe/aad049564f09_ponovaweight-app/stdout_085761890f9144f0a940a16f97207541.
+2026-03-05T14:15:27.3738410Z Creating stderr named pipe at /podr/container/pipe/aad049564f09_ponovaweight-app/stderr_2ca0178f13454edb91f4be07e7cad449.
+2026-03-05T14:15:27.3741547Z Successfully created stderr named pipe at: /podr/container/pipe/aad049564f09_ponovaweight-app/stderr_2ca0178f13454edb91f4be07e7cad449.
+2026-03-05T14:15:27.3743207Z Opening named pipe /podr/container/pipe/aad049564f09_ponovaweight-app/stderr_2ca0178f13454edb91f4be07e7cad449 for reading in non-blocking mode.
+2026-03-05T14:15:27.3745193Z Successfully opened named pipe: /podr/container/pipe/aad049564f09_ponovaweight-app/stderr_2ca0178f13454edb91f4be07e7cad449.
+2026-03-05T14:15:27.3746743Z Successfully removed non-blocking flag from /podr/container/pipe/aad049564f09_ponovaweight-app/stderr_2ca0178f13454edb91f4be07e7cad449.
+2026-03-05T14:15:27.3839242Z Creating container with image: appsvc/dotnetcore:10.0_20260115.4.tuxprod from registry: 10.1.0.4:13209 and fully qualified image name: 10.1.0.4:13209/appsvc/dotnetcore:10.0_20260115.4.tuxprod
+2026-03-05T14:15:35.1499059Z Starting container: aad049564f09_ponovaweight-app.
+2026-03-05T14:15:36.2939868Z Starting watchers and probes.
+2026-03-05T14:15:36.3144585Z Starting metrics collection.
+2026-03-05T14:15:36.3308480Z Container is running.
+2026-03-05T14:15:36.3324671Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 14:13:32, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container ponovaweight-app successfully created and is running., DetailsLevel: INFO
+2026-03-05T14:15:38.8844431Z Container start method finished after 24664 ms.
+2026-03-05T14:15:38.8849705Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 14:13:32, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container ponovaweight-app successfully created and is running., DetailsLevel: INFO
+2026-03-05T14:15:38.8850496Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 14:13:32, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-03-05T14:19:30.1716630Z Site startup probe failed after 230.5756957 seconds.
+2026-03-05T14:19:36.2122643Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 14:19:35, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: ERR
+2026-03-05T14:19:36.5098448Z Failed to start site. Revert by stopping site.
+2026-03-05T14:19:36.9376368Z State: Stopping, Action: StoppingSite, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 14:19:35, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: ERR
+2026-03-05T14:19:37.3471839Z State: Stopping, Action: StoppingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 14:19:35, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: ERR
+2026-03-05T14:19:37.4858341Z Container is terminating. Grace period: 5 seconds.
+2026-03-05T14:19:40.3805222Z Stop and delete container. Retry count = 0
+2026-03-05T14:19:40.3926294Z Stopping container: aad049564f09_ponovaweight-app.
+2026-03-05T14:19:44.4101676Z Deleting container: aad049564f09_ponovaweight-app. Retry count = 0
+2026-03-05T14:19:46.9949619Z Container spec TerminationMessagePolicy  path 
+2026-03-05T14:19:47.0045714Z Container is terminated. Total time elapsed: 9481 ms.
+2026-03-05T14:19:47.0176143Z Site container: ponovaweight-app terminated during site startup.
+2026-03-05T14:19:47.0342861Z State: Stopping, Action: CancellingStartup, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 14:19:35, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T14:19:47.0467535Z Site: ponovaweight-app stopped.
+2026-03-05T14:19:47.6654602Z State: Stopping, Action: UnmountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 14:19:35, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T14:19:59.9314817Z Site container: ponovaweight-app_managedIdentity terminated during site startup.
+2026-03-05T14:19:59.9835034Z State: Stopping, Action: UnmountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 14:19:35, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T14:20:03.7528720Z State: Stopping, Action: StoppingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 14:19:35, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T14:20:15.4056828Z Site: ponovaweight-app will be blocked for 1 minutes till 03/05/2026 14:21:15
+2026-03-05T14:20:15.4652117Z State: Blocked, Action: StoppingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 14:19:35, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site: ponovaweight-app will be blocked for 1 minutes till 03/05/2026 14:21:15, DetailsLevel: WARN
+2026-03-05T14:20:16.1763905Z State: Stopped, Action: None, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 14:19:35, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 14:20:16 (UTC), DetailsLevel: WARN
+2026-03-05T14:20:20.0551651Z State: Stopped, Action: None, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 14:19:35, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 14:20:16 (UTC), DetailsLevel: WARN
+2026-03-05T14:21:15.1323680Z Site: ponovaweight-app is unblocked.
+2026-03-05T15:05:40.7674339Z State: Starting, Action: EstablishingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 14:19:35, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 14:20:16 (UTC), DetailsLevel: WARN
+2026-03-05T15:05:52.2153786Z State: Starting, Action: StartingMsiContainer, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 14:19:35, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 14:20:16 (UTC), DetailsLevel: WARN
+2026-03-05T15:06:26.3917815Z State: Starting, Action: StartingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 14:19:35, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 14:20:16 (UTC), DetailsLevel: WARN
+2026-03-05T15:06:26.3985549Z Container start method called.
+2026-03-05T15:06:26.3986791Z State: Starting, Action: PullingImage, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 14:19:35, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pulling image 10.1.0.4:13209/appsvc/dotnetcore:10.0_20260115.4.tuxprod for ponovaweight-app., DetailsLevel: INFO
+2026-03-05T15:06:26.3988481Z Establishing network.
+2026-03-05T15:06:26.3989663Z Pulling image: appsvc/dotnetcore:10.0_20260115.4.tuxprod.
+2026-03-05T15:06:26.7364813Z Container is starting.
+2026-03-05T15:06:26.7444920Z State: Starting, Action: MountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 14:19:35, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Mounting volumes for ponovaweight-app., DetailsLevel: INFO
+2026-03-05T15:06:26.7455523Z Establishing user namespace if not established already.
+2026-03-05T15:06:26.7458846Z Establishing network if not established already.
+2026-03-05T15:06:26.7463970Z Mounting volumes.
+2026-03-05T15:06:26.7465492Z Nested mountpoint site/wwwroot
+2026-03-05T15:06:27.0075853Z Nested mountpoint volatile/logs
+2026-03-05T15:06:27.1384551Z Nested mountpoint 
+2026-03-05T15:06:27.6425654Z Nested mountpoint 
+2026-03-05T15:06:28.0350796Z Nested mountpoint 
+2026-03-05T15:06:28.1148710Z Nested mountpoint 
+2026-03-05T15:06:32.4125153Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 14:19:35, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Finished pulling container image and mounting volumes for ponovaweight-app. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-03-05T15:06:32.7292501Z Creating container.
+2026-03-05T15:06:32.7296547Z Creating pipes for streaming container io.
+2026-03-05T15:06:32.7298577Z Creating stdout named pipe at /podr/container/pipe/f984cac1625f_ponovaweight-app/stdout_805b7c7139bb490f88319cb7bce202f0.
+2026-03-05T15:06:32.7302264Z Successfully created stdout named pipe at: /podr/container/pipe/f984cac1625f_ponovaweight-app/stdout_805b7c7139bb490f88319cb7bce202f0.
+2026-03-05T15:06:32.7303914Z Opening named pipe /podr/container/pipe/f984cac1625f_ponovaweight-app/stdout_805b7c7139bb490f88319cb7bce202f0 for reading in non-blocking mode.
+2026-03-05T15:06:32.7305885Z Successfully opened named pipe: /podr/container/pipe/f984cac1625f_ponovaweight-app/stdout_805b7c7139bb490f88319cb7bce202f0.
+2026-03-05T15:06:32.7388929Z Successfully removed non-blocking flag from /podr/container/pipe/f984cac1625f_ponovaweight-app/stdout_805b7c7139bb490f88319cb7bce202f0.
+2026-03-05T15:06:32.7682624Z Creating stderr named pipe at /podr/container/pipe/f984cac1625f_ponovaweight-app/stderr_d71d096021944506b386132a24dacea1.
+2026-03-05T15:06:32.7684738Z Successfully created stderr named pipe at: /podr/container/pipe/f984cac1625f_ponovaweight-app/stderr_d71d096021944506b386132a24dacea1.
+2026-03-05T15:06:32.7685718Z Opening named pipe /podr/container/pipe/f984cac1625f_ponovaweight-app/stderr_d71d096021944506b386132a24dacea1 for reading in non-blocking mode.
+2026-03-05T15:06:32.7686913Z Successfully opened named pipe: /podr/container/pipe/f984cac1625f_ponovaweight-app/stderr_d71d096021944506b386132a24dacea1.
+2026-03-05T15:06:32.7687959Z Successfully removed non-blocking flag from /podr/container/pipe/f984cac1625f_ponovaweight-app/stderr_d71d096021944506b386132a24dacea1.
+2026-03-05T15:06:32.7689249Z Creating container with image: appsvc/dotnetcore:10.0_20260115.4.tuxprod from registry: 10.1.0.4:13209 and fully qualified image name: 10.1.0.4:13209/appsvc/dotnetcore:10.0_20260115.4.tuxprod
+2026-03-05T15:06:34.2946189Z Starting container: f984cac1625f_ponovaweight-app.
+2026-03-05T15:06:34.7375101Z Starting watchers and probes.
+2026-03-05T15:06:34.8475626Z Starting metrics collection.
+2026-03-05T15:06:34.8784974Z Container is running.
+2026-03-05T15:06:34.8889684Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 14:19:35, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container ponovaweight-app successfully created and is running., DetailsLevel: INFO
+2026-03-05T15:06:37.8134347Z Container start method finished after 11375 ms.
+2026-03-05T15:06:37.8328927Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 14:19:35, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container ponovaweight-app successfully created and is running., DetailsLevel: INFO
+2026-03-05T15:06:37.8575209Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 14:19:35, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-03-05T15:10:31.0459632Z Site startup probe failed after 233.0704872 seconds.
+2026-03-05T15:10:45.9152713Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 15:10:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: ERR
+2026-03-05T15:10:46.6449604Z Failed to start site. Revert by stopping site.
+2026-03-05T15:10:46.9055631Z State: Stopping, Action: StoppingSite, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 15:10:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: ERR
+2026-03-05T15:10:46.9472750Z State: Stopping, Action: StoppingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 15:10:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: ERR
+2026-03-05T15:10:46.9859426Z Container is terminating. Grace period: 5 seconds.
+2026-03-05T15:10:48.0134759Z Stop and delete container. Retry count = 0
+2026-03-05T15:10:48.0407963Z Stopping container: f984cac1625f_ponovaweight-app.
+2026-03-05T15:10:54.8727997Z Deleting container: f984cac1625f_ponovaweight-app. Retry count = 0
+2026-03-05T15:10:58.0550705Z Container get mounts received unexpected exception.
+2026-03-05T15:10:58.0702441Z Container get mounts received unexpected exception.
+2026-03-05T15:10:58.2229395Z Container get processes received unexpected exception.
+2026-03-05T15:10:58.4323326Z Container get processes received unexpected exception.
+2026-03-05T15:10:59.7400024Z Container spec TerminationMessagePolicy  path 
+2026-03-05T15:10:59.7406150Z Container is terminated. Total time elapsed: 12744 ms.
+2026-03-05T15:10:59.7576320Z Site container: ponovaweight-app terminated during site startup.
+2026-03-05T15:10:59.7592368Z State: Stopping, Action: CancellingStartup, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 15:10:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T15:10:59.8267480Z Site: ponovaweight-app stopped.
+2026-03-05T15:11:00.0146420Z State: Stopping, Action: UnmountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 15:10:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T15:11:15.4086159Z Site container: ponovaweight-app_managedIdentity terminated during site startup.
+2026-03-05T15:11:15.4087158Z State: Stopping, Action: UnmountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 15:10:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T15:11:16.9572164Z State: Stopping, Action: StoppingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 15:10:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T15:11:22.5461420Z Site: ponovaweight-app will be blocked for 1 minutes till 03/05/2026 15:12:22
+2026-03-05T15:11:22.5549309Z State: Blocked, Action: StoppingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 15:10:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site: ponovaweight-app will be blocked for 1 minutes till 03/05/2026 15:12:22, DetailsLevel: WARN
+2026-03-05T15:11:23.6237136Z State: Stopped, Action: None, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 15:10:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 15:11:23 (UTC), DetailsLevel: WARN
+2026-03-05T15:11:26.5606264Z State: Stopped, Action: None, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 15:10:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 15:11:23 (UTC), DetailsLevel: WARN
+2026-03-05T15:12:22.4111793Z Site: ponovaweight-app is unblocked.
+2026-03-05T15:28:42.9071020Z State: Starting, Action: EstablishingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 15:10:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 15:11:23 (UTC), DetailsLevel: WARN
+2026-03-05T15:28:52.5833635Z State: Starting, Action: StartingMsiContainer, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 15:10:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 15:11:23 (UTC), DetailsLevel: WARN
+2026-03-05T15:29:27.6383625Z State: Starting, Action: StartingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 15:10:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 15:11:23 (UTC), DetailsLevel: WARN
+2026-03-05T15:29:27.6392054Z Container start method called.
+2026-03-05T15:29:27.6394620Z State: Starting, Action: PullingImage, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 15:10:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pulling image 10.1.0.4:13209/appsvc/dotnetcore:10.0_20260115.4.tuxprod for ponovaweight-app., DetailsLevel: INFO
+2026-03-05T15:29:27.6397232Z Establishing network.
+2026-03-05T15:29:27.6399758Z Pulling image: appsvc/dotnetcore:10.0_20260115.4.tuxprod.
+2026-03-05T15:29:28.1436079Z Container is starting.
+2026-03-05T15:29:28.1437205Z State: Starting, Action: MountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 15:10:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Mounting volumes for ponovaweight-app., DetailsLevel: INFO
+2026-03-05T15:29:28.1538937Z Establishing user namespace if not established already.
+2026-03-05T15:29:28.1746521Z Establishing network if not established already.
+2026-03-05T15:29:28.1752150Z Mounting volumes.
+2026-03-05T15:29:28.1755222Z Nested mountpoint site/wwwroot
+2026-03-05T15:29:28.2034200Z Nested mountpoint volatile/logs
+2026-03-05T15:29:28.3141846Z Nested mountpoint 
+2026-03-05T15:29:28.3722800Z Nested mountpoint 
+2026-03-05T15:29:29.6119813Z Nested mountpoint 
+2026-03-05T15:29:29.6413297Z Nested mountpoint 
+2026-03-05T15:29:33.0889961Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 15:10:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Finished pulling container image and mounting volumes for ponovaweight-app. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-03-05T15:29:33.0915974Z Creating container.
+2026-03-05T15:29:33.1113066Z Creating pipes for streaming container io.
+2026-03-05T15:29:33.1115377Z Creating stdout named pipe at /podr/container/pipe/7e1feb0c058d_ponovaweight-app/stdout_45372addb75c4382a01ada1f23539476.
+2026-03-05T15:29:33.2055357Z Successfully created stdout named pipe at: /podr/container/pipe/7e1feb0c058d_ponovaweight-app/stdout_45372addb75c4382a01ada1f23539476.
+2026-03-05T15:29:33.2059256Z Opening named pipe /podr/container/pipe/7e1feb0c058d_ponovaweight-app/stdout_45372addb75c4382a01ada1f23539476 for reading in non-blocking mode.
+2026-03-05T15:29:33.2061628Z Successfully opened named pipe: /podr/container/pipe/7e1feb0c058d_ponovaweight-app/stdout_45372addb75c4382a01ada1f23539476.
+2026-03-05T15:29:33.2063260Z Successfully removed non-blocking flag from /podr/container/pipe/7e1feb0c058d_ponovaweight-app/stdout_45372addb75c4382a01ada1f23539476.
+2026-03-05T15:29:33.2065756Z Creating stderr named pipe at /podr/container/pipe/7e1feb0c058d_ponovaweight-app/stderr_b3ca96d4b6da49eb930f269672d3ead1.
+2026-03-05T15:29:33.2497761Z Successfully created stderr named pipe at: /podr/container/pipe/7e1feb0c058d_ponovaweight-app/stderr_b3ca96d4b6da49eb930f269672d3ead1.
+2026-03-05T15:29:33.2759670Z Opening named pipe /podr/container/pipe/7e1feb0c058d_ponovaweight-app/stderr_b3ca96d4b6da49eb930f269672d3ead1 for reading in non-blocking mode.
+2026-03-05T15:29:33.2879062Z Successfully opened named pipe: /podr/container/pipe/7e1feb0c058d_ponovaweight-app/stderr_b3ca96d4b6da49eb930f269672d3ead1.
+2026-03-05T15:29:33.2968756Z Successfully removed non-blocking flag from /podr/container/pipe/7e1feb0c058d_ponovaweight-app/stderr_b3ca96d4b6da49eb930f269672d3ead1.
+2026-03-05T15:29:33.3065597Z Creating container with image: appsvc/dotnetcore:10.0_20260115.4.tuxprod from registry: 10.1.0.4:13209 and fully qualified image name: 10.1.0.4:13209/appsvc/dotnetcore:10.0_20260115.4.tuxprod
+2026-03-05T15:29:34.9887230Z Starting container: 7e1feb0c058d_ponovaweight-app.
+2026-03-05T15:29:35.2947730Z Starting watchers and probes.
+2026-03-05T15:29:35.3833638Z Starting metrics collection.
+2026-03-05T15:29:35.3838316Z Container is running.
+2026-03-05T15:29:35.3840504Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 15:10:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container ponovaweight-app successfully created and is running., DetailsLevel: INFO
+2026-03-05T15:29:35.8006938Z Container start method finished after 8153 ms.
+2026-03-05T15:29:35.8098487Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 15:10:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container ponovaweight-app successfully created and is running., DetailsLevel: INFO
+2026-03-05T15:29:35.8413420Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 15:10:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-03-05T15:33:27.7338036Z Site startup probe failed after 231.631375 seconds.
+2026-03-05T15:33:34.6602722Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 15:33:34, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: ERR
+2026-03-05T15:33:35.6000089Z Failed to start site. Revert by stopping site.
+2026-03-05T15:33:35.8523040Z State: Stopping, Action: StoppingSite, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 15:33:34, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: ERR
+2026-03-05T15:33:36.1113680Z State: Stopping, Action: StoppingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 15:33:34, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: ERR
+2026-03-05T15:33:36.1790452Z Container is terminating. Grace period: 5 seconds.
+2026-03-05T15:33:37.8326296Z Stop and delete container. Retry count = 0
+2026-03-05T15:33:37.8432605Z Stopping container: 7e1feb0c058d_ponovaweight-app.
+2026-03-05T15:33:44.1007245Z Deleting container: 7e1feb0c058d_ponovaweight-app. Retry count = 0
+2026-03-05T15:33:46.6410581Z Container spec TerminationMessagePolicy  path 
+2026-03-05T15:33:46.6766863Z Container is terminated. Total time elapsed: 10444 ms.
+2026-03-05T15:33:46.6784622Z Site container: ponovaweight-app terminated during site startup.
+2026-03-05T15:33:46.6884057Z State: Stopping, Action: CancellingStartup, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 15:33:34, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T15:33:46.7188154Z Site: ponovaweight-app stopped.
+2026-03-05T15:33:46.7893472Z State: Stopping, Action: UnmountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 15:33:34, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T15:33:58.3354449Z Site container: ponovaweight-app_managedIdentity terminated during site startup.
+2026-03-05T15:33:58.3356307Z State: Stopping, Action: UnmountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 15:33:34, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T15:33:59.7755645Z State: Stopping, Action: StoppingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 15:33:34, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T15:34:06.1970912Z Site: ponovaweight-app will be blocked for 2 minutes till 03/05/2026 15:36:06
+2026-03-05T15:34:06.1973735Z State: Blocked, Action: StoppingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 15:33:34, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site: ponovaweight-app will be blocked for 2 minutes till 03/05/2026 15:36:06, DetailsLevel: WARN
+2026-03-05T15:34:06.3748375Z State: Stopped, Action: None, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 15:33:34, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 15:34:06 (UTC), DetailsLevel: WARN
+2026-03-05T15:34:08.8956158Z State: Stopped, Action: None, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 15:33:34, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 15:34:06 (UTC), DetailsLevel: WARN
+2026-03-05T15:36:06.1148336Z Site: ponovaweight-app is unblocked.
+2026-03-05T16:19:04.4027465Z State: Starting, Action: EstablishingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 15:33:34, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 15:34:06 (UTC), DetailsLevel: WARN
+2026-03-05T16:19:14.7890334Z State: Starting, Action: StartingMsiContainer, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 15:33:34, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 15:34:06 (UTC), DetailsLevel: WARN
+2026-03-05T16:19:43.2508295Z State: Starting, Action: StartingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 15:33:34, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 15:34:06 (UTC), DetailsLevel: WARN
+2026-03-05T16:19:43.2513078Z Container start method called.
+2026-03-05T16:19:43.2514043Z State: Starting, Action: PullingImage, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 15:33:34, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pulling image 10.1.0.4:13209/appsvc/dotnetcore:10.0_20260115.4.tuxprod for ponovaweight-app., DetailsLevel: INFO
+2026-03-05T16:19:43.2515824Z Establishing network.
+2026-03-05T16:19:43.2517699Z Pulling image: appsvc/dotnetcore:10.0_20260115.4.tuxprod.
+2026-03-05T16:19:44.8762820Z Container is starting.
+2026-03-05T16:19:44.8771324Z State: Starting, Action: MountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 15:33:34, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Mounting volumes for ponovaweight-app., DetailsLevel: INFO
+2026-03-05T16:19:44.8775915Z Establishing user namespace if not established already.
+2026-03-05T16:19:44.8778821Z Establishing network if not established already.
+2026-03-05T16:19:44.8785895Z Mounting volumes.
+2026-03-05T16:19:44.8964734Z Nested mountpoint site/wwwroot
+2026-03-05T16:19:44.9193399Z Nested mountpoint volatile/logs
+2026-03-05T16:19:45.0164367Z Nested mountpoint 
+2026-03-05T16:19:45.2662749Z Nested mountpoint 
+2026-03-05T16:19:45.4918012Z Nested mountpoint 
+2026-03-05T16:19:45.5421700Z Nested mountpoint 
+2026-03-05T16:19:50.3149701Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 15:33:34, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Finished pulling container image and mounting volumes for ponovaweight-app. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-03-05T16:19:50.4099560Z Creating container.
+2026-03-05T16:19:50.5028344Z Creating pipes for streaming container io.
+2026-03-05T16:19:50.5033267Z Creating stdout named pipe at /podr/container/pipe/6a70e0920a13_ponovaweight-app/stdout_748efdf402e446219e4ebdd8c66a522d.
+2026-03-05T16:19:50.5116126Z Successfully created stdout named pipe at: /podr/container/pipe/6a70e0920a13_ponovaweight-app/stdout_748efdf402e446219e4ebdd8c66a522d.
+2026-03-05T16:19:50.5119080Z Opening named pipe /podr/container/pipe/6a70e0920a13_ponovaweight-app/stdout_748efdf402e446219e4ebdd8c66a522d for reading in non-blocking mode.
+2026-03-05T16:19:50.5134954Z Successfully opened named pipe: /podr/container/pipe/6a70e0920a13_ponovaweight-app/stdout_748efdf402e446219e4ebdd8c66a522d.
+2026-03-05T16:19:50.5231995Z Successfully removed non-blocking flag from /podr/container/pipe/6a70e0920a13_ponovaweight-app/stdout_748efdf402e446219e4ebdd8c66a522d.
+2026-03-05T16:19:50.5428801Z Creating stderr named pipe at /podr/container/pipe/6a70e0920a13_ponovaweight-app/stderr_af72d80239124c53840ced7acada1d55.
+2026-03-05T16:19:50.5433832Z Successfully created stderr named pipe at: /podr/container/pipe/6a70e0920a13_ponovaweight-app/stderr_af72d80239124c53840ced7acada1d55.
+2026-03-05T16:19:50.5519464Z Opening named pipe /podr/container/pipe/6a70e0920a13_ponovaweight-app/stderr_af72d80239124c53840ced7acada1d55 for reading in non-blocking mode.
+2026-03-05T16:19:50.5524636Z Successfully opened named pipe: /podr/container/pipe/6a70e0920a13_ponovaweight-app/stderr_af72d80239124c53840ced7acada1d55.
+2026-03-05T16:19:50.5608188Z Successfully removed non-blocking flag from /podr/container/pipe/6a70e0920a13_ponovaweight-app/stderr_af72d80239124c53840ced7acada1d55.
+2026-03-05T16:19:50.6039266Z Creating container with image: appsvc/dotnetcore:10.0_20260115.4.tuxprod from registry: 10.1.0.4:13209 and fully qualified image name: 10.1.0.4:13209/appsvc/dotnetcore:10.0_20260115.4.tuxprod
+2026-03-05T16:19:54.1769207Z Starting container: 6a70e0920a13_ponovaweight-app.
+2026-03-05T16:19:54.4111740Z Starting watchers and probes.
+2026-03-05T16:19:54.4226666Z Starting metrics collection.
+2026-03-05T16:19:54.4232312Z Container is running.
+2026-03-05T16:19:54.4233166Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 15:33:34, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container ponovaweight-app successfully created and is running., DetailsLevel: INFO
+2026-03-05T16:19:55.6814310Z Container start method finished after 12429 ms.
+2026-03-05T16:19:55.6826084Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 15:33:34, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container ponovaweight-app successfully created and is running., DetailsLevel: INFO
+2026-03-05T16:19:55.7114775Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 15:33:34, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-03-05T16:23:46.6061318Z Site startup probe failed after 230.1039558 seconds.
+2026-03-05T16:23:52.2389199Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 16:23:51, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: ERR
+2026-03-05T16:23:52.6618091Z Failed to start site. Revert by stopping site.
+2026-03-05T16:23:52.8329349Z State: Stopping, Action: StoppingSite, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 16:23:51, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: ERR
+2026-03-05T16:23:53.1312392Z State: Stopping, Action: StoppingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 16:23:51, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: ERR
+2026-03-05T16:23:53.3340212Z Container is terminating. Grace period: 5 seconds.
+2026-03-05T16:23:57.1576106Z Stop and delete container. Retry count = 0
+2026-03-05T16:23:57.1596688Z Stopping container: 6a70e0920a13_ponovaweight-app.
+2026-03-05T16:24:02.0832242Z Container get mounts received unexpected exception.
+2026-03-05T16:24:03.2476195Z Deleting container: 6a70e0920a13_ponovaweight-app. Retry count = 0
+2026-03-05T16:24:07.0391307Z Container spec TerminationMessagePolicy  path 
+2026-03-05T16:24:07.0581963Z Container is terminated. Total time elapsed: 13675 ms.
+2026-03-05T16:24:07.0604822Z Site container: ponovaweight-app terminated during site startup.
+2026-03-05T16:24:07.0675502Z State: Stopping, Action: CancellingStartup, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 16:23:51, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T16:24:07.0978779Z Site: ponovaweight-app stopped.
+2026-03-05T16:24:07.5451783Z State: Stopping, Action: UnmountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 16:23:51, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T16:24:18.7354666Z Site container: ponovaweight-app_managedIdentity terminated during site startup.
+2026-03-05T16:24:18.7540511Z State: Stopping, Action: UnmountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 16:23:51, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T16:24:20.4355116Z State: Stopping, Action: StoppingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 16:23:51, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T16:24:26.5660961Z Site: ponovaweight-app will be blocked for 2 minutes till 03/05/2026 16:26:25
+2026-03-05T16:24:26.5675059Z State: Blocked, Action: StoppingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 16:23:51, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site: ponovaweight-app will be blocked for 2 minutes till 03/05/2026 16:26:25, DetailsLevel: WARN
+2026-03-05T16:24:27.1709445Z State: Stopped, Action: None, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 16:23:51, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 16:24:27 (UTC), DetailsLevel: WARN
+2026-03-05T16:24:29.5168604Z State: Stopped, Action: None, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 16:23:51, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 16:24:27 (UTC), DetailsLevel: WARN
+2026-03-05T16:26:25.8343422Z Site: ponovaweight-app is unblocked.
+2026-03-05T17:31:51.9877792Z State: Starting, Action: EstablishingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 16:23:51, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 16:24:27 (UTC), DetailsLevel: WARN
+2026-03-05T17:32:04.8485274Z State: Starting, Action: StartingMsiContainer, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 16:23:51, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 16:24:27 (UTC), DetailsLevel: WARN
+2026-03-05T17:32:43.1525392Z State: Starting, Action: StartingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 16:23:51, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 16:24:27 (UTC), DetailsLevel: WARN
+2026-03-05T17:32:43.1534302Z Container start method called.
+2026-03-05T17:32:43.1536713Z State: Starting, Action: PullingImage, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 16:23:51, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pulling image 10.1.0.4:13209/appsvc/dotnetcore:10.0_20260115.4.tuxprod for ponovaweight-app., DetailsLevel: INFO
+2026-03-05T17:32:43.1540617Z Establishing network.
+2026-03-05T17:32:43.1543747Z Pulling image: appsvc/dotnetcore:10.0_20260115.4.tuxprod.
+2026-03-05T17:32:43.8024316Z Container is starting.
+2026-03-05T17:32:43.8315618Z State: Starting, Action: MountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 16:23:51, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Mounting volumes for ponovaweight-app., DetailsLevel: INFO
+2026-03-05T17:32:43.8518027Z Establishing user namespace if not established already.
+2026-03-05T17:32:43.8689593Z Establishing network if not established already.
+2026-03-05T17:32:43.8691972Z Mounting volumes.
+2026-03-05T17:32:43.8701860Z Nested mountpoint site/wwwroot
+2026-03-05T17:32:44.0753086Z Nested mountpoint volatile/logs
+2026-03-05T17:32:44.2704196Z Nested mountpoint 
+2026-03-05T17:32:44.7591704Z Nested mountpoint 
+2026-03-05T17:32:46.0238878Z Nested mountpoint 
+2026-03-05T17:32:46.5488174Z Nested mountpoint 
+2026-03-05T17:32:51.9042007Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 16:23:51, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Finished pulling container image and mounting volumes for ponovaweight-app. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-03-05T17:32:51.9259024Z Creating container.
+2026-03-05T17:32:52.1254392Z Creating pipes for streaming container io.
+2026-03-05T17:32:52.2851822Z Creating stdout named pipe at /podr/container/pipe/18aa42545e4c_ponovaweight-app/stdout_73033be09f9c442aa958f8b109116d82.
+2026-03-05T17:32:52.3472156Z Successfully created stdout named pipe at: /podr/container/pipe/18aa42545e4c_ponovaweight-app/stdout_73033be09f9c442aa958f8b109116d82.
+2026-03-05T17:32:52.3474869Z Opening named pipe /podr/container/pipe/18aa42545e4c_ponovaweight-app/stdout_73033be09f9c442aa958f8b109116d82 for reading in non-blocking mode.
+2026-03-05T17:32:52.3477157Z Successfully opened named pipe: /podr/container/pipe/18aa42545e4c_ponovaweight-app/stdout_73033be09f9c442aa958f8b109116d82.
+2026-03-05T17:32:52.3478748Z Successfully removed non-blocking flag from /podr/container/pipe/18aa42545e4c_ponovaweight-app/stdout_73033be09f9c442aa958f8b109116d82.
+2026-03-05T17:32:52.3674903Z Creating stderr named pipe at /podr/container/pipe/18aa42545e4c_ponovaweight-app/stderr_36244355dc9349269a3d3c4a9421d161.
+2026-03-05T17:32:52.3846179Z Successfully created stderr named pipe at: /podr/container/pipe/18aa42545e4c_ponovaweight-app/stderr_36244355dc9349269a3d3c4a9421d161.
+2026-03-05T17:32:52.3858946Z Opening named pipe /podr/container/pipe/18aa42545e4c_ponovaweight-app/stderr_36244355dc9349269a3d3c4a9421d161 for reading in non-blocking mode.
+2026-03-05T17:32:52.4149497Z Successfully opened named pipe: /podr/container/pipe/18aa42545e4c_ponovaweight-app/stderr_36244355dc9349269a3d3c4a9421d161.
+2026-03-05T17:32:52.4183429Z Successfully removed non-blocking flag from /podr/container/pipe/18aa42545e4c_ponovaweight-app/stderr_36244355dc9349269a3d3c4a9421d161.
+2026-03-05T17:32:52.5855753Z Creating container with image: appsvc/dotnetcore:10.0_20260115.4.tuxprod from registry: 10.1.0.4:13209 and fully qualified image name: 10.1.0.4:13209/appsvc/dotnetcore:10.0_20260115.4.tuxprod
+2026-03-05T17:32:56.2095699Z Container get mounts received unexpected exception.
+2026-03-05T17:32:58.3845851Z Starting container: 18aa42545e4c_ponovaweight-app.
+2026-03-05T17:32:59.1041463Z Starting watchers and probes.
+2026-03-05T17:32:59.1845056Z Starting metrics collection.
+2026-03-05T17:32:59.1953806Z Container is running.
+2026-03-05T17:32:59.1960698Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 16:23:51, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container ponovaweight-app successfully created and is running., DetailsLevel: INFO
+2026-03-05T17:33:00.8835648Z Container start method finished after 17729 ms.
+2026-03-05T17:33:00.9145322Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 16:23:51, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container ponovaweight-app successfully created and is running., DetailsLevel: INFO
+2026-03-05T17:33:01.0426146Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 16:23:51, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-03-05T17:36:52.0359439Z Site startup probe failed after 230.497651 seconds.
+2026-03-05T17:36:59.5992800Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 17:36:59, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: ERR
+2026-03-05T17:36:59.8190658Z Failed to start site. Revert by stopping site.
+2026-03-05T17:36:59.8584244Z State: Stopping, Action: StoppingSite, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 17:36:59, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: ERR
+2026-03-05T17:36:59.8890638Z State: Stopping, Action: StoppingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 17:36:59, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: ERR
+2026-03-05T17:36:59.9065079Z Container is terminating. Grace period: 5 seconds.
+2026-03-05T17:37:00.2336005Z Stop and delete container. Retry count = 0
+2026-03-05T17:37:00.2611727Z Stopping container: 18aa42545e4c_ponovaweight-app.
+2026-03-05T17:37:07.7767186Z Deleting container: 18aa42545e4c_ponovaweight-app. Retry count = 0
+2026-03-05T17:37:09.2819350Z Container spec TerminationMessagePolicy  path 
+2026-03-05T17:37:09.3008263Z Container is terminated. Total time elapsed: 9391 ms.
+2026-03-05T17:37:09.3021768Z Site container: ponovaweight-app terminated during site startup.
+2026-03-05T17:37:09.4123620Z State: Stopping, Action: CancellingStartup, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 17:36:59, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T17:37:09.5883681Z Site: ponovaweight-app stopped.
+2026-03-05T17:37:09.8195287Z State: Stopping, Action: UnmountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 17:36:59, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T17:37:18.3991923Z Site container: ponovaweight-app_managedIdentity terminated during site startup.
+2026-03-05T17:37:18.3995456Z State: Stopping, Action: UnmountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 17:36:59, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T17:37:19.3993217Z State: Stopping, Action: StoppingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 17:36:59, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T17:37:23.8299629Z Site: ponovaweight-app will be blocked for 2 minutes till 03/05/2026 17:39:23
+2026-03-05T17:37:23.8484456Z State: Blocked, Action: StoppingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 17:36:59, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site: ponovaweight-app will be blocked for 2 minutes till 03/05/2026 17:39:23, DetailsLevel: WARN
+2026-03-05T17:37:23.9270667Z State: Stopped, Action: None, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 17:36:59, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 17:37:23 (UTC), DetailsLevel: WARN
+2026-03-05T17:37:26.2709703Z State: Stopped, Action: None, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 17:36:59, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 17:37:23 (UTC), DetailsLevel: WARN
+2026-03-05T17:39:23.7636964Z Site: ponovaweight-app is unblocked.
+2026-03-05T18:08:05.8421624Z State: Starting, Action: EstablishingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 17:36:59, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 17:37:23 (UTC), DetailsLevel: WARN
+2026-03-05T18:08:19.1976441Z State: Starting, Action: StartingMsiContainer, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 17:36:59, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 17:37:23 (UTC), DetailsLevel: WARN
+2026-03-05T18:08:47.7820631Z State: Starting, Action: StartingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 17:36:59, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 17:37:23 (UTC), DetailsLevel: WARN
+2026-03-05T18:08:47.7829725Z Container start method called.
+2026-03-05T18:08:47.7831388Z State: Starting, Action: PullingImage, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 17:36:59, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pulling image 10.1.0.4:13209/appsvc/dotnetcore:10.0_20260115.4.tuxprod for ponovaweight-app., DetailsLevel: INFO
+2026-03-05T18:08:47.7833378Z Establishing network.
+2026-03-05T18:08:47.7835098Z Pulling image: appsvc/dotnetcore:10.0_20260115.4.tuxprod.
+2026-03-05T18:08:49.0738879Z Container is starting.
+2026-03-05T18:08:49.0740522Z State: Starting, Action: MountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 17:36:59, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Mounting volumes for ponovaweight-app., DetailsLevel: INFO
+2026-03-05T18:08:49.0742206Z Establishing user namespace if not established already.
+2026-03-05T18:08:49.0743980Z Establishing network if not established already.
+2026-03-05T18:08:49.0745727Z Mounting volumes.
+2026-03-05T18:08:49.1247545Z Nested mountpoint site/wwwroot
+2026-03-05T18:08:49.4235066Z Nested mountpoint volatile/logs
+2026-03-05T18:08:49.4982809Z Nested mountpoint 
+2026-03-05T18:08:50.2927115Z Nested mountpoint 
+2026-03-05T18:08:50.4039461Z Nested mountpoint 
+2026-03-05T18:08:50.5029279Z Nested mountpoint 
+2026-03-05T18:08:55.6736917Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 17:36:59, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Finished pulling container image and mounting volumes for ponovaweight-app. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-03-05T18:08:55.6743965Z Creating container.
+2026-03-05T18:08:55.6759967Z Creating pipes for streaming container io.
+2026-03-05T18:08:55.7941475Z Creating stdout named pipe at /podr/container/pipe/a8fdc7e92424_ponovaweight-app/stdout_37c4b7fd63164793945a42d2b7da5b5b.
+2026-03-05T18:08:55.8456741Z Successfully created stdout named pipe at: /podr/container/pipe/a8fdc7e92424_ponovaweight-app/stdout_37c4b7fd63164793945a42d2b7da5b5b.
+2026-03-05T18:08:56.0062228Z Opening named pipe /podr/container/pipe/a8fdc7e92424_ponovaweight-app/stdout_37c4b7fd63164793945a42d2b7da5b5b for reading in non-blocking mode.
+2026-03-05T18:08:56.0541377Z Successfully opened named pipe: /podr/container/pipe/a8fdc7e92424_ponovaweight-app/stdout_37c4b7fd63164793945a42d2b7da5b5b.
+2026-03-05T18:08:56.0553506Z Successfully removed non-blocking flag from /podr/container/pipe/a8fdc7e92424_ponovaweight-app/stdout_37c4b7fd63164793945a42d2b7da5b5b.
+2026-03-05T18:08:56.0558125Z Creating stderr named pipe at /podr/container/pipe/a8fdc7e92424_ponovaweight-app/stderr_831ff31bfd1b4f9392bffca85006172f.
+2026-03-05T18:08:56.0561393Z Successfully created stderr named pipe at: /podr/container/pipe/a8fdc7e92424_ponovaweight-app/stderr_831ff31bfd1b4f9392bffca85006172f.
+2026-03-05T18:08:56.0563014Z Opening named pipe /podr/container/pipe/a8fdc7e92424_ponovaweight-app/stderr_831ff31bfd1b4f9392bffca85006172f for reading in non-blocking mode.
+2026-03-05T18:08:56.0564884Z Successfully opened named pipe: /podr/container/pipe/a8fdc7e92424_ponovaweight-app/stderr_831ff31bfd1b4f9392bffca85006172f.
+2026-03-05T18:08:56.0566504Z Successfully removed non-blocking flag from /podr/container/pipe/a8fdc7e92424_ponovaweight-app/stderr_831ff31bfd1b4f9392bffca85006172f.
+2026-03-05T18:08:56.1941653Z Creating container with image: appsvc/dotnetcore:10.0_20260115.4.tuxprod from registry: 10.1.0.4:13209 and fully qualified image name: 10.1.0.4:13209/appsvc/dotnetcore:10.0_20260115.4.tuxprod
+2026-03-05T18:08:56.3031623Z Container get mounts received unexpected exception.
+2026-03-05T18:08:56.3651716Z Container get mounts received unexpected exception.
+2026-03-05T18:08:56.5615205Z Container get processes received unexpected exception.
+2026-03-05T18:08:56.5640294Z Container get processes received unexpected exception.
+2026-03-05T18:09:02.0584295Z Starting container: a8fdc7e92424_ponovaweight-app.
+2026-03-05T18:09:03.2373957Z Starting watchers and probes.
+2026-03-05T18:09:03.2479980Z Starting metrics collection.
+2026-03-05T18:09:03.2483786Z Container is running.
+2026-03-05T18:09:03.2494812Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 17:36:59, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container ponovaweight-app successfully created and is running., DetailsLevel: INFO
+2026-03-05T18:09:05.4350984Z Container start method finished after 17551 ms.
+2026-03-05T18:09:05.4357296Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 17:36:59, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container ponovaweight-app successfully created and is running., DetailsLevel: INFO
+2026-03-05T18:09:05.5053972Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 17:36:59, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-03-05T18:12:56.5721634Z Site startup probe failed after 230.7249469 seconds.
+2026-03-05T18:13:07.2378832Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:13:06, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: ERR
+2026-03-05T18:13:08.2764306Z Failed to start site. Revert by stopping site.
+2026-03-05T18:13:08.4061329Z State: Stopping, Action: StoppingSite, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:13:06, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: ERR
+2026-03-05T18:13:08.6452420Z State: Stopping, Action: StoppingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:13:06, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: ERR
+2026-03-05T18:13:08.6788887Z Container is terminating. Grace period: 5 seconds.
+2026-03-05T18:13:09.2611893Z Stop and delete container. Retry count = 0
+2026-03-05T18:13:09.2718674Z Stopping container: a8fdc7e92424_ponovaweight-app.
+2026-03-05T18:13:19.6608867Z Deleting container: a8fdc7e92424_ponovaweight-app. Retry count = 0
+2026-03-05T18:13:24.7028850Z Container spec TerminationMessagePolicy  path 
+2026-03-05T18:13:24.7726155Z Container is terminated. Total time elapsed: 16068 ms.
+2026-03-05T18:13:24.8143129Z Site container: ponovaweight-app terminated during site startup.
+2026-03-05T18:13:24.9140119Z State: Stopping, Action: CancellingStartup, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:13:06, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T18:13:25.0140843Z Site: ponovaweight-app stopped.
+2026-03-05T18:13:25.2187333Z State: Stopping, Action: UnmountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:13:06, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T18:13:38.0032791Z Site container: ponovaweight-app_managedIdentity terminated during site startup.
+2026-03-05T18:13:38.0035408Z State: Stopping, Action: UnmountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:13:06, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T18:13:39.6172814Z State: Stopping, Action: StoppingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:13:06, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T18:13:46.1087773Z Site: ponovaweight-app will be blocked for 2 minutes till 03/05/2026 18:15:46
+2026-03-05T18:13:46.1092863Z State: Blocked, Action: StoppingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:13:06, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site: ponovaweight-app will be blocked for 2 minutes till 03/05/2026 18:15:46, DetailsLevel: WARN
+2026-03-05T18:13:46.3768406Z State: Stopped, Action: None, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:13:06, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 18:13:46 (UTC), DetailsLevel: WARN
+2026-03-05T18:13:48.2414128Z State: Stopped, Action: None, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:13:06, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 18:13:46 (UTC), DetailsLevel: WARN
+2026-03-05T18:15:46.0820716Z Site: ponovaweight-app is unblocked.
+2026-03-05T18:32:32.1589538Z State: Starting, Action: EstablishingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:13:06, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 18:13:46 (UTC), DetailsLevel: WARN
+2026-03-05T18:32:49.6315446Z State: Starting, Action: StartingMsiContainer, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:13:06, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 18:13:46 (UTC), DetailsLevel: WARN
+2026-03-05T18:33:34.5475306Z State: Starting, Action: StartingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:13:06, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 18:13:46 (UTC), DetailsLevel: WARN
+2026-03-05T18:33:34.5576530Z Container start method called.
+2026-03-05T18:33:34.5674805Z State: Starting, Action: PullingImage, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:13:06, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pulling image 10.1.0.4:13209/appsvc/dotnetcore:10.0_20260115.4.tuxprod for ponovaweight-app., DetailsLevel: INFO
+2026-03-05T18:33:34.5684639Z Establishing network.
+2026-03-05T18:33:34.5697654Z Pulling image: appsvc/dotnetcore:10.0_20260115.4.tuxprod.
+2026-03-05T18:33:35.7130321Z Container is starting.
+2026-03-05T18:33:35.7131905Z State: Starting, Action: MountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:13:06, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Mounting volumes for ponovaweight-app., DetailsLevel: INFO
+2026-03-05T18:33:35.7133599Z Establishing user namespace if not established already.
+2026-03-05T18:33:35.7135153Z Establishing network if not established already.
+2026-03-05T18:33:35.7136986Z Mounting volumes.
+2026-03-05T18:33:35.7139102Z Nested mountpoint site/wwwroot
+2026-03-05T18:33:35.9211637Z Nested mountpoint volatile/logs
+2026-03-05T18:33:36.1998415Z Nested mountpoint 
+2026-03-05T18:33:36.3013576Z Nested mountpoint 
+2026-03-05T18:33:37.8227885Z Nested mountpoint 
+2026-03-05T18:33:38.0123619Z Nested mountpoint 
+2026-03-05T18:33:45.2059428Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:13:06, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Finished pulling container image and mounting volumes for ponovaweight-app. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-03-05T18:33:45.2068597Z Creating container.
+2026-03-05T18:33:45.2073708Z Creating pipes for streaming container io.
+2026-03-05T18:33:45.2076557Z Creating stdout named pipe at /podr/container/pipe/2e9a51277221_ponovaweight-app/stdout_897c5afd2d1644628f517d0d1922a6d7.
+2026-03-05T18:33:45.5281347Z Successfully created stdout named pipe at: /podr/container/pipe/2e9a51277221_ponovaweight-app/stdout_897c5afd2d1644628f517d0d1922a6d7.
+2026-03-05T18:33:45.6709707Z Opening named pipe /podr/container/pipe/2e9a51277221_ponovaweight-app/stdout_897c5afd2d1644628f517d0d1922a6d7 for reading in non-blocking mode.
+2026-03-05T18:33:45.6784260Z Successfully opened named pipe: /podr/container/pipe/2e9a51277221_ponovaweight-app/stdout_897c5afd2d1644628f517d0d1922a6d7.
+2026-03-05T18:33:45.6893811Z Successfully removed non-blocking flag from /podr/container/pipe/2e9a51277221_ponovaweight-app/stdout_897c5afd2d1644628f517d0d1922a6d7.
+2026-03-05T18:33:45.6912520Z Creating stderr named pipe at /podr/container/pipe/2e9a51277221_ponovaweight-app/stderr_5d01ba3be95945c888fc5ec9c769c462.
+2026-03-05T18:33:45.7003082Z Successfully created stderr named pipe at: /podr/container/pipe/2e9a51277221_ponovaweight-app/stderr_5d01ba3be95945c888fc5ec9c769c462.
+2026-03-05T18:33:45.7486008Z Opening named pipe /podr/container/pipe/2e9a51277221_ponovaweight-app/stderr_5d01ba3be95945c888fc5ec9c769c462 for reading in non-blocking mode.
+2026-03-05T18:33:45.7490460Z Successfully opened named pipe: /podr/container/pipe/2e9a51277221_ponovaweight-app/stderr_5d01ba3be95945c888fc5ec9c769c462.
+2026-03-05T18:33:45.7492316Z Successfully removed non-blocking flag from /podr/container/pipe/2e9a51277221_ponovaweight-app/stderr_5d01ba3be95945c888fc5ec9c769c462.
+2026-03-05T18:33:45.7504087Z Creating container with image: appsvc/dotnetcore:10.0_20260115.4.tuxprod from registry: 10.1.0.4:13209 and fully qualified image name: 10.1.0.4:13209/appsvc/dotnetcore:10.0_20260115.4.tuxprod
+2026-03-05T18:33:48.8455129Z Starting container: 2e9a51277221_ponovaweight-app.
+2026-03-05T18:33:49.1973908Z Starting watchers and probes.
+2026-03-05T18:33:49.2156583Z Starting metrics collection.
+2026-03-05T18:33:49.2165594Z Container is running.
+2026-03-05T18:33:49.2167382Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:13:06, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container ponovaweight-app successfully created and is running., DetailsLevel: INFO
+2026-03-05T18:33:51.5217495Z Container start method finished after 16963 ms.
+2026-03-05T18:33:51.5220455Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:13:06, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container ponovaweight-app successfully created and is running., DetailsLevel: INFO
+2026-03-05T18:33:51.5220912Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:13:06, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-03-05T18:37:43.0520208Z Site startup probe failed after 231.0240475 seconds.
+2026-03-05T18:37:46.4513027Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:37:46, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: ERR
+2026-03-05T18:37:46.6643628Z Failed to start site. Revert by stopping site.
+2026-03-05T18:37:46.6762403Z State: Stopping, Action: StoppingSite, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:37:46, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: ERR
+2026-03-05T18:37:46.7521200Z State: Stopping, Action: StoppingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:37:46, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: ERR
+2026-03-05T18:37:46.7626799Z Container is terminating. Grace period: 5 seconds.
+2026-03-05T18:37:47.1592351Z Stop and delete container. Retry count = 0
+2026-03-05T18:37:47.1600883Z Stopping container: 2e9a51277221_ponovaweight-app.
+2026-03-05T18:37:55.5183814Z Deleting container: 2e9a51277221_ponovaweight-app. Retry count = 0
+2026-03-05T18:37:55.6505053Z Container get mounts received unexpected exception.
+2026-03-05T18:37:55.8391243Z Container get mounts received unexpected exception.
+2026-03-05T18:37:57.2858953Z Container get processes received unexpected exception.
+2026-03-05T18:37:57.6373734Z Container get processes received unexpected exception.
+2026-03-05T18:37:59.3690650Z Container spec TerminationMessagePolicy  path 
+2026-03-05T18:37:59.3890576Z Container is terminated. Total time elapsed: 12624 ms.
+2026-03-05T18:37:59.5164543Z Site container: ponovaweight-app terminated during site startup.
+2026-03-05T18:37:59.5262433Z State: Stopping, Action: CancellingStartup, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:37:46, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T18:37:59.5926950Z Site: ponovaweight-app stopped.
+2026-03-05T18:37:59.7590369Z State: Stopping, Action: UnmountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:37:46, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T18:38:13.8802186Z Site container: ponovaweight-app_managedIdentity terminated during site startup.
+2026-03-05T18:38:13.8804147Z State: Stopping, Action: UnmountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:37:46, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T18:38:15.9946505Z State: Stopping, Action: StoppingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:37:46, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T18:38:23.9332686Z Site: ponovaweight-app will be blocked for 2 minutes till 03/05/2026 18:40:23
+2026-03-05T18:38:24.0222572Z State: Blocked, Action: StoppingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:37:46, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site: ponovaweight-app will be blocked for 2 minutes till 03/05/2026 18:40:23, DetailsLevel: WARN
+2026-03-05T18:38:24.7189648Z State: Stopped, Action: None, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:37:46, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 18:38:24 (UTC), DetailsLevel: WARN
+2026-03-05T18:38:27.6218155Z State: Stopped, Action: None, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:37:46, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 18:38:24 (UTC), DetailsLevel: WARN
+2026-03-05T18:40:23.8781421Z Site: ponovaweight-app is unblocked.
+2026-03-05T18:43:03.7320578Z State: Starting, Action: EstablishingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:37:46, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 18:38:24 (UTC), DetailsLevel: WARN
+2026-03-05T18:43:16.7764405Z State: Starting, Action: StartingMsiContainer, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:37:46, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 18:38:24 (UTC), DetailsLevel: WARN
+2026-03-05T18:43:45.9025562Z State: Starting, Action: StartingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:37:46, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 18:38:24 (UTC), DetailsLevel: WARN
+2026-03-05T18:43:45.9130101Z Container start method called.
+2026-03-05T18:43:45.9253956Z State: Starting, Action: PullingImage, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:37:46, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pulling image 10.1.0.4:13209/appsvc/dotnetcore:10.0_20260115.4.tuxprod for ponovaweight-app., DetailsLevel: INFO
+2026-03-05T18:43:45.9424999Z Establishing network.
+2026-03-05T18:43:45.9441767Z Pulling image: appsvc/dotnetcore:10.0_20260115.4.tuxprod.
+2026-03-05T18:43:46.6731787Z Container is starting.
+2026-03-05T18:43:46.7013377Z State: Starting, Action: MountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:37:46, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Mounting volumes for ponovaweight-app., DetailsLevel: INFO
+2026-03-05T18:43:46.7023297Z Establishing user namespace if not established already.
+2026-03-05T18:43:46.7030660Z Establishing network if not established already.
+2026-03-05T18:43:46.7124754Z Mounting volumes.
+2026-03-05T18:43:46.7137161Z Nested mountpoint site/wwwroot
+2026-03-05T18:43:46.8317600Z Nested mountpoint volatile/logs
+2026-03-05T18:43:47.3176319Z Nested mountpoint 
+2026-03-05T18:43:48.2141734Z Nested mountpoint 
+2026-03-05T18:43:48.7870118Z Nested mountpoint 
+2026-03-05T18:43:48.8700698Z Nested mountpoint 
+2026-03-05T18:43:54.2857370Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:37:46, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Finished pulling container image and mounting volumes for ponovaweight-app. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-03-05T18:43:54.4441141Z Creating container.
+2026-03-05T18:43:54.4442978Z Creating pipes for streaming container io.
+2026-03-05T18:43:54.4444030Z Creating stdout named pipe at /podr/container/pipe/969fdf2f4d32_ponovaweight-app/stdout_bd04b8320a044a40b1812ecbdf4f6386.
+2026-03-05T18:43:54.4622275Z Successfully created stdout named pipe at: /podr/container/pipe/969fdf2f4d32_ponovaweight-app/stdout_bd04b8320a044a40b1812ecbdf4f6386.
+2026-03-05T18:43:54.4643390Z Opening named pipe /podr/container/pipe/969fdf2f4d32_ponovaweight-app/stdout_bd04b8320a044a40b1812ecbdf4f6386 for reading in non-blocking mode.
+2026-03-05T18:43:54.5496270Z Successfully opened named pipe: /podr/container/pipe/969fdf2f4d32_ponovaweight-app/stdout_bd04b8320a044a40b1812ecbdf4f6386.
+2026-03-05T18:43:54.5499182Z Successfully removed non-blocking flag from /podr/container/pipe/969fdf2f4d32_ponovaweight-app/stdout_bd04b8320a044a40b1812ecbdf4f6386.
+2026-03-05T18:43:54.5918925Z Creating stderr named pipe at /podr/container/pipe/969fdf2f4d32_ponovaweight-app/stderr_a7ea52cb04ef4a38a83a0dae054866be.
+2026-03-05T18:43:54.5922318Z Successfully created stderr named pipe at: /podr/container/pipe/969fdf2f4d32_ponovaweight-app/stderr_a7ea52cb04ef4a38a83a0dae054866be.
+2026-03-05T18:43:54.5923938Z Opening named pipe /podr/container/pipe/969fdf2f4d32_ponovaweight-app/stderr_a7ea52cb04ef4a38a83a0dae054866be for reading in non-blocking mode.
+2026-03-05T18:43:54.5925831Z Successfully opened named pipe: /podr/container/pipe/969fdf2f4d32_ponovaweight-app/stderr_a7ea52cb04ef4a38a83a0dae054866be.
+2026-03-05T18:43:54.5927440Z Successfully removed non-blocking flag from /podr/container/pipe/969fdf2f4d32_ponovaweight-app/stderr_a7ea52cb04ef4a38a83a0dae054866be.
+2026-03-05T18:43:54.6292931Z Creating container with image: appsvc/dotnetcore:10.0_20260115.4.tuxprod from registry: 10.1.0.4:13209 and fully qualified image name: 10.1.0.4:13209/appsvc/dotnetcore:10.0_20260115.4.tuxprod
+2026-03-05T18:43:54.9417195Z Container get mounts received unexpected exception.
+2026-03-05T18:43:54.9729886Z Container get mounts received unexpected exception.
+2026-03-05T18:43:55.0437265Z Container get processes received unexpected exception.
+2026-03-05T18:43:55.0742993Z Container get processes received unexpected exception.
+2026-03-05T18:43:59.8862305Z Starting container: 969fdf2f4d32_ponovaweight-app.
+2026-03-05T18:44:00.1387534Z Starting watchers and probes.
+2026-03-05T18:44:00.1571735Z Starting metrics collection.
+2026-03-05T18:44:00.1587229Z Container is running.
+2026-03-05T18:44:00.1588740Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:37:46, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container ponovaweight-app successfully created and is running., DetailsLevel: INFO
+2026-03-05T18:44:00.8215258Z Container start method finished after 14897 ms.
+2026-03-05T18:44:00.9520176Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:37:46, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container ponovaweight-app successfully created and is running., DetailsLevel: INFO
+2026-03-05T18:44:00.9521044Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:37:46, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-03-05T18:47:52.3014240Z Site startup probe failed after 230.748677 seconds.
+2026-03-05T18:48:02.7910877Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:48:02, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: ERR
+2026-03-05T18:48:03.6241048Z Failed to start site. Revert by stopping site.
+2026-03-05T18:48:03.7072603Z State: Stopping, Action: StoppingSite, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:48:02, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: ERR
+2026-03-05T18:48:03.8303939Z State: Stopping, Action: StoppingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:48:02, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: ERR
+2026-03-05T18:48:03.8972793Z Container is terminating. Grace period: 5 seconds.
+2026-03-05T18:48:04.8932343Z Stop and delete container. Retry count = 0
+2026-03-05T18:48:04.8951459Z Stopping container: 969fdf2f4d32_ponovaweight-app.
+2026-03-05T18:48:15.0607581Z Deleting container: 969fdf2f4d32_ponovaweight-app. Retry count = 0
+2026-03-05T18:48:18.3076709Z Container spec TerminationMessagePolicy  path 
+2026-03-05T18:48:18.3472979Z Container is terminated. Total time elapsed: 14429 ms.
+2026-03-05T18:48:18.3571621Z Site container: ponovaweight-app terminated during site startup.
+2026-03-05T18:48:18.3585822Z State: Stopping, Action: CancellingStartup, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:48:02, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T18:48:18.3761274Z Site: ponovaweight-app stopped.
+2026-03-05T18:53:43.4780787Z State: Starting, Action: EstablishingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:48:02, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 18:48:42 (UTC), DetailsLevel: WARN
+2026-03-05T18:53:57.5010797Z State: Starting, Action: StartingMsiContainer, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:48:02, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 18:48:42 (UTC), DetailsLevel: WARN
+2026-03-05T18:54:39.3855121Z State: Starting, Action: StartingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:48:02, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 18:48:42 (UTC), DetailsLevel: WARN
+2026-03-05T18:54:39.3949755Z Container start method called.
+2026-03-05T18:54:39.4399875Z State: Starting, Action: PullingImage, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:48:02, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pulling image 10.1.0.4:13209/appsvc/dotnetcore:10.0_20260115.4.tuxprod for ponovaweight-app., DetailsLevel: INFO
+2026-03-05T18:54:39.4770281Z Establishing network.
+2026-03-05T18:54:39.4959383Z Pulling image: appsvc/dotnetcore:10.0_20260115.4.tuxprod.
+2026-03-05T18:54:40.0122634Z Container is starting.
+2026-03-05T18:54:40.0124535Z State: Starting, Action: MountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:48:02, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Mounting volumes for ponovaweight-app., DetailsLevel: INFO
+2026-03-05T18:54:40.0329718Z Establishing user namespace if not established already.
+2026-03-05T18:54:40.0333006Z Establishing network if not established already.
+2026-03-05T18:54:40.0519477Z Mounting volumes.
+2026-03-05T18:54:40.0522933Z Nested mountpoint site/wwwroot
+2026-03-05T18:54:40.1121612Z Nested mountpoint volatile/logs
+2026-03-05T18:54:40.2207413Z Nested mountpoint 
+2026-03-05T18:54:40.6423417Z Nested mountpoint 
+2026-03-05T18:54:41.3149877Z Nested mountpoint 
+2026-03-05T18:54:42.1005537Z Nested mountpoint 
+2026-03-05T18:54:47.5592591Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:48:02, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Finished pulling container image and mounting volumes for ponovaweight-app. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-03-05T18:54:47.5597791Z Creating container.
+2026-03-05T18:54:47.5684147Z Creating pipes for streaming container io.
+2026-03-05T18:54:47.5694955Z Creating stdout named pipe at /podr/container/pipe/1d7a70c5395b_ponovaweight-app/stdout_927b21b3a7f84fe29cc4bfadf1a6a86f.
+2026-03-05T18:54:47.6588658Z Successfully created stdout named pipe at: /podr/container/pipe/1d7a70c5395b_ponovaweight-app/stdout_927b21b3a7f84fe29cc4bfadf1a6a86f.
+2026-03-05T18:54:47.6592870Z Opening named pipe /podr/container/pipe/1d7a70c5395b_ponovaweight-app/stdout_927b21b3a7f84fe29cc4bfadf1a6a86f for reading in non-blocking mode.
+2026-03-05T18:54:47.6595207Z Successfully opened named pipe: /podr/container/pipe/1d7a70c5395b_ponovaweight-app/stdout_927b21b3a7f84fe29cc4bfadf1a6a86f.
+2026-03-05T18:54:47.6596799Z Successfully removed non-blocking flag from /podr/container/pipe/1d7a70c5395b_ponovaweight-app/stdout_927b21b3a7f84fe29cc4bfadf1a6a86f.
+2026-03-05T18:54:47.7088048Z Creating stderr named pipe at /podr/container/pipe/1d7a70c5395b_ponovaweight-app/stderr_8816b1da0ccc4bb78880dee26f9bc50c.
+2026-03-05T18:54:47.7111920Z Successfully created stderr named pipe at: /podr/container/pipe/1d7a70c5395b_ponovaweight-app/stderr_8816b1da0ccc4bb78880dee26f9bc50c.
+2026-03-05T18:54:47.7311797Z Opening named pipe /podr/container/pipe/1d7a70c5395b_ponovaweight-app/stderr_8816b1da0ccc4bb78880dee26f9bc50c for reading in non-blocking mode.
+2026-03-05T18:54:47.8618116Z Successfully opened named pipe: /podr/container/pipe/1d7a70c5395b_ponovaweight-app/stderr_8816b1da0ccc4bb78880dee26f9bc50c.
+2026-03-05T18:54:47.8790745Z Successfully removed non-blocking flag from /podr/container/pipe/1d7a70c5395b_ponovaweight-app/stderr_8816b1da0ccc4bb78880dee26f9bc50c.
+2026-03-05T18:54:47.8911289Z Creating container with image: appsvc/dotnetcore:10.0_20260115.4.tuxprod from registry: 10.1.0.4:13209 and fully qualified image name: 10.1.0.4:13209/appsvc/dotnetcore:10.0_20260115.4.tuxprod
+2026-03-05T18:54:51.0054589Z Starting container: 1d7a70c5395b_ponovaweight-app.
+2026-03-05T18:54:53.4278222Z Starting watchers and probes.
+2026-03-05T18:54:53.5081541Z Starting metrics collection.
+2026-03-05T18:54:53.5084256Z Container is running.
+2026-03-05T18:54:53.5085440Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:48:02, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container ponovaweight-app successfully created and is running., DetailsLevel: INFO
+2026-03-05T18:54:56.7129715Z Container start method finished after 17300 ms.
+2026-03-05T18:54:56.7914832Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:48:02, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container ponovaweight-app successfully created and is running., DetailsLevel: INFO
+2026-03-05T18:54:56.8319455Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:48:02, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-03-05T18:58:47.1951749Z Site startup probe failed after 230.1511679 seconds.
+2026-03-05T18:58:50.9094301Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:58:50, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: ERR
+2026-03-05T18:58:52.0148531Z Failed to start site. Revert by stopping site.
+2026-03-05T18:58:52.3093463Z State: Stopping, Action: StoppingSite, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:58:50, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: ERR
+2026-03-05T18:58:52.3385533Z State: Stopping, Action: StoppingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:58:50, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: ERR
+2026-03-05T18:58:52.4486667Z Container is terminating. Grace period: 5 seconds.
+2026-03-05T18:58:53.7799800Z Stop and delete container. Retry count = 0
+2026-03-05T18:58:53.8424548Z Stopping container: 1d7a70c5395b_ponovaweight-app.
+2026-03-05T18:58:59.9689262Z Deleting container: 1d7a70c5395b_ponovaweight-app. Retry count = 0
+2026-03-05T18:59:06.8670570Z Container spec TerminationMessagePolicy  path 
+2026-03-05T18:59:06.8679371Z Container is terminated. Total time elapsed: 14400 ms.
+2026-03-05T18:59:06.8681393Z Site container: ponovaweight-app terminated during site startup.
+2026-03-05T18:59:06.9156764Z State: Stopping, Action: CancellingStartup, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:58:50, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T18:59:06.9444352Z Site: ponovaweight-app stopped.
+2026-03-05T18:59:07.1944623Z State: Stopping, Action: UnmountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:58:50, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T18:59:20.9210724Z Site container: ponovaweight-app_managedIdentity terminated during site startup.
+2026-03-05T18:59:20.9615531Z State: Stopping, Action: UnmountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:58:50, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T18:59:22.3616297Z State: Stopping, Action: StoppingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:58:50, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T18:59:28.7230445Z State: Stopped, Action: None, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:58:50, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 18:59:28 (UTC), DetailsLevel: ERR
+2026-03-05T18:59:30.8375768Z State: Stopped, Action: None, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:58:50, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 18:59:28 (UTC), DetailsLevel: ERR
+2026-03-05T19:34:28.1795342Z State: Starting, Action: EstablishingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:58:50, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 18:59:28 (UTC), DetailsLevel: ERR
+2026-03-05T19:34:38.4409339Z State: Starting, Action: StartingMsiContainer, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:58:50, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 18:59:28 (UTC), DetailsLevel: ERR
+2026-03-05T19:35:12.8132950Z State: Starting, Action: StartingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:58:50, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 18:59:28 (UTC), DetailsLevel: ERR
+2026-03-05T19:35:12.8136381Z Container start method called.
+2026-03-05T19:35:12.8137175Z State: Starting, Action: PullingImage, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:58:50, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pulling image 10.1.0.4:13209/appsvc/dotnetcore:10.0_20260115.4.tuxprod for ponovaweight-app., DetailsLevel: INFO
+2026-03-05T19:35:12.8139102Z Establishing network.
+2026-03-05T19:35:12.8141020Z Pulling image: appsvc/dotnetcore:10.0_20260115.4.tuxprod.
+2026-03-05T19:35:14.9839779Z Container is starting.
+2026-03-05T19:35:14.9841094Z State: Starting, Action: MountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:58:50, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Mounting volumes for ponovaweight-app., DetailsLevel: INFO
+2026-03-05T19:35:14.9842837Z Establishing user namespace if not established already.
+2026-03-05T19:35:14.9845380Z Establishing network if not established already.
+2026-03-05T19:35:14.9847117Z Mounting volumes.
+2026-03-05T19:35:14.9850642Z Nested mountpoint site/wwwroot
+2026-03-05T19:35:15.5346693Z Nested mountpoint volatile/logs
+2026-03-05T19:35:15.6622216Z Nested mountpoint 
+2026-03-05T19:35:15.8636802Z Nested mountpoint 
+2026-03-05T19:35:17.1213225Z Nested mountpoint 
+2026-03-05T19:35:18.2469228Z Nested mountpoint 
+2026-03-05T19:35:25.7885516Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:58:50, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Finished pulling container image and mounting volumes for ponovaweight-app. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-03-05T19:35:25.7890681Z Creating container.
+2026-03-05T19:35:25.7892641Z Creating pipes for streaming container io.
+2026-03-05T19:35:25.7894534Z Creating stdout named pipe at /podr/container/pipe/ded8907a8ff8_ponovaweight-app/stdout_45f31b8cef6e4661ab589fe4bf75d348.
+2026-03-05T19:35:26.1706106Z Successfully created stdout named pipe at: /podr/container/pipe/ded8907a8ff8_ponovaweight-app/stdout_45f31b8cef6e4661ab589fe4bf75d348.
+2026-03-05T19:35:26.1708399Z Opening named pipe /podr/container/pipe/ded8907a8ff8_ponovaweight-app/stdout_45f31b8cef6e4661ab589fe4bf75d348 for reading in non-blocking mode.
+2026-03-05T19:35:26.1709820Z Successfully opened named pipe: /podr/container/pipe/ded8907a8ff8_ponovaweight-app/stdout_45f31b8cef6e4661ab589fe4bf75d348.
+2026-03-05T19:35:26.1710747Z Successfully removed non-blocking flag from /podr/container/pipe/ded8907a8ff8_ponovaweight-app/stdout_45f31b8cef6e4661ab589fe4bf75d348.
+2026-03-05T19:35:26.1807332Z Creating stderr named pipe at /podr/container/pipe/ded8907a8ff8_ponovaweight-app/stderr_5c52c4684a2b48189831b056ce53724a.
+2026-03-05T19:35:26.1811622Z Successfully created stderr named pipe at: /podr/container/pipe/ded8907a8ff8_ponovaweight-app/stderr_5c52c4684a2b48189831b056ce53724a.
+2026-03-05T19:35:26.1892375Z Opening named pipe /podr/container/pipe/ded8907a8ff8_ponovaweight-app/stderr_5c52c4684a2b48189831b056ce53724a for reading in non-blocking mode.
+2026-03-05T19:35:26.1895557Z Successfully opened named pipe: /podr/container/pipe/ded8907a8ff8_ponovaweight-app/stderr_5c52c4684a2b48189831b056ce53724a.
+2026-03-05T19:35:26.1897329Z Successfully removed non-blocking flag from /podr/container/pipe/ded8907a8ff8_ponovaweight-app/stderr_5c52c4684a2b48189831b056ce53724a.
+2026-03-05T19:35:26.7706051Z Creating container with image: appsvc/dotnetcore:10.0_20260115.4.tuxprod from registry: 10.1.0.4:13209 and fully qualified image name: 10.1.0.4:13209/appsvc/dotnetcore:10.0_20260115.4.tuxprod
+2026-03-05T19:35:30.7873176Z Starting container: ded8907a8ff8_ponovaweight-app.
+2026-03-05T19:35:32.5287680Z Starting watchers and probes.
+2026-03-05T19:35:32.5482813Z Starting metrics collection.
+2026-03-05T19:35:32.5486705Z Container is running.
+2026-03-05T19:35:32.5632235Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:58:50, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container ponovaweight-app successfully created and is running., DetailsLevel: INFO
+2026-03-05T19:35:34.1259759Z Container start method finished after 21261 ms.
+2026-03-05T19:35:34.2874158Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:58:50, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container ponovaweight-app successfully created and is running., DetailsLevel: INFO
+2026-03-05T19:35:34.3346526Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 18:58:50, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-03-05T19:39:25.4608838Z Site startup probe failed after 230.8009197 seconds.
+2026-03-05T19:39:34.4884978Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 19:39:34, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: ERR
+2026-03-05T19:39:35.1687795Z Failed to start site. Revert by stopping site.
+2026-03-05T19:39:35.3479013Z State: Stopping, Action: StoppingSite, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 19:39:34, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: ERR
+2026-03-05T19:39:36.0329858Z State: Stopping, Action: StoppingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 19:39:34, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: ERR
+2026-03-05T19:39:36.2941525Z Container is terminating. Grace period: 5 seconds.
+2026-03-05T19:39:37.4774881Z Stop and delete container. Retry count = 0
+2026-03-05T19:39:37.4900102Z Stopping container: ded8907a8ff8_ponovaweight-app.
+2026-03-05T19:39:44.6161022Z Deleting container: ded8907a8ff8_ponovaweight-app. Retry count = 0
+2026-03-05T19:39:45.8699354Z Container spec TerminationMessagePolicy  path 
+2026-03-05T19:39:45.8890255Z Container is terminated. Total time elapsed: 9586 ms.
+2026-03-05T19:39:45.9094295Z Site container: ponovaweight-app terminated during site startup.
+2026-03-05T19:39:45.9110600Z State: Stopping, Action: CancellingStartup, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 19:39:34, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T19:39:45.9212115Z Site: ponovaweight-app stopped.
+2026-03-05T19:39:46.0338355Z State: Stopping, Action: UnmountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 19:39:34, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T19:40:00.1896517Z Site container: ponovaweight-app_managedIdentity terminated during site startup.
+2026-03-05T19:40:00.1898521Z State: Stopping, Action: UnmountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 19:39:34, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T19:40:02.0193217Z State: Stopping, Action: StoppingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 19:39:34, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: ponovaweight-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-03-05T19:40:08.6632625Z Site: ponovaweight-app will be blocked for 1 minutes till 03/05/2026 19:41:08
+2026-03-05T19:40:08.6637504Z State: Blocked, Action: StoppingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 19:39:34, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site: ponovaweight-app will be blocked for 1 minutes till 03/05/2026 19:41:08, DetailsLevel: WARN
+2026-03-05T19:40:08.9542324Z State: Stopped, Action: None, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 19:39:34, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 19:40:08 (UTC), DetailsLevel: WARN
+2026-03-05T19:40:13.8011329Z State: Stopped, Action: None, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 19:39:34, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 19:40:08 (UTC), DetailsLevel: WARN
+2026-03-05T19:41:08.6740630Z Site: ponovaweight-app is unblocked.
+2026-03-05T19:41:16.2191415Z State: Starting, Action: EstablishingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 19:39:34, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 19:40:08 (UTC), DetailsLevel: WARN
+2026-03-05T19:41:29.2837487Z State: Starting, Action: StartingMsiContainer, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 19:39:34, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 19:40:08 (UTC), DetailsLevel: WARN
+2026-03-05T19:42:02.9192864Z State: Starting, Action: StartingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 19:39:34, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 03/05/2026 19:40:08 (UTC), DetailsLevel: WARN
+2026-03-05T19:42:02.9196728Z Container start method called.
+2026-03-05T19:42:02.9202086Z State: Starting, Action: PullingImage, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 19:39:34, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pulling image 10.1.0.4:13209/appsvc/dotnetcore:10.0_20260115.4.tuxprod for ponovaweight-app., DetailsLevel: INFO
+2026-03-05T19:42:02.9542147Z Establishing network.
+2026-03-05T19:42:02.9545269Z Pulling image: appsvc/dotnetcore:10.0_20260115.4.tuxprod.
+2026-03-05T19:42:06.6649332Z Container is starting.
+2026-03-05T19:42:06.6650919Z State: Starting, Action: MountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 19:39:34, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Mounting volumes for ponovaweight-app., DetailsLevel: INFO
+2026-03-05T19:42:06.6652619Z Establishing user namespace if not established already.
+2026-03-05T19:42:06.6654170Z Establishing network if not established already.
+2026-03-05T19:42:06.6656003Z Mounting volumes.
+2026-03-05T19:42:06.7245194Z Nested mountpoint site/wwwroot
+2026-03-05T19:42:06.8128341Z Nested mountpoint volatile/logs
+2026-03-05T19:42:07.1878884Z Nested mountpoint 
+2026-03-05T19:42:07.3534085Z Nested mountpoint 
+2026-03-05T19:42:10.0393742Z Nested mountpoint 
+2026-03-05T19:42:10.2318843Z Nested mountpoint 
+2026-03-05T19:42:17.6050315Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 19:39:34, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Finished pulling container image and mounting volumes for ponovaweight-app. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-03-05T19:42:17.6052507Z Creating container.
+2026-03-05T19:42:17.6054053Z Creating pipes for streaming container io.
+2026-03-05T19:42:17.6055738Z Creating stdout named pipe at /podr/container/pipe/af2fbe50c4d8_ponovaweight-app/stdout_cfb08f011ab84ac983d8f11f70ae5c14.
+2026-03-05T19:42:17.6059190Z Successfully created stdout named pipe at: /podr/container/pipe/af2fbe50c4d8_ponovaweight-app/stdout_cfb08f011ab84ac983d8f11f70ae5c14.
+2026-03-05T19:42:17.6060819Z Opening named pipe /podr/container/pipe/af2fbe50c4d8_ponovaweight-app/stdout_cfb08f011ab84ac983d8f11f70ae5c14 for reading in non-blocking mode.
+2026-03-05T19:42:17.9638468Z Successfully opened named pipe: /podr/container/pipe/af2fbe50c4d8_ponovaweight-app/stdout_cfb08f011ab84ac983d8f11f70ae5c14.
+2026-03-05T19:42:18.0336110Z Successfully removed non-blocking flag from /podr/container/pipe/af2fbe50c4d8_ponovaweight-app/stdout_cfb08f011ab84ac983d8f11f70ae5c14.
+2026-03-05T19:42:18.0338968Z Creating stderr named pipe at /podr/container/pipe/af2fbe50c4d8_ponovaweight-app/stderr_30e4d453024b4b62846064d5d28f2301.
+2026-03-05T19:42:18.0340792Z Successfully created stderr named pipe at: /podr/container/pipe/af2fbe50c4d8_ponovaweight-app/stderr_30e4d453024b4b62846064d5d28f2301.
+2026-03-05T19:42:18.0341806Z Opening named pipe /podr/container/pipe/af2fbe50c4d8_ponovaweight-app/stderr_30e4d453024b4b62846064d5d28f2301 for reading in non-blocking mode.
+2026-03-05T19:42:18.1492763Z Successfully opened named pipe: /podr/container/pipe/af2fbe50c4d8_ponovaweight-app/stderr_30e4d453024b4b62846064d5d28f2301.
+2026-03-05T19:42:18.1710218Z Successfully removed non-blocking flag from /podr/container/pipe/af2fbe50c4d8_ponovaweight-app/stderr_30e4d453024b4b62846064d5d28f2301.
+2026-03-05T19:42:18.3126377Z Creating container with image: appsvc/dotnetcore:10.0_20260115.4.tuxprod from registry: 10.1.0.4:13209 and fully qualified image name: 10.1.0.4:13209/appsvc/dotnetcore:10.0_20260115.4.tuxprod
+2026-03-05T19:42:26.0138420Z Starting container: af2fbe50c4d8_ponovaweight-app.
+2026-03-05T19:42:26.2753343Z Starting watchers and probes.
+2026-03-05T19:42:26.4151925Z Starting metrics collection.
+2026-03-05T19:42:26.4637483Z Container is running.
+2026-03-05T19:42:26.5041445Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 19:39:34, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container ponovaweight-app successfully created and is running., DetailsLevel: INFO
+2026-03-05T19:42:29.2192753Z Container start method finished after 26153 ms.
+2026-03-05T19:42:29.2408931Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 19:39:34, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container ponovaweight-app successfully created and is running., DetailsLevel: INFO
+2026-03-05T19:42:29.2409475Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: ContainerTimeout, LastErrorTimestamp: 03/05/2026 19:39:34, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO

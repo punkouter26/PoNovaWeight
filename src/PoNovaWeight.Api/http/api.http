@@ -18,10 +18,10 @@ GET {{baseUrl}}/api/auth/me
 ### =====================
 
 ### Health Check
-GET {{baseUrl}}/api/health
-
-### Aspire Health Check
 GET {{baseUrl}}/health
+
+### Liveness Check
+GET {{baseUrl}}/alive
 
 ### OpenAPI Spec
 GET {{baseUrl}}/openapi/v1.json

@@ -1,0 +1,19 @@
+<step title="BackgroundTrace" date="2026-02-20T17:11:32.423" instance="9e82f9" url="/api/publish" method="POST" >
+  <step title="Cleanup Xml Logs" date="2026-02-20T17:11:32.426" /><!-- duration: 19ms -->
+  <step title="Creating temporary deployment - FetchDeploymentManager" date="2026-02-20T17:11:34.791" /><!-- duration: 4ms -->
+  <step title="Creating temporary deployment" date="2026-02-20T17:11:34.800" /><!-- duration: 5914ms -->
+  <step title="Performing fetch based deployment" date="2026-02-20T17:11:41.923" >
+    <step title="Marking deployment as failed and cleaning up the temp deployment" date="2026-02-20T17:11:46.713" /><!-- duration: 16ms -->
+  </step><!-- duration: 5096ms -->
+  <step title="Error occurred" date="2026-02-20T17:11:47.165" type="error" text="One or more errors occurred. (End of Central Directory record could not be found.)" stackTrace="   at System.Threading.Tasks.Task.Wait(Int32 millisecondsTimeout, CancellationToken cancellationToken)
+   at System.Threading.Tasks.Task.Wait()
+   at Kudu.Core.Deployment.FetchDeploymentManager.&lt;&gt;c__DisplayClass22_1.&lt;PerformBackgroundDeployment&gt;b__3() in /tmp/KuduLite/Kudu.Core/Deployment/FetchDeploymentManager.cs:line 414
+   at Kudu.Contracts.Infrastructure.LockExtensions.TryLockOperation(IOperationLock lockObj, Action operation, String operationName, TimeSpan timeout) in /tmp/KuduLite/Kudu.Contracts/Infrastructure/LockExtensions.cs:line 34
+   at Kudu.Contracts.Infrastructure.LockExtensions.LockOperation(IOperationLock lockObj, Action operation, String operationName, TimeSpan timeout) in /tmp/KuduLite/Kudu.Contracts/Infrastructure/LockExtensions.cs:line 46
+   at Kudu.Core.Deployment.FetchDeploymentManager.&lt;&gt;c__DisplayClass22_0.&lt;PerformBackgroundDeployment&gt;b__1() in /tmp/KuduLite/Kudu.Core/Deployment/FetchDeploymentManager.cs:line 393" innerText="End of Central Directory record could not be found." innerStackTrace="   at System.IO.Compression.ZipArchive.ReadEndOfCentralDirectory()
+   at System.IO.Compression.ZipArchive..ctor(Stream stream, ZipArchiveMode mode, Boolean leaveOpen, Encoding entryNameEncoding)
+   at System.IO.Compression.ZipFile.Open(String archiveFileName, ZipArchiveMode mode, Encoding entryNameEncoding)
+   at Kudu.Services.Deployment.PushDeploymentController.ExtractTriggers(IRepository repository, ArtifactDeploymentInfo zipDeploymentInfo) in /tmp/KuduLite/Kudu.Services/Deployment/PushDeploymentController.cs:line 1355
+   at Kudu.Services.Deployment.PushDeploymentController.LocalZipHandler(IRepository repository, DeploymentInfoBase deploymentInfo, String targetBranch, ILogger logger, ITracer tracer) in /tmp/KuduLite/Kudu.Services/Deployment/PushDeploymentController.cs:line 1344
+   at Kudu.Core.Deployment.FetchDeploymentManager.PerformDeployment(DeploymentInfoBase deploymentInfo, IDisposable tempDeployment, ChangeSet tempChangeSet, DeployStatusApiResult updateStatusObj) in /tmp/KuduLite/Kudu.Core/Deployment/FetchDeploymentManager.cs:line 200" /><!-- duration: 6ms -->
+</step><!-- duration: 14752ms -->

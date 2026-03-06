@@ -6,27 +6,17 @@ namespace PoNovaWeight.Api.Infrastructure.TableStorage;
 /// <summary>
 /// Azure Table Storage entity for user profiles.
 /// </summary>
-public class UserEntity : ITableEntity
+public class UserEntity : TableStorageEntity
 {
     /// <summary>
     /// User's email address, normalized to lowercase.
     /// </summary>
-    public string PartitionKey { get; set; } = string.Empty;
+    public override string PartitionKey { get; set; } = string.Empty;
 
     /// <summary>
     /// Fixed value: "profile" (single row per user).
     /// </summary>
-    public string RowKey { get; set; } = "profile";
-
-    /// <summary>
-    /// Azure-managed timestamp for concurrency.
-    /// </summary>
-    public DateTimeOffset? Timestamp { get; set; }
-
-    /// <summary>
-    /// Azure-managed ETag for optimistic concurrency.
-    /// </summary>
-    public ETag ETag { get; set; }
+    public override string RowKey { get; set; } = "profile";
 
     /// <summary>
     /// User's display name from Google.

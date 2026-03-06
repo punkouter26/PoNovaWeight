@@ -1,0 +1,17 @@
+<step title="Incoming Request" date="2026-02-06T12:16:16.405" instance="5d4311" url="/api/publish?async=true&amp;deployer=GITHUB_ONE_DEPLOY&amp;type=zip&amp;message=%7B%22type%22%3A%22deployment%22%2C%22sha%22%3A%22fd3792d7553b9f2bcc5bea4dffcc30d249270925%22%2C%22repoName%22%3A%22punkouter26%2FPoNovaWeight%22%2C%22actor%22%3A%22punkouter26%22%2C%22slotName%22%3A%22production%22%2C%22commitMessage%22%3A%22Merge%20pull%20request%20%231%20from%20punkouter26%2Fcopilot%2Ffix-error-menu%5Cn%5CnFix%20UserMenu%20click-outside%20behavior%22%7D" method="POST" type="request" pid="851,1,14" Host="ponovaweight-app.scm.azurewebsites.net" User-Agent="GITHUBACTIONS_DeployWebAppToAzure_cdce2c904e52a65ce3302c4654b23c5f11fa288e1787a9c50576576d299b0c21" Authorization="Bea..." Content-Type="application/octet-stream" Cookie="ARRAffinity=5d43112dac899e79c5f159102c851f071cec9160838765e615962ec31a27c96f;Path=/;HttpOnly;Secure;Domain=ponovaweight-app.scm.azurewebsites.net; ARRAffinitySameSite=5d43112dac899e79c5f159102c851f071cec9160838765e615962ec31a27c96f;Path=/;HttpOnly;SameSite=None;Secure;Domain=ponovaweight-app.scm.azurewebsites.net" Transfer-Encoding="chunked" X-ARR-LOG-ID="bed6f3a2-26cb-4689-9feb-3c54c2f5dd85" CLIENT-IP="64.236.160.18:31760" X-SITE-DEPLOYMENT-ID="ponovaweight-app" WAS-DEFAULT-HOSTNAME="ponovaweight-app.scm.azurewebsites.net" X-Forwarded-Proto="https" X-AppService-Proto="https" X-Forwarded-TlsVersion="1.3" X-WAWS-Unencoded-URL="/api/publish?async=true&amp;deployer=GITHUB_ONE_DEPLOY&amp;type=zip&amp;message=%7B%22type%22%3A%22deployment%22%2C%22sha%22%3A%22fd3792d7553b9f2bcc5bea4dffcc30d249270925%22%2C%22repoName%22%3A%22punkouter26%2FPoNovaWeight%22%2C%22actor%22%3A%22punkouter26%22%2C%22slotName%22%3A%22production%22%2C%22commitMessage%22%3A%22Merge%20pull%20request%20%231%20from%20punkouter26%2Fcopilot%2Ffix-error-menu%5Cn%5CnFix%20UserMenu%20click-outside%20behavior%22%7D" X-Client-IP="64.236.160.18" X-Client-Port="31760" >
+  <step title="OneDeploy" date="2026-02-06T12:16:16.613" >
+    <step title="None repository commit" date="2026-02-06T12:16:16.627" >
+      <step title="Commit id: e7595758-01ca-4d4b-be07-c0c6d931ec49" date="2026-02-06T12:16:16.641" Message="N/A" AuthorName="N/A" AuthorEmail="N/A" /><!-- duration: 5ms -->
+    </step><!-- duration: 23ms -->
+    <step title="Starting PushDeployAsync" date="2026-02-06T12:16:16.656" /><!-- duration: 4ms -->
+    <step title="WEBSITE_RUN_FROM_PACKAGE is set to 1. Writing zip to SitePackagesPath" date="2026-02-06T12:16:16.672" /><!-- duration: 4ms -->
+    <step title="Copying zip to SitePackages /home/data/SitePackages/20260206121616.zip from request body" date="2026-02-06T12:16:16.696" /><!-- duration: 12ms -->
+    <step title="Writing multipart request body to /home/data/SitePackages/20260206121616.zip" date="2026-02-06T12:16:16.733" /><!-- duration: 82ms -->
+    <step title="Deleting outdated zip file /home/data/SitePackages/20260205134727.zip" date="2026-02-06T12:16:17.432" /><!-- duration: 14ms -->
+    <step title="Start deployment in the background" date="2026-02-06T12:16:17.460" >
+      <step title="Acquiring Deployment Lock" date="2026-02-06T12:16:17.494" /><!-- duration: 8ms -->
+      <step title="Acquired Deployment Lock" date="2026-02-06T12:16:17.559" /><!-- duration: 15ms -->
+    </step><!-- duration: 185ms -->
+  </step><!-- duration: 1043ms -->
+  <step title="Outgoing response" date="2026-02-06T12:16:17.672" type="response" statusCode="202" statusText="Accepted" /><!-- duration: 5ms -->
+</step><!-- duration: 1276ms -->

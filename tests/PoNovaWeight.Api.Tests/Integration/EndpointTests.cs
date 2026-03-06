@@ -28,7 +28,7 @@ public class EndpointTests
         // Arrange
         var client = CreateClientWithMockedDependencies();
 
-        // Act - uses Aspire default /health endpoint
+        // Act
         var response = await client.GetAsync("/health");
 
         // Assert

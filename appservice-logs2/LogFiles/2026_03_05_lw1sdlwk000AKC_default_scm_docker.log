@@ -1,0 +1,65 @@
+2026-03-05T14:06:29.3446873Z     __ __          __      __    _ __     
+2026-03-05T14:06:29.3676066Z    / //_/_  _ ____/ /_  __/ /   (_) /____ 
+2026-03-05T14:06:29.3676373Z   / ,< / / / / __  / / / / /   / / __/ _  
+2026-03-05T14:06:29.3676439Z  / /| / /_/ / /_/ / /_/ / /___/ / /_/  __/
+2026-03-05T14:06:29.3676499Z /_/ |_\__,_/\__,_/\__,_/_____/_/\__/\___/ 
+2026-03-05T14:06:29.3676575Z 
+2026-03-05T14:06:29.3676647Z                                           
+2026-03-05T14:06:29.3676705Z DEBUG CONSOLE | AZURE APP SERVICE ON LINUX
+2026-03-05T14:06:29.3676759Z 
+2026-03-05T14:06:29.3676821Z Documentation: http://aka.ms/webapp-linux
+2026-03-05T14:06:29.3676906Z Kudu Version : 20260204.5
+2026-03-05T14:06:29.3676970Z Commit       : f2123a3d94768058c9d9e002efc0a31e9c1580a3
+2026-03-05T14:06:29.3677028Z Instance Name: lw1sdlwk000AKC
+2026-03-05T14:06:29.3677101Z Instance Id  : 14081d20018b15b1623fc720b48f16fa62465e5170c988d77c1ce70393fc7d40
+2026-03-05T14:06:29.3677156Z 
+2026-03-05T14:06:31.2919267Z chown: changing ownership of '/temp': Operation not permitted
+2026-03-05T14:06:31.3428098Z chmod: changing permissions of '/temp': Operation not permitted
+2026-03-05T14:06:40.7374039Z  * Restarting OpenBSD Secure Shell server sshd
+2026-03-05T14:06:40.9064253Z    ...done.
+2026-03-05T14:06:41.1084386Z node not running, starting node /opt/webssh/index.js
+2026-03-05T14:07:16.1656936Z Thu Mar 5 14:07:16 UTC 2026 running .net core
+2026-03-05T14:07:20.9592076Z Startup : 02.07.20.847077
+2026-03-05T14:07:21.1015330Z Configure Services : 02.07.21.101231
+2026-03-05T14:07:23.8164473Z Configure : 02.07.23.809557
+2026-03-05T14:07:27.7157831Z Setting Up Routes : 02.07.27.715318
+2026-03-05T14:07:27.7999985Z Exiting Configure : 02.07.27.799745
+2026-03-05T14:07:33.1820437Z Hosting environment: Production
+2026-03-05T14:07:33.1822669Z Content root path: /opt/Kudu
+2026-03-05T14:07:33.1822767Z Now listening on: http://0.0.0.0:8181
+2026-03-05T14:07:33.1822835Z Application started. Press Ctrl+C to shut down.
+2026-03-05T14:13:27.0130102Z warn: Microsoft.AspNetCore.Server.Kestrel[22]
+2026-03-05T14:13:27.0228791Z       As of "03/05/2026 14:13:24 +00:00", the heartbeat has been running for "00:00:04.5353287" which is longer than "00:00:01". This could be caused by thread pool starvation.
+2026-03-05T18:32:11.8468042Z Deploy Async
+2026-03-05T18:49:33.0986544Z     __ __          __      __    _ __     
+2026-03-05T18:49:33.3725611Z    / //_/_  _ ____/ /_  __/ /   (_) /____ 
+2026-03-05T18:49:33.3726000Z   / ,< / / / / __  / / / / /   / / __/ _  
+2026-03-05T18:49:33.3726067Z  / /| / /_/ / /_/ / /_/ / /___/ / /_/  __/
+2026-03-05T18:49:33.3726128Z /_/ |_\__,_/\__,_/\__,_/_____/_/\__/\___/ 
+2026-03-05T18:49:33.3726184Z 
+2026-03-05T18:49:33.3726288Z                                           
+2026-03-05T18:49:33.3726409Z DEBUG CONSOLE | AZURE APP SERVICE ON LINUX
+2026-03-05T18:49:33.3726466Z 
+2026-03-05T18:49:33.3726526Z Documentation: http://aka.ms/webapp-linux
+2026-03-05T18:49:33.3726594Z Kudu Version : 20260204.5
+2026-03-05T18:49:33.3726658Z Commit       : f2123a3d94768058c9d9e002efc0a31e9c1580a3
+2026-03-05T18:49:33.3726718Z Instance Name: lw1sdlwk000AKC
+2026-03-05T18:49:33.3726789Z Instance Id  : 14081d20018b15b1623fc720b48f16fa62465e5170c988d77c1ce70393fc7d40
+2026-03-05T18:49:33.3726844Z 
+2026-03-05T18:49:34.3976388Z chown: changing ownership of '/temp': Operation not permitted
+2026-03-05T18:49:34.4248102Z chmod: changing permissions of '/temp': Operation not permitted
+2026-03-05T18:49:59.0957461Z  * Restarting OpenBSD Secure Shell server sshd
+2026-03-05T18:49:59.1904664Z    ...done.
+2026-03-05T18:49:59.8800051Z node not running, starting node /opt/webssh/index.js
+2026-03-05T18:50:49.4989399Z Thu Mar 5 18:50:49 UTC 2026 running .net core
+2026-03-05T18:50:56.8604785Z Startup : 06.50.56.776510
+2026-03-05T18:50:56.9556254Z Configure Services : 06.50.56.938649
+2026-03-05T18:51:00.1712779Z Configure : 06.51.00.164413
+2026-03-05T18:51:01.3773038Z Setting Up Routes : 06.51.01.371198
+2026-03-05T18:51:01.5394526Z Exiting Configure : 06.51.01.539208
+2026-03-05T18:51:03.0596705Z Hosting environment: Production
+2026-03-05T18:51:03.0780718Z Content root path: /opt/Kudu
+2026-03-05T18:51:03.0781064Z Now listening on: http://0.0.0.0:8181
+2026-03-05T18:51:03.0781256Z Application started. Press Ctrl+C to shut down.
+2026-03-05T18:53:27.2591170Z Deploy Async
+2026-03-05T19:01:42.2648916Z Deploy Async

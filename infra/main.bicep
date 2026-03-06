@@ -40,6 +40,10 @@ param openAiDeploymentName string = 'gpt-4o'
 @description('Budget start date (first of current month, format: YYYY-MM-01)')
 param budgetStartDate string = '2025-08-01'
 
+@description('Shared App Service Plan resource ID (from PoShared resource group)')
+@secure()
+param sharedAppServicePlanId string = ''
+
 // Variables
 var tags = {
   Environment: environmentName
@@ -68,12 +72,12 @@ module appInsights 'modules/app-insights.bicep' = {
   }
 }
 
-// App Service
+// App Service (uses shared App Service Plan from PoShared)
 module appService 'modules/app-service.bicep' = {
   name: 'app-service-deployment'
   params: {
     name: baseName
-    planName: '${baseName}-plan'
+    appServicePlanId: sharedAppServicePlanId
     location: location
     tags: tags
     appInsightsConnectionString: appInsights.outputs.connectionString

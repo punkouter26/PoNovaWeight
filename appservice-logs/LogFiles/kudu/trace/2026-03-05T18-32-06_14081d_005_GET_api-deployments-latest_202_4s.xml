@@ -1,0 +1,9 @@
+<step title="Incoming Request" date="2026-03-05T18:32:06.003" instance="14081d" url="/api/deployments/latest?deployer=OneDeploy&amp;time=2026-03-05_18-32-05Z" method="GET" type="request" pid="857,1,66" Host="ponovaweight-app.scm.azurewebsites.net" User-Agent="GITHUBACTIONS_DeployWebAppToAzure_cdce2c904e52a65ce3302c4654b23c5f11fa288e1787a9c50576576d299b0c21_v3.0.7" Authorization="Bea..." Content-Type="application/json; charset=utf-8" Cookie="ARRAffinity=14081d20018b15b1623fc720b48f16fa62465e5170c988d77c1ce70393fc7d40; ARRAffinitySameSite=14081d20018b15b1623fc720b48f16fa62465e5170c988d77c1ce70393fc7d40" Content-Length="0" X-ARR-LOG-ID="84f51cb8-32bf-4b44-af5a-7a1d765e532e" CLIENT-IP="4.246.135.192:54208" X-SITE-DEPLOYMENT-ID="ponovaweight-app" WAS-DEFAULT-HOSTNAME="ponovaweight-app.scm.azurewebsites.net" X-Forwarded-Proto="https" X-AppService-Proto="https" X-Forwarded-TlsVersion="1.3" X-WAWS-Unencoded-URL="/api/deployments/latest?deployer=OneDeploy&amp;time=2026-03-05_18-32-05Z" X-Client-IP="4.246.135.192" X-Client-Port="54208" >
+  <step title="Cleanup Xml Logs" date="2026-03-05T18:32:06.034" /><!-- duration: 109ms -->
+  <step title="DeploymentService.GetResult" date="2026-03-05T18:32:06.910" >
+    <step title="DeploymentService.GetLatestDeployment" date="2026-03-05T18:32:06.921" >
+      <step title="DeploymentManager.GetResults" date="2026-03-05T18:32:06.940" /><!-- duration: 3067ms -->
+    </step><!-- duration: 3150ms -->
+  </step><!-- duration: 3202ms -->
+  <step title="Outgoing response" date="2026-03-05T18:32:10.182" type="response" statusCode="202" statusText="Accepted" /><!-- duration: 56ms -->
+</step><!-- duration: 4252ms -->

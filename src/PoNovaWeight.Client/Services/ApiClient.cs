@@ -144,4 +144,15 @@ public class ApiClient(HttpClient httpClient)
         response.EnsureSuccessStatusCode();
         return await response.Content.ReadFromJsonAsync<AlcoholCorrelationDto>(cancellationToken);
     }
+
+    /// <summary>
+    /// Gets all dashboard analytics (weight trends, alcohol correlation, health correlations) in a single request.
+    /// Recommended for dashboard to replace multiple individual trend calls.
+    /// </summary>
+    public async Task<DashboardAnalyticsDto?> GetDashboardAnalyticsAsync(int days = 30, CancellationToken cancellationToken = default)
+    {
+        var response = await httpClient.GetAsync($"api/daily-logs/analytics?days={days}", cancellationToken);
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<DashboardAnalyticsDto>(cancellationToken);
+    }
 }

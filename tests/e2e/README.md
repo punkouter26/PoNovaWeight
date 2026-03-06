@@ -6,7 +6,7 @@ End-to-end tests for PoNovaWeight using Playwright and TypeScript.
 
 - Node.js 18+
 - The API must be running at `http://localhost:5000`
-- For Aspire dashboard tests: The AppHost must be running
+- Start the API locally with `dotnet run --project src/PoNovaWeight.Api`
 
 ## Setup
 
@@ -47,9 +47,3 @@ npm run test:report
 - Homepage redirects unauthenticated users to login
 - Homepage loads static assets
 - Health endpoint returns healthy
-
-### Aspire Dashboard Tests (`aspire-dashboard.spec.ts`)
-- Aspire dashboard loads successfully
-- Aspire dashboard shows resources
-
-> **Note:** Aspire dashboard tests require the AppHost to be running (`dotnet run --project src/PoNovaWeight.AppHost`)

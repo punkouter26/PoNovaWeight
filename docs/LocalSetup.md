@@ -28,13 +28,15 @@ cd PoNovaWeight
 # 2. Restore dependencies
 dotnet restore
 
-# 3. Run with Aspire (includes Azurite, API, Dashboard)
-dotnet run --project src/PoNovaWeight.AppHost
+# 3. Start Azurite (local Table Storage)
+azurite --silent --location ./azurite --debug ./azurite/debug.log
+
+# 4. Run the API directly
+dotnet run --project src/PoNovaWeight.Api
 ```
 
 **After running, access:**
 - 🌐 **App**: http://localhost:5000
-- 📊 **Aspire Dashboard**: https://localhost:15888
 
 ### Detailed Setup
 
@@ -96,7 +98,7 @@ dotnet user-secrets set "AzureOpenAI:ApiKey" "your-api-key"
 
 #### Step 4: Run Azurite (Local Azure Storage)
 
-Azurite is automatically started by .NET Aspire. If you need to run manually:
+Start Azurite before launching the API:
 
 ```bash
 # Using Docker
@@ -115,10 +117,10 @@ docker run -d --name azurite \
 #### Step 5: Run the Application
 
 ```bash
-# Option 1: Using Aspire (recommended)
-dotnet run --project src/PoNovaWeight.AppHost
+# Option 1: Run the API directly (recommended)
+dotnet run --project src/PoNovaWeight.Api
 
-# Option 2: Run API and Client separately
+# Option 2: Run Client separately during frontend-only work
 # Terminal 1: Run API
 dotnet run --project src/PoNovaWeight.Api
 
@@ -229,7 +231,6 @@ PoNovaWeight/
 │   ├── PoNovaWeight.Api/         # Backend API
 │   ├── PoNovaWeight.Client/      # Blazor WASM frontend
 │   ├── PoNovaWeight.Shared/      # Shared DTOs
-│   └── PoNovaWeight.ServiceDefaults/  # Observability
 ├── tests/
 │   ├── PoNovaWeight.Api.Tests/   # API tests
 │   ├── PoNovaWeight.Client.Tests/# Component tests
@@ -253,8 +254,11 @@ cd PoNovaWeight
 # 2. Restore
 dotnet restore
 
-# 3. Run
-dotnet run --project src/PoNovaWeight.AppHost
+# 3. Start Azurite
+azurite --silent --location ./azurite --debug ./azurite/debug.log
+
+# 4. Run the API
+dotnet run --project src/PoNovaWeight.Api
 ```
 
 ### What You Need
@@ -283,7 +287,6 @@ dotnet user-secrets set "GoogleAuth:ClientSecret" "YOUR_SECRET"
 ### Access
 
 - App: http://localhost:5000
-- Dashboard: https://localhost:15888
 
 ### Test
 
@@ -295,6 +298,6 @@ dotnet test
 
 | Problem | Fix |
 |---------|-----|
-| Can't connect to storage | Start Docker Desktop |
+| Can't connect to storage | Start Azurite or Docker Desktop |
 | OAuth error | Check redirect URIs match |
 | Build fails | Install .NET 10 SDK |
