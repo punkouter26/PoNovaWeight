@@ -6,3 +6,4 @@ services:
     language: dotnet
     project: ./src/PoNovaWeight.Api/PoNovaWeight.Api.csproj
     host: appservice
+

@@ -4,12 +4,7 @@ using Azure.Data.Tables;
 using Azure.Identity;
 using FluentValidation;
 using MediatR;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.ResponseCompression;
-using OpenTelemetry.Instrumentation.AspNetCore;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
 using PoNovaWeight.Api.Features.Auth;
 using PoNovaWeight.Api.Features.DailyLogs;
 using PoNovaWeight.Api.Features.MealScan;
@@ -87,22 +82,6 @@ try
         Log.Information("Key Vault not configured - using user secrets and environment variables only");
     }
 
-    // Configure Data Protection to persist keys in Azure Blob Storage (production only)
-    // This ensures cookies remain valid across container restarts and scaling
-    var dataProtectionBlobUri = builder.Configuration["DataProtection:BlobUri"];
-    if (!string.IsNullOrEmpty(dataProtectionBlobUri) && !builder.Environment.IsDevelopment())
-    {
-        // Use ManagedIdentityCredential in Production for fast token acquisition
-        TokenCredential dpCredential = builder.Environment.IsProduction()
-            ? new ManagedIdentityCredential()
-            : new DefaultAzureCredential();
-
-        builder.Services.AddDataProtection()
-            .SetApplicationName("PoNovaWeight")
-            .PersistKeysToAzureBlobStorage(new Uri(dataProtectionBlobUri), dpCredential);
-        Log.Information("Data Protection configured with Azure Blob Storage: {BlobUri}", dataProtectionBlobUri);
-    }
-
     // Serilog configuration
     builder.Host.UseSerilog((context, services, configuration) => configuration
         .ReadFrom.Configuration(context.Configuration)
@@ -115,47 +94,15 @@ try
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddOpenApi();
     builder.Services.AddApplicationInsightsTelemetry();
-    
-    // Configure OpenTelemetry for distributed tracing
-    // Creates instrumentation for ASP.NET Core, HTTP client requests
-    var otlpEndpoint = builder.Configuration["OpenTelemetry:OtlpEndpoint"];
-    if (!string.IsNullOrEmpty(otlpEndpoint))
-    {
-        // Extension methods from OpenTelemetry.Extensions.Hosting package
-        builder.Services.AddOpenTelemetry()
-            .ConfigureResource(resource => resource
-                .AddService(serviceName: "PoNovaWeight.Api", serviceVersion: "1.0.0", serviceInstanceId: Environment.MachineName))
-            .WithTracing(tracingBuilder =>
-            {
-                tracingBuilder
-                    .AddAspNetCoreInstrumentation(options => options.RecordException = true)
-                    .AddHttpClientInstrumentation(options => options.RecordException = true)
-                    .AddOtlpExporter(options => options.Endpoint = new Uri(otlpEndpoint));
-            });
-        Log.Information("OpenTelemetry configured with OTLP Exporter: {Endpoint}", otlpEndpoint);
-    }
-    else
-    {
-        Log.Information("OpenTelemetry OTLP endpoint not configured - distributed tracing disabled");
-    }
-    
+
     builder.Services.AddDistributedMemoryCache();
+    builder.Services.AddMemoryCache();
     builder.Services.AddSession(options =>
     {
         options.IdleTimeout = TimeSpan.FromMinutes(30);
         options.Cookie.HttpOnly = true;
         options.Cookie.IsEssential = true;
     });
-
-    // Response compression for Blazor WASM assets - Simplified to Brotli only
-    builder.Services.AddResponseCompression(options =>
-    {
-        options.EnableForHttps = true;
-        options.Providers.Add<BrotliCompressionProvider>();
-        options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
-            ["application/octet-stream", "application/wasm"]);
-    });
-    builder.Services.Configure<BrotliCompressionProviderOptions>(options => options.Level = System.IO.Compression.CompressionLevel.Fastest);
 
     // MediatR with validation pipeline
     builder.Services.AddMediatR(cfg =>
@@ -170,56 +117,19 @@ try
     // TimeProvider for testable time abstractions
     builder.Services.AddSingleton(TimeProvider.System);
 
-    // Simple in-memory caching - simpler than HybridCache for this use case
-    builder.Services.AddMemoryCache();
-    
     // Add Health Checks
     builder.Services.AddHealthChecks();
 
-    // Table Storage configuration
-    // Reads from PoNovaWeight:AzureStorage:ConnectionString (Key Vault) or ConnectionStrings:AzureStorage / ConnectionStrings:tables (App Service)
-    // App Service stores the endpoint URL (https://...) rather than a full connection string,
-    // so we detect which form is present and construct the client accordingly.
-    var tableStorageValue = builder.Configuration["PoNovaWeight:AzureStorage:ConnectionString"]
-        ?? builder.Configuration.GetConnectionString("AzureStorage")
-        ?? builder.Configuration.GetConnectionString("tables")
+    // Table Storage — Key Vault (prod) or appsettings (dev/Azurite)
+    var tableStorageValue = builder.Configuration.GetConnectionString("AzureStorage")
         ?? throw new InvalidOperationException(
-            "Azure Storage connection string is required. Set 'ConnectionStrings:AzureStorage' in configuration.");
+            "ConnectionStrings:AzureStorage is required. Configure via Key Vault or appsettings.");
 
-    TableServiceClient tableServiceClient;
-    if (Uri.TryCreate(tableStorageValue, UriKind.Absolute, out var tableEndpointUri)
-        && (tableEndpointUri.Scheme == "https" || tableEndpointUri.Scheme == "http"))
-    {
-        // URL-style endpoint — use Managed Identity in Production to avoid the
-        // slow DefaultAzureCredential fallback chain consuming the App Service
-        // startup probe window before the app begins listening.
-        TokenCredential tableCredential;
-        if (builder.Environment.IsProduction())
-        {
-            tableCredential = new ManagedIdentityCredential();
-        }
-        else
-        {
-            var credOpts = new DefaultAzureCredentialOptions
-            {
-                ExcludeVisualStudioCodeCredential = true,
-                ExcludeInteractiveBrowserCredential = true
-            };
-            tableCredential = new DefaultAzureCredential(credOpts);
-        }
+    var tableServiceClient = Uri.TryCreate(tableStorageValue, UriKind.Absolute, out var tableEndpoint)
+        && tableEndpoint.Scheme is "https" or "http"
+        ? new TableServiceClient(tableEndpoint, new ManagedIdentityCredential())
+        : new TableServiceClient(tableStorageValue);
 
-        tableServiceClient = new TableServiceClient(tableEndpointUri, tableCredential);
-        Log.Information(
-            "Table Storage configured with URI + {CredentialType}: {Endpoint}",
-            tableCredential.GetType().Name,
-            tableEndpointUri);
-    }
-    else
-    {
-        // Full connection string — use directly
-        tableServiceClient = new TableServiceClient(tableStorageValue);
-        Log.Information("Table Storage configured with connection string.");
-    }
     builder.Services.AddSingleton(tableServiceClient);
 
     // Register repositories using TableServiceClient
@@ -237,45 +147,20 @@ try
     // Google OAuth + Cookie Authentication
     builder.Services.AddNovaAuthentication(builder.Configuration, builder.Environment);
 
-    // Azure OpenAI - optional for local development (meal scan will be disabled)
-    var openAiEndpoint = builder.Configuration["PoNovaWeight:AzureOpenAI:Endpoint"]
-        ?? builder.Configuration["AzureOpenAI:Endpoint"];
-    var openAiApiKey = builder.Configuration["PoNovaWeight:AzureOpenAI:ApiKey"]
-        ?? builder.Configuration["AzureOpenAI:ApiKey"];
+    // Azure OpenAI — required for meal scanning
+    var openAiEndpoint = builder.Configuration["AzureOpenAI:Endpoint"]
+        ?? throw new InvalidOperationException("AzureOpenAI:Endpoint is required. Configure via Key Vault or appsettings.");
+    var openAiApiKey = builder.Configuration["AzureOpenAI:ApiKey"]
+        ?? throw new InvalidOperationException("AzureOpenAI:ApiKey is required. Configure via Key Vault or appsettings.");
 
-    if (!string.IsNullOrEmpty(openAiEndpoint) && !string.IsNullOrEmpty(openAiApiKey) && !openAiApiKey.StartsWith("YOUR-"))
-    {
-        builder.Services.AddSingleton(new AzureOpenAIClient(
-            new Uri(openAiEndpoint),
-            new Azure.AzureKeyCredential(openAiApiKey)));
-        builder.Services.AddSingleton<IMealAnalysisService, MealAnalysisService>();
-    }
-    else
-    {
-        // Use stub service when OpenAI is not configured
-        builder.Services.AddSingleton<IMealAnalysisService, StubMealAnalysisService>();
-        Log.Warning("Azure OpenAI not configured - meal scanning will return mock data");
-    }
+    builder.Services.AddSingleton(new AzureOpenAIClient(
+        new Uri(openAiEndpoint),
+        new Azure.AzureKeyCredential(openAiApiKey)));
+    builder.Services.AddSingleton<IMealAnalysisService, MealAnalysisService>();
 
     // Exception handling
     builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
     builder.Services.AddProblemDetails();
-
-    // Output caching for read-only endpoints
-    builder.Services.AddOutputCache(options =>
-    {
-        options.AddBasePolicy(builder => builder.Expire(TimeSpan.FromSeconds(60)));
-    });
-
-    // Configure forwarded headers for running behind reverse proxy (Azure Container Apps)
-    builder.Services.Configure<ForwardedHeadersOptions>(options =>
-    {
-        options.ForwardedHeaders = ForwardedHeaders.XForwardedFor
-            | ForwardedHeaders.XForwardedProto
-            | ForwardedHeaders.XForwardedHost;
-        options.KnownIPNetworks.Clear();
-        options.KnownProxies.Clear();
-    });
 
     var app = builder.Build();
 
@@ -302,28 +187,7 @@ try
         }
     });
 
-    // Azure App Service may use X-ARR-SSL; normalize scheme to https so Secure cookies are issued
-    app.Use((context, next) =>
-    {
-        // Explicitly handle X-Forwarded-Proto for Container Apps / Linux App Service
-        // This ensures the app knows it's running over HTTPS, which is critical for:
-        // 1. Setting Secure cookies
-        // 2. Generating correct OAuth redirect URIs (https://...)
-        // 3. Validating OAuth tokens during callback
-        if (context.Request.Headers.TryGetValue("X-Forwarded-Proto", out var proto) && 
-            string.Equals(proto, "https", StringComparison.OrdinalIgnoreCase))
-        {
-            context.Request.Scheme = "https";
-        }
-
-        if (context.Request.Headers.ContainsKey("X-ARR-SSL") &&
-            !string.Equals(context.Request.Scheme, "https", StringComparison.OrdinalIgnoreCase))
-        {
-            context.Request.Scheme = "https";
-        }
-
-        return next();
-    });
+   
 
     // Configure the HTTP request pipeline
     if (app.Environment.IsDevelopment())
@@ -336,7 +200,6 @@ try
 
     app.UseExceptionHandler();
     app.UseSerilogRequestLogging();
-    app.UseResponseCompression();
     app.UseHttpsRedirection();
     app.UseBlazorFrameworkFiles();
     app.UseStaticFiles();
@@ -345,9 +208,6 @@ try
     // Authentication & Authorization
     app.UseAuthentication();
     app.UseAuthorization();
-
-    // Output caching (after auth so cache varies by user)
-    app.UseOutputCache();
 
     // Health Checks
     app.MapHealthChecks("/health");

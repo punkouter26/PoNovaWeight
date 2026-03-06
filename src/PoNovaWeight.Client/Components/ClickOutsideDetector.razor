@@ -1,5 +1,4 @@
 @implements IAsyncDisposable
-@inject IJSRuntime JS
 
 <CascadingValue Value="this">
     @if (IsOpen)
@@ -8,15 +7,12 @@
         <div class="fixed inset-0 z-@(OverlayZIndex)" @onclick="Close"></div>
     }
 
-    <div @ref="contentRef" style="position: relative;">
+    <div style="position: relative;">
         @ChildContent
     </div>
 </CascadingValue>
 
 @code {
-    private ElementReference contentRef;
-    private IJSObjectReference? module;
-    
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
@@ -40,33 +36,5 @@
         }
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            module = await JS.InvokeAsync<IJSObjectReference>(
-                "import", "./Components/ClickOutsideDetector.razor.js");
-        }
-
-        if (IsOpen && contentRef.Id != null)
-        {
-            // Optional: Add focus management or additional UI enhancements
-            // await module!.InvokeVoidAsync("focusContent", contentRef);
-        }
-    }
-
-    async ValueTask IAsyncDisposable.DisposeAsync()
-    {
-        if (module is not null)
-        {
-            try
-            {
-                await module.DisposeAsync();
-            }
-            catch (JSDisconnectedException)
-            {
-                // Ignore - app is closing
-            }
-        }
-    }
+    ValueTask IAsyncDisposable.DisposeAsync() => ValueTask.CompletedTask;
 }

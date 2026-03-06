@@ -1,126 +1,184 @@
 {
-  "version": "2.0.0",
-  "tasks": [
-    {
-      "label": "build",
-      "command": "dotnet",
-      "type": "process",
-      "args": [
-        "build",
-        "${workspaceFolder}/PoNovaWeight.sln",
-        "/property:GenerateFullPaths=true",
-        "/consoleloggerparameters:NoSummary;ForceNoAlign"
-      ],
-      "problemMatcher": "$msCompile",
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      }
-    },
-    {
-      "label": "build-api",
-      "command": "dotnet",
-      "type": "process",
-      "args": [
-        "build",
-        "${workspaceFolder}/src/PoNovaWeight.Api/PoNovaWeight.Api.csproj",
-        "/property:GenerateFullPaths=true",
-        "/consoleloggerparameters:NoSummary;ForceNoAlign"
-      ],
-      "problemMatcher": "$msCompile",
-      "group": "build"
-    },
-    {
-      "label": "kill-dotnet",
-      "type": "shell",
-      "command": "powershell",
-      "args": [
-        "-NoProfile",
-        "-ExecutionPolicy",
-        "Bypass",
-        "-Command",
-        "Get-Process dotnet -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue"
-      ],
-      "problemMatcher": []
-    },
-    {
-      "label": "kill-dotnet-and-build-api",
-      "dependsOn": [
-        "kill-dotnet",
-        "build-api"
-      ],
-      "dependsOrder": "sequence",
-      "problemMatcher": []
-    },
-    {
-      "label": "watch",
-      "command": "dotnet",
-      "type": "process",
-      "args": [
-        "watch",
-        "run",
-        "--project",
-        "${workspaceFolder}/src/PoNovaWeight.Api/PoNovaWeight.Api.csproj"
-      ],
-      "problemMatcher": "$msCompile",
-      "isBackground": true
-    },
-    {
-      "label": "test",
-      "command": "dotnet",
-      "type": "process",
-      "args": [
-        "test",
-        "${workspaceFolder}/PoNovaWeight.sln",
-        "--no-build"
-      ],
-      "problemMatcher": "$msCompile",
-      "group": "test"
-    },
-    {
-      "label": "tailwind-watch",
-      "type": "shell",
-      "command": "npm",
-      "args": ["run", "watch"],
-      "options": {
-        "cwd": "${workspaceFolder}/src/PoNovaWeight.Client"
-      },
-      "isBackground": true,
-      "problemMatcher": []
-    },
-    {
-      "label": "tailwind-build",
-      "type": "shell",
-      "command": "npm",
-      "args": ["run", "build"],
-      "options": {
-        "cwd": "${workspaceFolder}/src/PoNovaWeight.Client"
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "azurite-start",
-      "type": "shell",
-      "command": "azurite",
-      "args": ["--silent", "--location", "${workspaceFolder}/azurite", "--debug", "${workspaceFolder}/azurite/debug.log"],
-      "isBackground": true,
-      "problemMatcher": []
-    },
-    {
-      "label": "open-client",
-      "type": "shell",
-      "command": "Start-Sleep -Seconds 5; Start-Process 'http://localhost:5000'",
-      "problemMatcher": [],
-      "presentation": {
-        "reveal": "silent",
-        "panel": "shared"
-      }
-    },
-    {
-      "label": "dev-api",
-      "dependsOn": ["azurite-start", "watch", "open-client"],
-      "dependsOrder": "parallel",
-      "problemMatcher": []
-    }
-  ]
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "build",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"build",
+				"${workspaceFolder}/PoNovaWeight.sln",
+				"/property:GenerateFullPaths=true",
+				"/consoleloggerparameters:NoSummary;ForceNoAlign"
+			],
+			"problemMatcher": "$msCompile",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},
+		{
+			"label": "build-api",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"build",
+				"${workspaceFolder}/src/PoNovaWeight.Api/PoNovaWeight.Api.csproj",
+				"/property:GenerateFullPaths=true",
+				"/consoleloggerparameters:NoSummary;ForceNoAlign"
+			],
+			"problemMatcher": "$msCompile",
+			"group": "build"
+		},
+		{
+			"label": "kill-dotnet",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-ExecutionPolicy",
+				"Bypass",
+				"-Command",
+				"Get-Process dotnet -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "kill-dotnet-and-build-api",
+			"dependsOn": [
+				"kill-dotnet",
+				"build-api"
+			],
+			"dependsOrder": "sequence",
+			"problemMatcher": []
+		},
+		{
+			"label": "watch",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"watch",
+				"run",
+				"--project",
+				"${workspaceFolder}/src/PoNovaWeight.Api/PoNovaWeight.Api.csproj"
+			],
+			"problemMatcher": "$msCompile",
+			"isBackground": true
+		},
+		{
+			"label": "test",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"test",
+				"${workspaceFolder}/PoNovaWeight.sln",
+				"--no-build"
+			],
+			"problemMatcher": "$msCompile",
+			"group": "test"
+		},
+		{
+			"label": "tailwind-watch",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"watch"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}/src/PoNovaWeight.Client"
+			},
+			"isBackground": true,
+			"problemMatcher": []
+		},
+		{
+			"label": "tailwind-build",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"build"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}/src/PoNovaWeight.Client"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "azurite-start",
+			"type": "shell",
+			"command": "azurite",
+			"args": [
+				"--silent",
+				"--location",
+				"${workspaceFolder}/azurite",
+				"--debug",
+				"${workspaceFolder}/azurite/debug.log"
+			],
+			"isBackground": true,
+			"problemMatcher": []
+		},
+		{
+			"label": "open-client",
+			"type": "shell",
+			"command": "Start-Sleep -Seconds 5; Start-Process 'http://localhost:5000'",
+			"problemMatcher": [],
+			"presentation": {
+				"reveal": "silent",
+				"panel": "shared"
+			}
+		},
+		{
+			"label": "dev-api",
+			"dependsOn": [
+				"azurite-start",
+				"watch",
+				"open-client"
+			],
+			"dependsOrder": "parallel",
+			"problemMatcher": []
+		},
+		{
+			"label": "get-app-settings",
+			"type": "shell",
+			"command": "az webapp config appsettings list --name ponovaweight-app --resource-group PoNovaWeight > settings.json",
+			"isBackground": false
+		},
+		{
+			"label": "get-webapp",
+			"type": "shell",
+			"command": "az webapp show --name ponovaweight-app --resource-group PoNovaWeight > webapp.json",
+			"isBackground": false
+		},
+		{
+			"label": "get-webapp-linux",
+			"type": "shell",
+			"command": "jq .linuxFxVersion webapp.json > linuxFx.txt",
+			"isBackground": false
+		},
+		{
+			"label": "get-logs-task",
+			"type": "shell",
+			"command": "az webapp log show --name ponovaweight-app --resource-group PoNovaWeight > webapp_logs.txt",
+			"isBackground": false
+		},
+		{
+			"label": "download-debug-logs",
+			"type": "shell",
+			"command": "az webapp log download --name ponovaweight-app --resource-group PoNovaWeight --log-file debug_logs.zip",
+			"isBackground": false
+		},
+		{
+			"label": "extract-logs",
+			"type": "shell",
+			"command": "Expand-Archive -Path debug_logs.zip -DestinationPath debug_logs -Force",
+			"isBackground": false
+		},
+		{
+			"label": "list-logs",
+			"type": "shell",
+			"command": "Get-ChildItem -Path debug_logs -Recurse | Select-Object FullName",
+			"isBackground": false
+		}
+	]
 }

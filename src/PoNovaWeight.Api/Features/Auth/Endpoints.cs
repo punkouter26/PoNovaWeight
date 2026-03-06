@@ -44,6 +44,12 @@ public static class Endpoints
                 .WithDescription("Development-only endpoint for E2E testing. Creates a fake JWT token.")
                 .Produces<DevLoginResponse>(StatusCodes.Status200OK)
                 .ExcludeFromDescription(); // Hide from OpenAPI in prod
+
+            group.MapPost("/dev-test-user-login", DevTestUserLogin)
+                .WithName("DevTestUserLogin")
+                .WithDescription("Development-only endpoint that seeds 3-year demo data and returns a dev JWT for test-user@local.")
+                .Produces<DevLoginResponse>(StatusCodes.Status200OK)
+                .ExcludeFromDescription();
         }
 
         return app;
@@ -158,7 +164,61 @@ public static class Endpoints
             issuer: "dev-issuer",
             audience: configuration["Google:ClientId"] ?? "dev-audience",
             claims: claims,
-            expires: DateTime.UtcNow.AddHours(1),
+            expires: DateTime.UtcNow.AddDays(30),
+            signingCredentials: creds);
+
+        var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+
+        return Results.Ok(new DevLoginResponse
+        {
+            Token = tokenString,
+            IsAuthenticated = true,
+            User = new UserInfo
+            {
+                Email = email,
+                DisplayName = displayName
+            }
+        });
+    }
+
+    /// <summary>
+    /// Development-only endpoint that seeds deterministic demo data for test-user@local
+    /// and returns a dev JWT. Used by E2E tests and screenshot capture.
+    /// </summary>
+    private static async Task<IResult> DevTestUserLogin(
+        HttpContext context,
+        IConfiguration configuration,
+        ITestUserDataSeeder seeder,
+        ILoggerFactory loggerFactory)
+    {
+        var logger = loggerFactory.CreateLogger("Auth");
+        var seedResult = await seeder.EnsureSeededAsync(context.RequestAborted);
+
+        logger.LogInformation(
+            "Dev test user login requested. Seeded={Seeded}, CreatedEntries={CreatedEntries}, FullDays={FullDays}, PartialDays={PartialDays}, MissingDays={MissingDays}",
+            seedResult.Seeded, seedResult.CreatedEntries, seedResult.FullDays, seedResult.PartialDays, seedResult.MissingDays);
+
+        const string email = TestUserDataSeeder.TestUserEmail;
+        const string displayName = TestUserDataSeeder.TestUserDisplayName;
+
+        var claims = new[]
+        {
+            new Claim(ClaimTypes.Email, email),
+            new Claim("email", email),
+            new Claim(ClaimTypes.Name, displayName),
+            new Claim("name", displayName),
+            new Claim(ClaimTypes.NameIdentifier, email),
+            new Claim("sub", email)
+        };
+
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("dev-test-key-that-is-long-enough-for-hmac-sha256"));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var token = new JwtSecurityToken(
+            issuer: "dev-issuer",
+            audience: configuration["Google:ClientId"] ?? "dev-audience",
+            claims: claims,
+            expires: DateTime.UtcNow.AddDays(30),
             signingCredentials: creds);
 
         var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
